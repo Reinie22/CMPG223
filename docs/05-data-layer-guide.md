@@ -1,13 +1,22 @@
-# How the data layer works, and how to add your own
+# How the data layer works, and how to add your ownThis is one Visual Studio project. Everything is under
+`Program/Nkanyezi Tours 2.0/NkanyeziTours/`:
 
+| Folder | What goes in it | Who writes it |
+|---|---|---|
+| `Models/` | Data classes. Properties only, no logic, no SQL | Reinhardt |
+| `Data/` | Repositories. The SQL lives here | Reinhardt |
+| `Services/` | Business rules, login, the repository factory | Reinhardt |
+| `Maintain/` `Account/` `Itineraries/` … | The .aspx screens | everyone else |
+
+If you are building screens, you only ever touch the screen folders.
 Read this before you write any code that touches the database. It is short, and
 the section on SQL injection is not optional.
 
 ## The chain
 
 ```
-Razor Page  →  Repository  →  SQL Server
-(.cshtml.cs)   (Data/)        (the SQL is written in the repository)
+Web Forms page  →  Repository  →  SQL Server
+(.aspx.cs)        (Data/)        (the SQL is written in the repository)
 ```
 
 **You never write SQL in a page.** You never open a connection. You never see a
@@ -17,20 +26,19 @@ model objects.
 A page that lists attractions is this much code:
 
 ```csharp
-public class IndexModel : PageModel
+public partial class Default : Page
 {
-    private readonly AttractionRepository _attractions;
+    private readonly AttractionRepository _attractions = Repositories.Attractions;
 
-    public IndexModel(AttractionRepository attractions)
+    protected void Page_Load(object sender, EventArgs e)
     {
-        _attractions = attractions;
-    }
+        // IsPostBack is false the first time the page opens and true after
+        // every button click. Re-binding on a postback would wipe out what the
+        // user had selected.
+        if (IsPostBack) return;
 
-    public List<Attraction> Attractions { get; set; } = new();
-
-    public void OnGet()
-    {
-        Attractions = _attractions.GetAll();
+        gvAttractions.DataSource = _attractions.GetAll();
+        gvAttractions.DataBind();
     }
 }
 ```
@@ -40,17 +48,17 @@ somewhere else.
 
 ## Where the files live
 
-This is one Visual Studio project, not four. Everything is under
-`Program/Nkanyezi Tours/Nkanyezi Tours/`:
+This is one Visual Studio project. Everything is under
+`Program/Nkanyezi Tours 2.0/NkanyeziTours/`:
 
 | Folder | What goes in it | Who writes it |
 |---|---|---|
 | `Models/` | Data classes. Properties only, no logic, no SQL | Reinhardt |
 | `Data/` | Repositories. The SQL lives here | Reinhardt |
-| `Services/` | Business rules and validation | Reinhardt |
-| `Pages/` | The screens | everyone else |
+| `Services/` | Business rules, login, the repository factory | Reinhardt |
+| `Account/` `Maintain/` `Itineraries/` … | The .aspx screens | everyone else |
 
-If you are building screens, you only ever touch `Pages/`.
+If you are building screens, you only ever touch the screen folders.
 
 The namespaces are `Nkanyezi.Models`, `Nkanyezi.Data` and `Nkanyezi.Services`
 even though there is only one project. That is deliberate: if we ever split it
@@ -174,12 +182,15 @@ Every table has a model and a repository, and they all compile:
   four booking classes, TripExpense, ExchangeRate, AppUser
 - `Data/Db.cs` — the connection helper, written once
 - `Data/AttractionRepository.cs` — **the pattern. Copy this one.**
-- `Data/` — a repository for every entity, all registered in `Program.cs`
+- `Data/` — a repository for every entity, all handed out by `Services/Repositories.cs`
 
-⚠️ The C# compiles, but the SQL inside these repositories has **not yet been run
-against a real database** — nobody has had SQL Server installed to test it.
-Expect to find typos in column names the first time you run each screen. Test
-your own queries in SSMS before blaming your page.
+✅ These are not just compiling — 21 of the queries, including the four-way
+UNION on the itinerary page, the budget totals and all three availability
+checks, have been run against a real database with real parameters. The
+Attractions screens have been driven end to end in a browser.
+
+That does not make your own new queries correct. Test each one in SSMS before
+blaming your page.
 
 ## Adding a repository for your own entity
 
@@ -200,13 +211,21 @@ SELECT * FROM dbo.Accommodation WHERE AccommodationId = 1;
 If it does not work there, it will not work from C# either, and it is far easier
 to debug in SSMS.
 
-**4. Register it** in `Program.cs` so pages can ask for it:
+**4. Add it to `Services/Repositories.cs`** so pages can ask for it:
 
 ```csharp
-builder.Services.AddScoped<AccommodationRepository>();
+public static AccommodationRepository Accommodation => new AccommodationRepository(_db);
 ```
 
-Forget step 4 and the page fails at startup with "unable to resolve service".
+Web Forms has no dependency injection container - a page is created by ASP.NET
+itself and you cannot add constructor arguments to it. That small factory class
+takes its place. Your page then reads:
+
+```csharp
+private readonly AccommodationRepository _accommodation = Repositories.Accommodation;
+```
+
+Forget step 4 and there is simply no way for the page to reach your repository.
 
 ## Rules that are not negotiable
 
