@@ -1,0 +1,132 @@
+# =============================================================================
+# Nkanyezi Tours - .gitignore
+# CMPG213 Group 6
+#
+# WHAT THIS FILE IS FOR
+# ---------------------
+# Git tries to track every file in the folder. Most of what Visual Studio
+# creates should NOT be tracked: it is rebuilt automatically, it is different on
+# every machine, and it is large. Committing it causes merge conflicts that
+# cannot be resolved, in files nobody wrote.
+#
+# If you ever see "bin", "obj" or ".vs" in your list of changes, something is
+# wrong with this file - say so in the group chat rather than committing them.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Build output. Rebuilt every time you press F5. Never commit.
+# -----------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+
+# -----------------------------------------------------------------------------
+# Visual Studio's own working folder and per-user settings.
+#
+# .vs/ holds your window layout, your open tabs and a local database of the
+# solution. It is yours alone and is enormous. The .user files hold things like
+# which page starts when you press F5.
+# -----------------------------------------------------------------------------
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# -----------------------------------------------------------------------------
+# CONNECTION STRINGS AND SECRETS
+#
+# appsettings.json IS committed, because everyone needs the same structure.
+# appsettings.Development.json is NOT, because that is where you put your own
+# server name if yours is not localhost\SQLEXPRESS.
+#
+# Rule: no password, no connection string with a password in it, and no API key
+# ever goes into a file that is committed. If you commit one by accident, tell
+# Reinhardt immediately - deleting it in a later commit does not remove it from
+# the history.
+# -----------------------------------------------------------------------------
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+# -----------------------------------------------------------------------------
+# NuGet packages. Restored automatically from the .csproj, so there is no reason
+# to commit hundreds of megabytes of them.
+# -----------------------------------------------------------------------------
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# -----------------------------------------------------------------------------
+# ASP.NET / web specific
+# -----------------------------------------------------------------------------
+wwwroot/dist/
+node_modules/
+*.publishsettings
+PublishProfiles/
+*.pubxml
+*.pubxml.user
+*.azurePubxml
+
+# -----------------------------------------------------------------------------
+# SQL Server local database files.
+#
+# The database itself is NOT in git. The .sql scripts are. Everyone rebuilds
+# their own copy by running 01-schema.sql and 03-seed-data.sql. That is the
+# whole reason those files are numbered.
+# -----------------------------------------------------------------------------
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.dbmdl
+*.jfm
+
+# -----------------------------------------------------------------------------
+# Test and coverage output
+# -----------------------------------------------------------------------------
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+*.trx
+
+# -----------------------------------------------------------------------------
+# ReSharper / Rider, if anyone uses them
+# -----------------------------------------------------------------------------
+_ReSharper*/
+*.[Rr]e[Ss]harper
+.idea/
+
+# -----------------------------------------------------------------------------
+# Operating system clutter
+# -----------------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# -----------------------------------------------------------------------------
+# Office lock files.
+#
+# When somebody has a Word document open, Word creates a hidden ~$ file next to
+# it. Committing those causes confusing conflicts on the submission documents.
+# -----------------------------------------------------------------------------
+~$*
+*.tmp
+*~
+
+# -----------------------------------------------------------------------------
+# Draw.io backups
+# -----------------------------------------------------------------------------
+*.drawio.bkp
+*.drawio.dtmp
