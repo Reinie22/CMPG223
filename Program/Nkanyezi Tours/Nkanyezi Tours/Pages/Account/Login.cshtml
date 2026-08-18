@@ -1,0 +1,76 @@
+@page
+@model Nkanyezi_Tours.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="text-center mb-4">
+            <h1 class="h3">Nkanyezi Tours</h1>
+            <p class="text-muted">Lighting your path to adventure</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">Sign in</h2>
+
+                @if (Model.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger">@Model.ErrorMessage</div>
+                }
+
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label"></label>
+                        <input asp-for="Input.Email" class="form-control"
+                               autocomplete="username" autofocus />
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label"></label>
+                        <input asp-for="Input.Password" class="form-control"
+                               type="password" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="Input.RememberMe" class="form-check-input" />
+                        <label asp-for="Input.RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                </form>
+
+                <hr class="my-4" />
+
+                <p class="text-center mb-0 small">
+                    New client? <a href="/Account/Register">Create an account</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Development only. Delete this box before the final submission. -->
+        <div class="card mt-3 border-warning">
+            <div class="card-body small">
+                <strong class="text-warning-emphasis">Test accounts (development only)</strong>
+                <ul class="mb-0 mt-2">
+                    <li>admin@nkanyezitours.co.za — Administrator</li>
+                    <li>supervisor@nkanyezitours.co.za — Supervisor</li>
+                    <li>precious@nkanyezitours.co.za — Travel Agent</li>
+                    <li>johan.botha@gmail.com — Client</li>
+                </ul>
+                <p class="mb-0 mt-2">Password for all: <code>Password123</code></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

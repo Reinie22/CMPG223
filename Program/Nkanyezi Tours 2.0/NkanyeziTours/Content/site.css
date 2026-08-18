@@ -1,0 +1,32 @@
+/* Nkanyezi Tours - our own styling.
+   Bootstrap does the heavy lifting; this file is only for the few things
+   Bootstrap does not cover. Keep it short. */
+
+body {
+    min-height: 100vh;
+}
+
+/* Grid headers read better slightly smaller and in small caps. */
+.table > thead th {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #6c757d;
+    border-bottom-width: 2px;
+}
+
+/* The empty-data message GridView renders when there are no rows. */
+.table .text-muted-empty {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Validation messages sit tight under their input. */
+.text-danger.small {
+    display: block;
+    margin-top: .25rem;
+}
+
+footer {
+    background-color: #f8f9fa;
+}

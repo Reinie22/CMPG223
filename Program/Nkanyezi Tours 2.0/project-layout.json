@@ -1,0 +1,955 @@
+{
+  "$comment": "Nkanyezi Tours - screen inventory for wireframing. Generated from docs/03-app-sections.md and database/01-schema.sql. Field lists match the real database columns, so a wireframe built from this will match what the pages can actually save.",
+  "project": {
+    "name": "Nkanyezi Tours Information System",
+    "module": "CMPG223 / CMPG213",
+    "group": "Group 6",
+    "client": "Nkanyezi Tours",
+    "deadline": "2026-09-30",
+    "platform": "ASP.NET Web Forms (.NET Framework 4.8), C#, Visual Studio Design view",
+    "database": "Microsoft SQL Server (LocalDB / Express), 18 tables",
+    "currency": "ZAR (R)",
+    "locale": "en-ZA",
+    "dateFormat": "dd MMM yyyy",
+    "screenCount": 50
+  },
+
+  "designSystem": {
+    "cssFramework": "Bootstrap 5",
+    "masterPage": "Site.Master",
+    "chrome": {
+      "topBar": "Brand on the left, section menu across, signed-in user name and Sign out on the right",
+      "sectionMenu": ["Dashboard", "Maintain", "Itineraries", "Expenses", "Portal", "Reports"],
+      "menuVisibility": "Menu items are hidden when the signed-in role may not open anything inside them",
+      "footer": "Group 6 - CMPG223 - Nkanyezi Tours"
+    },
+    "conventions": {
+      "listPage": "Filter bar across the top, primary grid below, 'Add new' button top-right of the grid",
+      "editPage": "Two-column form, labels above inputs, Save and Cancel bottom-right",
+      "deletePage": "Read-only summary of the record, warning panel, Confirm and Cancel",
+      "messages": "Green success panel and red warning panel directly above the form or grid",
+      "requiredFields": "Marked with a red asterisk, validated before save",
+      "money": "Right-aligned, prefixed R, two decimals",
+      "grids": "GridView, paging at 20 rows, sortable headers, action links in the last column"
+    },
+    "importantConstraint": "Controls are dragged onto the page in Design view for LAYOUT ONLY. Grids are bound in code-behind from the repository classes. Do NOT use SqlDataSource or ObjectDataSource wizards - that would put SQL back into the markup."
+  },
+
+  "roles": [
+    { "id": "AD", "name": "Administrator", "notes": "Everything, including users and exchange rates" },
+    { "id": "SU", "name": "Supervisor", "notes": "Everything except users and exchange rates" },
+    { "id": "AG", "name": "Travel Agent", "notes": "Master data and trips, no reports" },
+    { "id": "CL", "name": "Client", "notes": "Portal only, and only their own trips" }
+  ],
+
+  "lookups": {
+    "Province": ["Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga", "Northern Cape", "North West", "Western Cape"],
+    "AttractionCategory": ["Adventure", "Cultural", "Wildlife", "Historical", "Nature", "Entertainment", "Sightseeing"],
+    "ExpenseCategory": ["Meals", "Fuel", "Entrance fees", "Shopping", "Other"],
+    "RouteType": ["Flight", "Shuttle"],
+    "ItineraryStatus": ["Draft", "Confirmed", "Cancelled", "Completed"],
+    "BookingStatus": ["Confirmed", "Cancelled"],
+    "VehicleBookingStatus": ["Confirmed", "Collected", "Returned", "Cancelled"]
+  },
+
+  "sections": [
+    {
+      "id": "account",
+      "name": "Public and account",
+      "order": 0,
+      "inMenu": false,
+      "pages": [
+        {
+          "id": "login",
+          "name": "Login",
+          "file": "Account/Login.aspx",
+          "type": "auth",
+          "roles": ["public"],
+          "purpose": "Email and password, then send the user to their dashboard",
+          "layout": "Centred card about 400px wide on an empty page with no menu",
+          "fields": [
+            { "name": "Email", "label": "Email address", "control": "TextBox", "inputType": "email", "required": true },
+            { "name": "Password", "label": "Password", "control": "TextBox", "inputType": "password", "required": true },
+            { "name": "RememberMe", "label": "Keep me signed in", "control": "CheckBox" }
+          ],
+          "actions": ["Sign in", "Create an account"],
+          "states": ["empty", "invalid credentials warning", "account deactivated warning"]
+        },
+        {
+          "id": "register",
+          "name": "Register",
+          "file": "Account/Register.aspx",
+          "type": "form",
+          "roles": ["public"],
+          "purpose": "Client self-registration. Only ever creates a Client account",
+          "layout": "Centred card, same width as Login",
+          "fields": [
+            { "name": "Name", "label": "First name", "control": "TextBox", "required": true, "maxLength": 60 },
+            { "name": "Surname", "label": "Surname", "control": "TextBox", "required": true, "maxLength": 60 },
+            { "name": "Email", "label": "Email address", "control": "TextBox", "inputType": "email", "required": true, "maxLength": 150, "unique": true },
+            { "name": "ContactNumber", "label": "Contact number", "control": "TextBox", "maxLength": 20 },
+            { "name": "Password", "label": "Password", "control": "TextBox", "inputType": "password", "required": true },
+            { "name": "ConfirmPassword", "label": "Confirm password", "control": "TextBox", "inputType": "password", "required": true }
+          ],
+          "actions": ["Create account", "Back to sign in"],
+          "states": ["empty", "email already registered warning", "passwords do not match warning"]
+        },
+        {
+          "id": "denied",
+          "name": "Access denied",
+          "file": "Account/Denied.aspx",
+          "type": "message",
+          "roles": ["all"],
+          "purpose": "Shown when a user opens something their role may not see",
+          "layout": "Centred message with an icon and a Back to dashboard button",
+          "actions": ["Back to dashboard"]
+        }
+      ]
+    },
+
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "order": 1,
+      "inMenu": true,
+      "pages": [
+        {
+          "id": "dashboard",
+          "name": "Dashboard",
+          "file": "Default.aspx",
+          "type": "dashboard",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "purpose": "Landing page after login. Content differs per role",
+          "layout": "Row of stat cards across the top, one or two grids below",
+          "roleViews": [
+            {
+              "role": "CL",
+              "statCards": ["My trips", "Next trip", "Total spent"],
+              "grids": ["My trips - trip name, dates, status, total"],
+              "actions": ["Plan a new trip"]
+            },
+            {
+              "role": "AG",
+              "statCards": ["My trips", "Unassigned trips waiting", "Cars out on hire"],
+              "grids": ["My assigned trips", "Unassigned trips queue with a Claim button"],
+              "actions": ["New itinerary"]
+            },
+            {
+              "role": "AD|SU",
+              "statCards": ["Trips this month", "Revenue this month", "Active clients", "Cars awaiting return"],
+              "grids": ["Recent trips"],
+              "actions": ["Open reports"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "maintain",
+      "name": "Maintain",
+      "order": 2,
+      "inMenu": true,
+      "notes": "Master data. Every sub-section is the same three screens: list, add/edit, delete confirm. Build one set properly and the rest is copying.",
+      "subSections": [
+        {
+          "id": "users",
+          "name": "Users and access",
+          "roles": ["AD"],
+          "pages": [
+            {
+              "id": "users-list",
+              "name": "User list",
+              "file": "Maintain/Users/Default.aspx",
+              "type": "list",
+              "purpose": "All users, filter by role, active and inactive",
+              "filters": [
+                { "name": "Search", "label": "Name, surname or email", "control": "TextBox" },
+                { "name": "RoleId", "label": "Role", "control": "DropDownList", "source": "Role" },
+                { "name": "IncludeInactive", "label": "Show deactivated", "control": "CheckBox" }
+              ],
+              "grid": {
+                "columns": ["Name", "Surname", "Email", "Contact number", "Role", "Active"],
+                "actions": ["Edit", "Deactivate"]
+              },
+              "actions": ["Add user"]
+            },
+            {
+              "id": "users-edit",
+              "name": "Add / edit user",
+              "file": "Maintain/Users/Edit.aspx",
+              "type": "form",
+              "purpose": "Details and role. Password is set here",
+              "fields": [
+                { "name": "Name", "label": "First name", "control": "TextBox", "required": true, "maxLength": 60 },
+                { "name": "Surname", "label": "Surname", "control": "TextBox", "required": true, "maxLength": 60 },
+                { "name": "Email", "label": "Email address", "control": "TextBox", "inputType": "email", "required": true, "maxLength": 150, "unique": true },
+                { "name": "ContactNumber", "label": "Contact number", "control": "TextBox", "maxLength": 20 },
+                { "name": "RoleId", "label": "Role", "control": "DropDownList", "source": "Role", "required": true },
+                { "name": "Password", "label": "Password", "control": "TextBox", "inputType": "password", "note": "Leave blank when editing to keep the current password" },
+                { "name": "IsActive", "label": "Account active", "control": "CheckBox", "default": true }
+              ],
+              "actions": ["Save", "Cancel"]
+            },
+            {
+              "id": "users-delete",
+              "name": "Deactivate user",
+              "file": "Maintain/Users/Delete.aspx",
+              "type": "confirm",
+              "purpose": "Users are never deleted, only deactivated, because bookings record who captured them",
+              "actions": ["Confirm deactivate", "Cancel"]
+            }
+          ]
+        },
+        {
+          "id": "attractions",
+          "name": "Attractions",
+          "roles": ["AD", "SU", "AG"],
+          "referenceImplementation": true,
+          "pages": [
+            {
+              "id": "attractions-list",
+              "name": "Attraction list",
+              "file": "Maintain/Attractions/Default.aspx",
+              "type": "list",
+              "purpose": "Search by name, filter by category and province",
+              "filters": [
+                { "name": "Name", "label": "Name contains", "control": "TextBox" },
+                { "name": "CategoryId", "label": "Category", "control": "DropDownList", "source": "AttractionCategory" },
+                { "name": "ProvinceId", "label": "Province", "control": "DropDownList", "source": "Province" },
+                { "name": "MaxRate", "label": "Maximum rate", "control": "TextBox", "inputType": "money" }
+              ],
+              "grid": {
+                "columns": ["Name", "Category", "City", "Province", "Rate", "Capacity per slot", "Active"],
+                "actions": ["Edit", "Time slots", "Delete"]
+              },
+              "actions": ["Add attraction", "Export to Excel"]
+            },
+            {
+              "id": "attractions-edit",
+              "name": "Add / edit attraction",
+              "file": "Maintain/Attractions/Edit.aspx",
+              "type": "form",
+              "purpose": "All fields from Phase 2 Table 2",
+              "fields": [
+                { "name": "Name", "label": "Name", "control": "TextBox", "required": true, "maxLength": 120 },
+                { "name": "CategoryId", "label": "Category", "control": "DropDownList", "source": "AttractionCategory" },
+                { "name": "Description", "label": "Description", "control": "TextBox", "multiline": true, "maxLength": 1000 },
+                { "name": "Address", "label": "Address", "control": "TextBox", "maxLength": 200 },
+                { "name": "City", "label": "City", "control": "TextBox", "maxLength": 80 },
+                { "name": "ProvinceId", "label": "Province", "control": "DropDownList", "source": "Province" },
+                { "name": "Rate", "label": "Rate", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero" },
+                { "name": "Quantity", "label": "Capacity per time slot (people)", "control": "TextBox", "inputType": "int", "required": true, "rule": "greater than zero" },
+                { "name": "UnitOfMeasure", "label": "Unit of measure", "control": "TextBox", "placeholder": "per person, per group", "maxLength": 30 },
+                { "name": "DurationMinutes", "label": "Duration (minutes)", "control": "TextBox", "inputType": "int" },
+                { "name": "OperatingTimeStart", "label": "Opens at", "control": "TextBox", "inputType": "time" },
+                { "name": "OperatingTimeEnd", "label": "Closes at", "control": "TextBox", "inputType": "time", "rule": "later than opens at" },
+                { "name": "BestOperatingSeason", "label": "Best season", "control": "TextBox", "maxLength": 50 }
+              ],
+              "actions": ["Save", "Cancel"]
+            },
+            {
+              "id": "attractions-timeslots",
+              "name": "Time slots",
+              "file": "Maintain/Attractions/TimeSlots.aspx",
+              "type": "childList",
+              "purpose": "Manage the slots for one attraction. Capacity is counted per slot",
+              "header": "Shows the attraction name and its capacity per slot",
+              "grid": { "columns": ["Starts", "Ends"], "actions": ["Delete"] },
+              "inlineForm": [
+                { "name": "TimeStart", "label": "Starts", "control": "TextBox", "inputType": "time", "required": true },
+                { "name": "TimeEnd", "label": "Ends", "control": "TextBox", "inputType": "time", "required": true }
+              ],
+              "actions": ["Add slot", "Back to attractions"]
+            },
+            {
+              "id": "attractions-delete",
+              "name": "Delete attraction",
+              "file": "Maintain/Attractions/Delete.aspx",
+              "type": "confirm",
+              "purpose": "Deactivates instead of deleting where bookings exist",
+              "actions": ["Confirm delete", "Cancel"]
+            }
+          ]
+        },
+        {
+          "id": "accommodation",
+          "name": "Accommodation",
+          "roles": ["AD", "SU", "AG"],
+          "pages": [
+            {
+              "id": "accommodation-list",
+              "name": "Accommodation list",
+              "file": "Maintain/Accommodation/Default.aspx",
+              "type": "list",
+              "filters": [
+                { "name": "Name", "label": "Name contains", "control": "TextBox" },
+                { "name": "ProvinceId", "label": "Province", "control": "DropDownList", "source": "Province" },
+                { "name": "MinStarRating", "label": "Minimum stars", "control": "DropDownList", "options": ["1", "2", "3", "4", "5"] },
+                { "name": "MaxPrice", "label": "Maximum price per night", "control": "TextBox", "inputType": "money" }
+              ],
+              "grid": {
+                "columns": ["Name", "Type", "City", "Province", "Stars", "Price per night", "Rooms", "Active"],
+                "actions": ["Edit", "Rooms", "Delete"]
+              },
+              "actions": ["Add accommodation", "Export to Excel"]
+            },
+            {
+              "id": "accommodation-edit",
+              "name": "Add / edit accommodation",
+              "file": "Maintain/Accommodation/Edit.aspx",
+              "type": "form",
+              "fields": [
+                { "name": "Name", "label": "Name", "control": "TextBox", "required": true, "maxLength": 120 },
+                { "name": "Type", "label": "Type", "control": "TextBox", "placeholder": "Hotel, Guest House, Lodge, Camp", "maxLength": 50 },
+                { "name": "Description", "label": "Description", "control": "TextBox", "multiline": true, "maxLength": 1000 },
+                { "name": "Address", "label": "Address", "control": "TextBox", "maxLength": 200 },
+                { "name": "City", "label": "City", "control": "TextBox", "maxLength": 80 },
+                { "name": "ProvinceId", "label": "Province", "control": "DropDownList", "source": "Province" },
+                { "name": "StarRating", "label": "Star rating", "control": "DropDownList", "options": ["1", "2", "3", "4", "5"] },
+                { "name": "PricePerNight", "label": "Price per night", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero" },
+                { "name": "Capacity", "label": "Total capacity (people)", "control": "TextBox", "inputType": "int", "required": true, "rule": "greater than zero" },
+                { "name": "Amenities", "label": "Amenities", "control": "TextBox", "multiline": true, "maxLength": 500 }
+              ],
+              "actions": ["Save", "Cancel"]
+            },
+            {
+              "id": "accommodation-rooms",
+              "name": "Rooms",
+              "file": "Maintain/Accommodation/Rooms.aspx",
+              "type": "childList",
+              "purpose": "Manage the rooms belonging to one accommodation",
+              "grid": { "columns": ["Room number", "Type", "Beds", "Size", "Own bathroom", "In service"], "actions": ["Edit", "Delete"] },
+              "inlineForm": [
+                { "name": "RoomNumber", "label": "Room number", "control": "TextBox", "required": true, "maxLength": 20, "rule": "unique within this property" },
+                { "name": "RoomType", "label": "Room type", "control": "TextBox", "placeholder": "Single, Double, Family, Suite", "maxLength": 50 },
+                { "name": "Beds", "label": "Beds", "control": "TextBox", "inputType": "int", "required": true, "rule": "greater than zero" },
+                { "name": "Size", "label": "Size", "control": "TextBox", "placeholder": "30 sqm", "maxLength": 30 },
+                { "name": "Bathroom", "label": "Own bathroom", "control": "CheckBox", "default": true },
+                { "name": "AvailabilityStatus", "label": "In service", "control": "CheckBox", "default": true }
+              ],
+              "actions": ["Add room", "Back to accommodation"]
+            },
+            {
+              "id": "accommodation-delete",
+              "name": "Delete accommodation",
+              "file": "Maintain/Accommodation/Delete.aspx",
+              "type": "confirm",
+              "actions": ["Confirm delete", "Cancel"]
+            }
+          ]
+        },
+        {
+          "id": "vehicles",
+          "name": "Vehicles (car rental)",
+          "roles": ["AD", "SU", "AG"],
+          "pages": [
+            {
+              "id": "vehicles-list",
+              "name": "Vehicle list",
+              "file": "Maintain/Vehicles/Default.aspx",
+              "type": "list",
+              "filters": [
+                { "name": "Search", "label": "Make, model or registration", "control": "TextBox" },
+                { "name": "Location", "label": "Collection branch", "control": "DropDownList" },
+                { "name": "MinCapacity", "label": "Minimum passengers", "control": "TextBox", "inputType": "int" }
+              ],
+              "grid": {
+                "columns": ["Make", "Model", "Colour", "Registration", "Passengers", "Branch", "Price per day", "Km included", "Active"],
+                "actions": ["Edit", "Delete"]
+              },
+              "actions": ["Add vehicle", "Export to Excel"]
+            },
+            {
+              "id": "vehicles-edit",
+              "name": "Add / edit vehicle",
+              "file": "Maintain/Vehicles/Edit.aspx",
+              "type": "form",
+              "fieldGroups": [
+                {
+                  "title": "Vehicle",
+                  "fields": [
+                    { "name": "Make", "label": "Make", "control": "TextBox", "maxLength": 50 },
+                    { "name": "Model", "label": "Model", "control": "TextBox", "maxLength": 50 },
+                    { "name": "Colour", "label": "Colour", "control": "TextBox", "maxLength": 30 },
+                    { "name": "RegistrationNumber", "label": "Registration number", "control": "TextBox", "required": true, "maxLength": 20, "unique": true },
+                    { "name": "VehicleDescription", "label": "Description", "control": "TextBox", "maxLength": 200 },
+                    { "name": "Capacity", "label": "Passengers", "control": "TextBox", "inputType": "int" },
+                    { "name": "Location", "label": "Collection branch", "control": "TextBox", "maxLength": 80 }
+                  ]
+                },
+                {
+                  "title": "Pricing",
+                  "note": "Changing a rate applies to new bookings only. Existing bookings keep the rate they were quoted.",
+                  "fields": [
+                    { "name": "PricePerDay", "label": "Price per day", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero" },
+                    { "name": "IncludedKmPerDay", "label": "Kilometres included per day", "control": "TextBox", "inputType": "int", "required": true, "default": 200 },
+                    { "name": "RatePerExtraKm", "label": "Rate per extra kilometre", "control": "TextBox", "inputType": "money", "required": true, "rule": "not negative" }
+                  ]
+                }
+              ],
+              "actions": ["Save", "Cancel"]
+            },
+            {
+              "id": "vehicles-delete",
+              "name": "Delete vehicle",
+              "file": "Maintain/Vehicles/Delete.aspx",
+              "type": "confirm",
+              "actions": ["Confirm delete", "Cancel"]
+            }
+          ]
+        },
+        {
+          "id": "routes",
+          "name": "Routes (flights and shuttles)",
+          "roles": ["AD", "SU", "AG"],
+          "notes": "One set of screens serves both flights and shuttles. The type is a dropdown.",
+          "pages": [
+            {
+              "id": "routes-list",
+              "name": "Route list",
+              "file": "Maintain/Routes/Default.aspx",
+              "type": "list",
+              "filters": [
+                { "name": "RouteType", "label": "Type", "control": "DropDownList", "source": "RouteType" },
+                { "name": "DepartureCity", "label": "From", "control": "DropDownList" },
+                { "name": "ArrivalCity", "label": "To", "control": "DropDownList" },
+                { "name": "Carrier", "label": "Carrier contains", "control": "TextBox" }
+              ],
+              "grid": {
+                "columns": ["Type", "Carrier", "Code", "From", "To", "Departs", "Arrives", "Duration", "Indicative fare", "Active"],
+                "actions": ["Edit", "Delete"]
+              },
+              "actions": ["Add route", "Export to Excel"]
+            },
+            {
+              "id": "routes-edit",
+              "name": "Add / edit route",
+              "file": "Maintain/Routes/Edit.aspx",
+              "type": "form",
+              "fields": [
+                { "name": "RouteType", "label": "Type", "control": "DropDownList", "source": "RouteType", "required": true },
+                { "name": "Carrier", "label": "Carrier", "control": "TextBox", "required": true, "maxLength": 80, "placeholder": "Airline or bus company" },
+                { "name": "RouteCode", "label": "Flight or service number", "control": "TextBox", "maxLength": 20 },
+                { "name": "DepartureCity", "label": "Departure city", "control": "TextBox", "required": true, "maxLength": 80 },
+                { "name": "ArrivalCity", "label": "Arrival city", "control": "TextBox", "required": true, "maxLength": 80, "rule": "must differ from departure city" },
+                { "name": "DepartureTime", "label": "Departure time", "control": "TextBox", "inputType": "time" },
+                { "name": "ArrivalTime", "label": "Arrival time", "control": "TextBox", "inputType": "time" },
+                { "name": "DurationMinutes", "label": "Duration (minutes)", "control": "TextBox", "inputType": "int" },
+                { "name": "IndicativeFarePerSeat", "label": "Indicative fare per seat", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero", "note": "A guide price for the portal, not a quote" }
+              ],
+              "actions": ["Save", "Cancel"]
+            },
+            {
+              "id": "routes-delete",
+              "name": "Delete route",
+              "file": "Maintain/Routes/Delete.aspx",
+              "type": "confirm",
+              "actions": ["Confirm delete", "Cancel"]
+            }
+          ]
+        },
+        {
+          "id": "rates",
+          "name": "Exchange rates",
+          "roles": ["AD"],
+          "pages": [
+            {
+              "id": "rates-list",
+              "name": "Rate list",
+              "file": "Maintain/Rates/Default.aspx",
+              "type": "list",
+              "purpose": "Current and historic rates per currency. Old rates are kept so a past conversion can still be explained",
+              "grid": { "columns": ["Currency", "Name", "Rate to Rand", "Effective from", "Captured by"], "actions": ["Delete"] },
+              "actions": ["Capture rate"]
+            },
+            {
+              "id": "rates-edit",
+              "name": "Capture rate",
+              "file": "Maintain/Rates/Edit.aspx",
+              "type": "form",
+              "fields": [
+                { "name": "CurrencyCode", "label": "Currency code", "control": "TextBox", "required": true, "maxLength": 3, "placeholder": "USD" },
+                { "name": "CurrencyName", "label": "Currency name", "control": "TextBox", "required": true, "maxLength": 50, "placeholder": "US Dollar" },
+                { "name": "RateToZar", "label": "Rand per 1 unit", "control": "TextBox", "inputType": "decimal", "required": true, "rule": "greater than zero" },
+                { "name": "EffectiveFrom", "label": "Effective from", "control": "TextBox", "inputType": "date", "required": true }
+              ],
+              "actions": ["Save", "Cancel"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "itineraries",
+      "name": "Manage Itineraries",
+      "order": 3,
+      "inMenu": true,
+      "notes": "The centre of the system and the hardest section. Everything else feeds into it.",
+      "pages": [
+        {
+          "id": "itineraries-list",
+          "name": "Itinerary list",
+          "file": "Itineraries/Default.aspx",
+          "type": "list",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "All trips. Agents see their own by default",
+          "filters": [
+            { "name": "TripName", "label": "Trip name contains", "control": "TextBox" },
+            { "name": "ClientId", "label": "Client", "control": "DropDownList", "source": "Client users" },
+            { "name": "AgentId", "label": "Agent", "control": "DropDownList", "source": "Travel agents" },
+            { "name": "Status", "label": "Status", "control": "DropDownList", "source": "ItineraryStatus" }
+          ],
+          "grid": {
+            "columns": ["Trip name", "Client", "Agent", "Dates", "Budget", "Status"],
+            "actions": ["Open", "Edit", "Cancel"],
+            "rowHint": "Status shown as a coloured badge: Draft grey, Confirmed green, Completed blue, Cancelled red"
+          },
+          "actions": ["New itinerary", "Export to Excel"]
+        },
+        {
+          "id": "itineraries-unassigned",
+          "name": "Unassigned trips",
+          "file": "Itineraries/Unassigned.aspx",
+          "type": "list",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Trips submitted from the portal with no agent yet. An agent claims one",
+          "grid": { "columns": ["Trip name", "Client", "Dates", "Budget", "Submitted"], "actions": ["Claim"] },
+          "emptyState": "Nothing waiting - every trip has an agent",
+          "notes": "Two agents can click Claim at the same moment. The second is told an agent has already taken it"
+        },
+        {
+          "id": "itineraries-create",
+          "name": "Create itinerary",
+          "file": "Itineraries/Create.aspx",
+          "type": "form",
+          "roles": ["AD", "SU", "AG"],
+          "fields": [
+            { "name": "ClientId", "label": "Client", "control": "DropDownList", "source": "Client users", "required": true },
+            { "name": "AgentId", "label": "Agent", "control": "DropDownList", "source": "Travel agents", "note": "May be left empty" },
+            { "name": "TripName", "label": "Trip name", "control": "TextBox", "required": true, "maxLength": 120 },
+            { "name": "StartDate", "label": "Start date", "control": "TextBox", "inputType": "date" },
+            { "name": "EndDate", "label": "End date", "control": "TextBox", "inputType": "date", "rule": "on or after start date" },
+            { "name": "TotalBudget", "label": "Total budget", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero" },
+            { "name": "TripComments", "label": "Comments", "control": "TextBox", "multiline": true }
+          ],
+          "actions": ["Create", "Cancel"]
+        },
+        {
+          "id": "itineraries-detail",
+          "name": "Itinerary detail",
+          "file": "Itineraries/Detail.aspx",
+          "type": "detail",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "purpose": "The trip: every booking, running total against budget, comments, status",
+          "layout": "Header panel with trip name, client, agent, dates and status. Budget panel with progress bar. One combined bookings grid. Expenses summary. Add buttons above the bookings grid.",
+          "budgetPanel": {
+            "shows": ["Total budget", "Bookings total", "Expenses total", "Grand total", "Remaining"],
+            "progressBar": "Percentage of budget used, turns red when over budget",
+            "overBudgetWarning": "Red panel when the grand total exceeds the budget"
+          },
+          "grid": {
+            "title": "Bookings",
+            "columns": ["Type", "Description", "Date", "Cost", "Status"],
+            "typeBadges": { "Accommodation": "blue", "Attraction": "amber", "Vehicle": "primary", "Route": "dark" },
+            "actions": ["Edit", "Cancel"],
+            "notes": "One combined list of rooms, attractions, cars and seats, sorted by date"
+          },
+          "actions": ["Book accommodation", "Book attraction", "Book a car", "Book a flight or shuttle", "Add expense", "Export itinerary as PDF"],
+          "clientView": "A Client sees the same page with the add and edit buttons hidden"
+        },
+        {
+          "id": "itineraries-edit",
+          "name": "Edit itinerary",
+          "file": "Itineraries/Edit.aspx",
+          "type": "form",
+          "roles": ["AD", "SU", "AG"],
+          "fields": [
+            { "name": "TripName", "label": "Trip name", "control": "TextBox", "required": true },
+            { "name": "AgentId", "label": "Agent", "control": "DropDownList", "source": "Travel agents" },
+            { "name": "StartDate", "label": "Start date", "control": "TextBox", "inputType": "date" },
+            { "name": "EndDate", "label": "End date", "control": "TextBox", "inputType": "date" },
+            { "name": "TotalBudget", "label": "Total budget", "control": "TextBox", "inputType": "money", "required": true },
+            { "name": "Status", "label": "Status", "control": "DropDownList", "source": "ItineraryStatus", "required": true },
+            { "name": "TripComments", "label": "Comments", "control": "TextBox", "multiline": true }
+          ],
+          "actions": ["Save", "Cancel"]
+        },
+        {
+          "id": "itineraries-delete",
+          "name": "Delete itinerary",
+          "file": "Itineraries/Delete.aspx",
+          "type": "confirm",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Cancels rather than deletes once anything has been booked",
+          "actions": ["Confirm", "Cancel"]
+        },
+        {
+          "id": "book-room",
+          "name": "Book accommodation",
+          "file": "Itineraries/BookRoom.aspx",
+          "type": "bookingWizard",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Search available rooms for a date range, one booking row per room",
+          "layout": "Step 1 search panel at the top, step 2 results grid below, step 3 cost summary and Save",
+          "steps": [
+            {
+              "step": 1,
+              "title": "Choose property and dates",
+              "fields": [
+                { "name": "AccommodationId", "label": "Accommodation", "control": "DropDownList", "required": true },
+                { "name": "CheckInDate", "label": "Check in", "control": "TextBox", "inputType": "date", "required": true },
+                { "name": "CheckOutDate", "label": "Check out", "control": "TextBox", "inputType": "date", "required": true, "rule": "after check in" }
+              ],
+              "actions": ["Search available rooms"]
+            },
+            {
+              "step": 2,
+              "title": "Available rooms",
+              "grid": { "columns": ["Select", "Room number", "Type", "Beds", "Size", "Own bathroom", "Price per night"], "selection": "checkbox, multiple rooms allowed" },
+              "emptyState": "No rooms free for those dates"
+            },
+            {
+              "step": 3,
+              "title": "Confirm",
+              "readOnly": ["Nights", "Rooms selected", "Total cost", "Budget remaining after this booking"],
+              "warnings": ["Booking would take the trip over budget"]
+            }
+          ],
+          "actions": ["Save booking", "Cancel"]
+        },
+        {
+          "id": "book-attraction",
+          "name": "Book attraction",
+          "file": "Itineraries/BookAttraction.aspx",
+          "type": "bookingWizard",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Pick a date and time slot, checks people booked against capacity",
+          "steps": [
+            {
+              "step": 1,
+              "title": "Choose attraction and date",
+              "fields": [
+                { "name": "AttractionId", "label": "Attraction", "control": "DropDownList", "required": true },
+                { "name": "BookingDate", "label": "Date", "control": "TextBox", "inputType": "date", "required": true }
+              ],
+              "actions": ["Check availability"]
+            },
+            {
+              "step": 2,
+              "title": "Choose a time slot",
+              "fields": [
+                { "name": "TimeSlotId", "label": "Time slot", "control": "DropDownList", "required": true, "displayFormat": "09:00 - 11:00  (14 of 20 left)", "note": "Full slots are shown but cannot be chosen" },
+                { "name": "Quantity", "label": "Number of people", "control": "TextBox", "inputType": "int", "required": true, "rule": "greater than zero and not more than the spaces left" }
+              ]
+            },
+            {
+              "step": 3,
+              "title": "Confirm",
+              "readOnly": ["Rate per person", "Total cost", "Budget remaining after this booking"]
+            }
+          ],
+          "actions": ["Save booking", "Cancel"]
+        },
+        {
+          "id": "book-vehicle",
+          "name": "Book a car",
+          "file": "Itineraries/BookVehicle.aspx",
+          "type": "bookingWizard",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Pick dates, shows the daily rate and the km included",
+          "steps": [
+            {
+              "step": 1,
+              "title": "Choose dates",
+              "fields": [
+                { "name": "StartDate", "label": "Collection date", "control": "TextBox", "inputType": "date", "required": true },
+                { "name": "EndDate", "label": "Return date", "control": "TextBox", "inputType": "date", "required": true, "rule": "on or after collection date" }
+              ],
+              "actions": ["Show available cars"]
+            },
+            {
+              "step": 2,
+              "title": "Available cars",
+              "grid": { "columns": ["Select", "Make", "Model", "Colour", "Passengers", "Branch", "Price per day", "Km included per day", "Rate per extra km"], "selection": "single" }
+            },
+            {
+              "step": 3,
+              "title": "Confirm",
+              "readOnly": ["Days", "Base cost", "Kilometres included in total"],
+              "note": "The final cost is not known until the car comes back and the odometer is read"
+            }
+          ],
+          "actions": ["Save booking", "Cancel"]
+        },
+        {
+          "id": "vehicle-return",
+          "name": "Collect and return vehicle",
+          "file": "Itineraries/VehicleReturn.aspx",
+          "type": "form",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Capture the odometer out and in, settles the final cost",
+          "notes": "Easy to forget and nothing settles without it. A car rental's cost is not final until the odometer comes back.",
+          "layout": "Booking summary panel at the top, then whichever capture panel applies to the current status",
+          "panels": [
+            {
+              "shownWhen": "Status is Confirmed",
+              "title": "Collect the car",
+              "fields": [{ "name": "OdometerOut", "label": "Odometer at collection (km)", "control": "TextBox", "inputType": "int", "required": true }],
+              "actions": ["Mark as collected"]
+            },
+            {
+              "shownWhen": "Status is Collected",
+              "title": "Return the car",
+              "fields": [{ "name": "OdometerIn", "label": "Odometer at return (km)", "control": "TextBox", "inputType": "int", "required": true, "rule": "not less than the collection reading" }],
+              "actions": ["Mark as returned and settle cost"]
+            },
+            {
+              "shownWhen": "Status is Returned",
+              "title": "Final cost",
+              "readOnly": ["Days", "Km driven", "Km included", "Extra km", "Base cost", "Extra km cost", "Total cost"]
+            }
+          ]
+        },
+        {
+          "id": "book-route",
+          "name": "Book a flight or shuttle",
+          "file": "Itineraries/BookRoute.aspx",
+          "type": "form",
+          "roles": ["AD", "SU", "AG"],
+          "purpose": "Pick a route and date, seats, fare per seat pre-filled from the indicative fare and overridden with what was actually paid",
+          "fields": [
+            { "name": "RouteType", "label": "Type", "control": "DropDownList", "source": "RouteType" },
+            { "name": "RouteId", "label": "Route", "control": "DropDownList", "required": true, "displayFormat": "SAA SA315 - Johannesburg to Cape Town" },
+            { "name": "TravelDate", "label": "Travel date", "control": "TextBox", "inputType": "date", "required": true },
+            { "name": "Seats", "label": "Seats", "control": "TextBox", "inputType": "int", "required": true, "rule": "greater than zero" },
+            { "name": "FarePerSeat", "label": "Fare actually paid per seat", "control": "TextBox", "inputType": "money", "required": true, "note": "Pre-filled from the indicative fare, agent overrides with the real fare" },
+            { "name": "BookingReference", "label": "Airline reference", "control": "TextBox", "maxLength": 30 }
+          ],
+          "readOnly": ["Total cost (seats x fare)", "Budget remaining after this booking"],
+          "actions": ["Save booking", "Cancel"]
+        }
+      ]
+    },
+
+    {
+      "id": "expenses",
+      "name": "Manage Trip Expenses",
+      "order": 4,
+      "inMenu": true,
+      "notes": "Clients may capture and edit expenses on their own trips. No approval step, so the page shows who captured each line.",
+      "pages": [
+        {
+          "id": "expenses-list",
+          "name": "Expense list",
+          "file": "Expenses/Default.aspx",
+          "type": "list",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "purpose": "Expenses for one trip, grouped by category",
+          "layout": "Trip header, category total cards across the top, then the full expense grid",
+          "filters": [
+            { "name": "ExpenseCategoryId", "label": "Category", "control": "DropDownList", "source": "ExpenseCategory" },
+            { "name": "FromDate", "label": "From", "control": "TextBox", "inputType": "date" },
+            { "name": "ToDate", "label": "To", "control": "TextBox", "inputType": "date" }
+          ],
+          "grid": { "columns": ["Date", "Category", "Description", "Amount", "Receipt", "Captured by"], "actions": ["Edit", "Delete"] },
+          "actions": ["Add expense", "Back to itinerary"]
+        },
+        {
+          "id": "expenses-edit",
+          "name": "Add / edit expense",
+          "file": "Expenses/Edit.aspx",
+          "type": "form",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "fields": [
+            { "name": "ExpenseCategoryId", "label": "Category", "control": "DropDownList", "source": "ExpenseCategory", "required": true },
+            { "name": "Description", "label": "Description", "control": "TextBox", "required": true, "maxLength": 300 },
+            { "name": "ExpenseDate", "label": "Date", "control": "TextBox", "inputType": "date", "required": true },
+            { "name": "CurrencyCode", "label": "Currency", "control": "DropDownList", "default": "ZAR", "note": "Choosing a foreign currency reveals the amount paid field and converts it" },
+            { "name": "AmountOriginal", "label": "Amount paid in that currency", "control": "TextBox", "inputType": "money", "showWhen": "currency is not ZAR" },
+            { "name": "Amount", "label": "Amount in Rand", "control": "TextBox", "inputType": "money", "required": true, "rule": "greater than zero" },
+            { "name": "ReceiptNumber", "label": "Receipt number", "control": "TextBox", "maxLength": 50 }
+          ],
+          "actions": ["Save", "Cancel"]
+        },
+        {
+          "id": "expenses-delete",
+          "name": "Delete expense",
+          "file": "Expenses/Delete.aspx",
+          "type": "confirm",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "actions": ["Confirm delete", "Cancel"]
+        },
+        {
+          "id": "expenses-summary",
+          "name": "Trip cost summary",
+          "file": "Expenses/Summary.aspx",
+          "type": "report",
+          "roles": ["AD", "SU", "AG", "CL"],
+          "purpose": "Bookings plus expenses against budget, exportable",
+          "layout": "Trip header, budget panel, bookings subtotal table, expenses by category table, grand total row",
+          "sections": ["Bookings by type with subtotals", "Expenses by category with subtotals", "Grand total against budget"],
+          "actions": ["Export as PDF", "Back to itinerary"]
+        }
+      ]
+    },
+
+    {
+      "id": "portal",
+      "name": "Client Portal",
+      "order": 5,
+      "inMenu": true,
+      "notes": "The answer to the main problem in the project: agents drowning in telephone enquiries. The browse pages need no login.",
+      "pages": [
+        {
+          "id": "portal-attractions",
+          "name": "Browse attractions",
+          "file": "Portal/Attractions.aspx",
+          "type": "catalogue",
+          "roles": ["public"],
+          "layout": "Filter bar, then a responsive card grid, three cards per row",
+          "card": { "shows": ["Name", "Category badge", "City and province", "Duration", "Rate"], "action": "View details" },
+          "filters": ["Category", "Province", "Maximum rate"]
+        },
+        {
+          "id": "portal-accommodation",
+          "name": "Browse accommodation",
+          "file": "Portal/Accommodation.aspx",
+          "type": "catalogue",
+          "roles": ["public"],
+          "card": { "shows": ["Name", "Type", "Star rating", "City and province", "Price per night", "Amenities"], "action": "View details" },
+          "filters": ["Province", "Minimum stars", "Maximum price per night"]
+        },
+        {
+          "id": "portal-vehicles",
+          "name": "Browse cars",
+          "file": "Portal/Vehicles.aspx",
+          "type": "catalogue",
+          "roles": ["public"],
+          "card": { "shows": ["Make and model", "Colour", "Passengers", "Branch", "Price per day", "Km included per day", "Rate per extra km"] },
+          "filters": ["Branch", "Minimum passengers", "Maximum price per day"]
+        },
+        {
+          "id": "portal-routes",
+          "name": "Browse flights and shuttles",
+          "file": "Portal/Routes.aspx",
+          "type": "catalogue",
+          "roles": ["public"],
+          "purpose": "So a client can see roughly what Johannesburg to New York costs before phoning",
+          "grid": { "columns": ["Type", "Carrier", "From", "To", "Departs", "Duration", "Indicative fare"] },
+          "filters": ["Type", "From", "To"],
+          "disclaimer": "Fares shown are indicative. Your agent will confirm the actual fare."
+        },
+        {
+          "id": "portal-mytrips",
+          "name": "My trips",
+          "file": "Portal/MyTrips.aspx",
+          "type": "list",
+          "roles": ["CL"],
+          "grid": { "columns": ["Trip name", "Dates", "Status", "Budget", "Spent so far"], "actions": ["Open"] },
+          "actions": ["Plan a new trip"]
+        },
+        {
+          "id": "portal-plantrip",
+          "name": "Plan a trip",
+          "file": "Portal/PlanTrip.aspx",
+          "type": "form",
+          "roles": ["CL"],
+          "purpose": "Client builds a trip and submits it to the agency. It lands in the unassigned queue",
+          "fields": [
+            { "name": "TripName", "label": "What should we call this trip", "control": "TextBox", "required": true },
+            { "name": "StartDate", "label": "Roughly when do you leave", "control": "TextBox", "inputType": "date" },
+            { "name": "EndDate", "label": "Roughly when do you return", "control": "TextBox", "inputType": "date" },
+            { "name": "TotalBudget", "label": "What is your budget", "control": "TextBox", "inputType": "money", "required": true },
+            { "name": "TripComments", "label": "Tell us what you would like to do", "control": "TextBox", "multiline": true }
+          ],
+          "actions": ["Submit to the agency"],
+          "confirmation": "Thank you. An agent will pick this up and contact you."
+        },
+        {
+          "id": "portal-convert",
+          "name": "Currency converter",
+          "file": "Portal/Convert.aspx",
+          "type": "tool",
+          "roles": ["CL"],
+          "purpose": "Converts a trip total using the captured rates",
+          "layout": "Small centred card",
+          "fields": [
+            { "name": "Amount", "label": "Amount in Rand", "control": "TextBox", "inputType": "money", "required": true },
+            { "name": "CurrencyCode", "label": "Convert to", "control": "DropDownList", "source": "Captured currencies", "required": true }
+          ],
+          "readOnly": ["Converted amount", "Rate used", "Rate effective from"],
+          "actions": ["Convert", "Use my trip total instead"],
+          "emptyState": "No rate has been captured for that currency yet"
+        }
+      ]
+    },
+
+    {
+      "id": "reports",
+      "name": "Reports",
+      "order": 6,
+      "inMenu": true,
+      "roles": ["AD", "SU"],
+      "pages": [
+        {
+          "id": "reports-menu",
+          "name": "Report menu",
+          "file": "Reports/Default.aspx",
+          "type": "menu",
+          "layout": "Four large cards, one per report, each with a title, one-line description and Open button"
+        },
+        {
+          "id": "reports-revenue",
+          "name": "Revenue and profit",
+          "file": "Reports/Revenue.aspx",
+          "type": "report",
+          "parameters": ["From date", "To date"],
+          "shows": ["Revenue by month", "Average spend per client", "Revenue split by booking type"],
+          "visuals": ["Column chart of revenue by month", "Summary stat cards"],
+          "actions": ["Export as PDF", "Export to Excel"]
+        },
+        {
+          "id": "reports-seasonal",
+          "name": "Seasonal trends and hotspots",
+          "file": "Reports/Seasonal.aspx",
+          "type": "report",
+          "parameters": ["From date", "To date"],
+          "shows": ["Bookings by month", "Bookings by province", "Most visited attractions"],
+          "visuals": ["Line chart by month", "Bar chart by province", "Top ten table"],
+          "actions": ["Export as PDF", "Export to Excel"]
+        },
+        {
+          "id": "reports-tripcost",
+          "name": "Trip cost",
+          "file": "Reports/TripCost.aspx",
+          "type": "report",
+          "parameters": ["From date", "To date", "Client (optional)"],
+          "shows": ["Cost breakdown across trips", "Budget versus actual per trip", "Trips that went over budget"],
+          "actions": ["Export as PDF", "Export to Excel"]
+        },
+        {
+          "id": "reports-agent",
+          "name": "Agent performance",
+          "file": "Reports/AgentPerformance.aspx",
+          "type": "report",
+          "parameters": ["From date", "To date"],
+          "shows": ["Trips per agent", "Revenue per agent", "Average trip value per agent"],
+          "notes": "Counts only trips that have an agent assigned, since a client can build a trip in the portal before anyone picks it up",
+          "actions": ["Export as PDF", "Export to Excel"]
+        }
+      ]
+    }
+  ],
+
+  "export": {
+    "notes": "Export is not a menu section. It is a button on the pages that produce something worth exporting.",
+    "targets": [
+      { "page": "Itinerary detail", "produces": "Full itinerary as PDF" },
+      { "page": "Trip cost summary", "produces": "Summary as PDF" },
+      { "page": "Any report", "produces": "PDF or Excel" },
+      { "page": "Any list page", "produces": "Excel" }
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="NkanyeziTours.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nkanyezi Tours</title>
+    <link rel="stylesheet" href="<%: ResolveUrl("~/Content/bootstrap/bootstrap.min.css") %>" />
+    <link rel="stylesheet" href="<%: ResolveUrl("~/Content/site.css") %>" />
+    <asp:ContentPlaceHolder ID="head" runat="server" />
+</head>
+<body>
+    <form id="form1" runat="server">
+
+        <%--
+            The navigation bar.
+
+            Each menu item is a <li runat="server"> so the code-behind can hide
+            it from roles that may not open anything inside it. Hiding the menu
+            is only tidiness - the real protection is the <location> rules in
+            Web.config, which stop somebody typing the URL in directly.
+        --%>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="<%: ResolveUrl("~/Default.aspx") %>">Nkanyezi Tours</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item" runat="server" id="navDashboard">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Default.aspx") %>">Dashboard</a>
+                        </li>
+                        <li class="nav-item" runat="server" id="navMaintain">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Attractions/Default.aspx") %>">Maintain</a>
+                        </li>
+                        <li class="nav-item" runat="server" id="navItineraries">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Itineraries/Default.aspx") %>">Itineraries</a>
+                        </li>
+                        <li class="nav-item" runat="server" id="navReports">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Reports/Default.aspx") %>">Reports</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        <asp:PlaceHolder ID="phSignedIn" runat="server">
+                            <li class="nav-item">
+                                <span class="navbar-text me-3">
+                                    <asp:Literal ID="litUserName" runat="server" />
+                                    <span class="badge bg-secondary ms-1">
+                                        <asp:Literal ID="litRole" runat="server" />
+                                    </span>
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <asp:LinkButton ID="btnSignOut" runat="server" CssClass="nav-link"
+                                                OnClick="btnSignOut_Click" CausesValidation="false">Sign out</asp:LinkButton>
+                            </li>
+                        </asp:PlaceHolder>
+
+                        <asp:PlaceHolder ID="phAnonymous" runat="server">
+                            <li class="nav-item">
+                                <a class="nav-link" href="<%: ResolveUrl("~/Account/Login.aspx") %>">Sign in</a>
+                            </li>
+                        </asp:PlaceHolder>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container py-4">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </main>
+
+        <footer class="border-top py-3 mt-4">
+            <div class="container text-muted small">
+                Group 6 &middot; CMPG223 &middot; Nkanyezi Tours
+            </div>
+        </footer>
+
+        <script src="<%: ResolveUrl("~/Scripts/bootstrap.bundle.min.js") %>"></script>
+    </form>
+</body>
+</html>

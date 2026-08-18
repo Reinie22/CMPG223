@@ -1,0 +1,62 @@
+# =============================================================================
+# Nkanyezi Tours - .gitattributes
+#
+# Line endings and file types. Without this file you get two annoying problems:
+#   1. Screens of "LF will be replaced by CRLF" warnings on every commit.
+#   2. Diffs that show an entire file as changed when somebody's editor saved
+#      it with different line endings - which makes code review impossible.
+# =============================================================================
+
+# Let git work out what is text and normalise it to LF in the repository,
+# checking it out as CRLF on Windows. Everyone gets the endings their tools
+# expect and the repository stays consistent.
+* text=auto
+
+# Source and markup - always text
+*.cs        text diff=csharp
+*.aspx      text
+*.master    text
+*.config    text
+*.csproj    text
+*.sln       text
+*.sql       text
+*.css       text
+*.js        text
+*.json      text
+*.md        text
+*.drawio    text
+
+# -----------------------------------------------------------------------------
+# Binary files. Git must never try to merge or diff these - it would corrupt
+# them. The Word and PowerPoint documents are the important ones: if two people
+# edit the same .docx on different branches, git CANNOT merge it. One version
+# has to be chosen and the other person's work is lost.
+#
+# That is why documents should be written in OneDrive or Google Docs and only
+# the finished .docx committed here as a snapshot.
+# -----------------------------------------------------------------------------
+*.docx      binary
+*.pptx      binary
+*.xlsx      binary
+*.pdf       binary
+*.png       binary
+*.jpg       binary
+*.ico       binary
+*.mdf       binary
+*.ldf       binary
+
+# -----------------------------------------------------------------------------
+# OPTIONAL - the .csproj merge problem.
+#
+# Old-style Web Forms projects list every file by hand, so ANY two people who
+# each add a page will both edit NkanyeziTours.csproj and git will report a
+# conflict. The fix is nearly always "keep both lines".
+#
+# Uncommenting the line below makes git keep both sides automatically. It
+# removes most of the pain, but can occasionally leave a duplicated
+# <Compile Include> entry, which shows up as a clear MSBuild "duplicate items"
+# error that you then delete by hand. Louder failure, but never lost work.
+#
+# Discuss as a group before turning this on.
+#
+# *.csproj merge=union
