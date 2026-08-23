@@ -147,6 +147,27 @@
     <Compile Include="Maintain\Attractions\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Itineraries\BookTransport.aspx.cs">
+      <DependentUpon>BookTransport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookTransport.aspx.designer.cs">
+      <DependentUpon>BookTransport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\BookVehicle.aspx.cs">
+      <DependentUpon>BookVehicle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookVehicle.aspx.designer.cs">
+      <DependentUpon>BookVehicle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\BookRoute.aspx.cs">
+      <DependentUpon>BookRoute.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookRoute.aspx.designer.cs">
+      <DependentUpon>BookRoute.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- Markup and static files -->
   <ItemGroup>
@@ -158,7 +179,11 @@
     <Content Include="Account\Denied.aspx" />
     <Content Include="Maintain\Attractions\Default.aspx" />
     <Content Include="Maintain\Attractions\Edit.aspx" />
+    <Content Include="Itineraries\BookTransport.aspx" />
+    <Content Include="Itineraries\BookVehicle.aspx" />
+    <Content Include="Itineraries\BookRoute.aspx" />
     <Content Include="Content\site.css" />
+    <Content Include="Content\images\transport-hero.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Transport\" />
