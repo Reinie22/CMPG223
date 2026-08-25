@@ -237,17 +237,17 @@ GO
    The fares are indicative. The agent captures the fare actually paid when the
    booking is made.
    ============================================================================= */
-INSERT INTO dbo.Route (RouteType, Carrier, RouteCode, DepartureCity, ArrivalCity, DepartureTime, ArrivalTime, DurationMinutes, IndicativeFarePerSeat) VALUES
-('Flight','South African Airways','SA 322','Johannesburg','Cape Town','07:00','09:10',130,1850.00),
-('Flight','South African Airways','SA 323','Cape Town','Johannesburg','10:00','12:05',125,1850.00),
-('Flight','FlySafair','FA 212','Johannesburg','Durban','06:30','07:40',70,1150.00),
-('Flight','Airlink','4Z 128','Johannesburg','Skukuza','09:30','10:45',75,2650.00),
-('Flight','Emirates','EK 764','Johannesburg','New York','13:30','21:45',1095,14500.00),
-('Flight','British Airways','BA 56','Johannesburg','London','19:15','06:05',655,11200.00),
-('Flight','Qantas','QF 64','Johannesburg','Sydney','16:45','12:30',830,16800.00),
-('Shuttle','Nkanyezi Shuttle','NS 01','Cape Town','Stellenbosch','08:00','09:00',60,180.00),
-('Shuttle','Nkanyezi Shuttle','NS 02','Johannesburg','Pretoria','07:30','08:30',60,150.00),
-('Shuttle','Baz Bus','BZ 10','Cape Town','Plettenberg Bay','07:00','15:30',510,650.00);
+INSERT INTO dbo.Route (RouteType, Carrier, RouteCode, DepartureCity, ArrivalCity, DepartureTime, ArrivalTime, DurationMinutes, IndicativeFarePerSeat, SeatCapacity) VALUES
+('Flight','South African Airways','SA 322','Johannesburg','Cape Town','07:00','09:10',130,1850.00,180),
+('Flight','South African Airways','SA 323','Cape Town','Johannesburg','10:00','12:05',125,1850.00,180),
+('Flight','FlySafair','FA 212','Johannesburg','Durban','06:30','07:40',70,1150.00,186),
+('Flight','Airlink','4Z 128','Johannesburg','Skukuza','09:30','10:45',75,2650.00,74),
+('Flight','Emirates','EK 764','Johannesburg','New York','13:30','21:45',1095,14500.00,300),
+('Flight','British Airways','BA 56','Johannesburg','London','19:15','06:05',655,11200.00,280),
+('Flight','Qantas','QF 64','Johannesburg','Sydney','16:45','12:30',830,16800.00,250),
+('Shuttle','Nkanyezi Shuttle','NS 01','Cape Town','Stellenbosch','08:00','09:00',60,180.00,22),
+('Shuttle','Nkanyezi Shuttle','NS 02','Johannesburg','Pretoria','07:30','08:30',60,150.00,22),
+('Shuttle','Baz Bus','BZ 10','Cape Town','Plettenberg Bay','07:00','15:30',510,650.00,36);
 GO
 
 

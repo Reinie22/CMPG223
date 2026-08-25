@@ -130,3 +130,5 @@ $RECYCLE.BIN/
 # -----------------------------------------------------------------------------
 *.drawio.bkp
 *.drawio.dtmp
+docs/screen-board.html
+docs/screen-list.md

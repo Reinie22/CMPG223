@@ -4,6 +4,13 @@
 
 body {
     min-height: 100vh;
+    background: #f4f7fb;
+    color: #17233b;
+}
+
+.navbar.bg-dark {
+    background: linear-gradient(90deg, #0b1830, #173d68) !important;
+    box-shadow: 0 2px 12px rgba(9, 28, 54, .18);
 }
 
 /* Grid headers read better slightly smaller and in small caps. */
@@ -29,4 +36,237 @@ body {
 
 footer {
     background-color: #f8f9fa;
+}
+
+/* Large, easy-to-scan choices on the transport booking landing page. */
+.transport-choice {
+    border: 0;
+    border-top: 4px solid #1a73b8;
+    border-radius: 1rem;
+    box-shadow: 0 .35rem 1.2rem rgba(31, 51, 81, .08);
+    overflow: hidden;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.transport-choice:hover,
+.transport-choice:focus-within {
+    transform: translateY(-5px);
+    box-shadow: 0 .9rem 1.7rem rgba(23, 61, 104, .16);
+}
+
+.transport-icon {
+    display: grid;
+    place-items: center;
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 1.1rem;
+    background: #eaf4fc;
+    font-size: 2.2rem;
+    line-height: 1;
+    margin-bottom: 1.25rem;
+}
+
+.transport-choice-bus { border-top-color: #e49b23; }
+.transport-choice-bus .transport-icon { background: #fff5df; }
+.transport-choice-flight { border-top-color: #5c65c0; }
+.transport-choice-flight .transport-icon { background: #efefff; }
+
+.transport-step {
+    color: #c3ccda;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.transport-kicker {
+    color: #3979aa;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.transport-hero {
+    position: relative;
+    height: clamp(280px, 38vw, 430px);
+    overflow: hidden;
+    border-radius: 1.2rem;
+    box-shadow: 0 1rem 2.5rem rgba(13, 36, 65, .18);
+    color: #fff;
+}
+
+.transport-hero > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.transport-hero-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(5, 19, 38, .88) 0%, rgba(5, 19, 38, .45) 48%, rgba(5, 19, 38, .05) 78%);
+}
+
+.transport-hero-content {
+    position: absolute;
+    left: clamp(1.5rem, 5vw, 4rem);
+    bottom: clamp(1.5rem, 5vw, 3.5rem);
+    max-width: 38rem;
+}
+
+.transport-hero-content h1,
+.booking-page-header h1 {
+    margin: .35rem 0 .55rem;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 750;
+    letter-spacing: -.035em;
+}
+
+.transport-hero-content p,
+.booking-page-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, .84);
+    font-size: 1.05rem;
+}
+
+.transport-eyebrow {
+    font-size: .74rem;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #ffd27b;
+}
+
+.transport-back {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    border: 0;
+    box-shadow: 0 .25rem .7rem rgba(0, 0, 0, .18);
+}
+
+.booking-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 190px;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    overflow: hidden;
+    border-radius: 1.1rem;
+    background:
+        linear-gradient(90deg, rgba(8, 28, 53, .96), rgba(20, 75, 117, .76)),
+        url('images/transport-hero.png') center 59% / cover;
+    box-shadow: 0 .7rem 1.7rem rgba(13, 36, 65, .16);
+    color: #fff;
+}
+
+.booking-header-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 6rem;
+    height: 6rem;
+    margin-left: 2rem;
+    border: 1px solid rgba(255, 255, 255, .34);
+    border-radius: 1.5rem;
+    background: rgba(255, 255, 255, .16);
+    backdrop-filter: blur(5px);
+    font-size: 3rem;
+}
+
+.booking-card {
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: 0 .35rem 1.3rem rgba(31, 51, 81, .09);
+}
+
+.booking-card > .card-body {
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.booking-section-title {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin-bottom: 1.25rem;
+}
+
+.booking-section-title > span {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: #173d68;
+    color: #fff;
+    font-weight: 700;
+}
+
+.booking-section-title strong,
+.booking-section-title small {
+    display: block;
+}
+
+.booking-section-title small {
+    margin-top: .1rem;
+    color: #6c7584;
+}
+
+.booking-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid #cfe1f3;
+    border-radius: .8rem;
+    background: linear-gradient(90deg, #edf6ff, #f7fbff);
+    color: #173d68;
+}
+
+.booking-total > span {
+    font-weight: 650;
+}
+
+.booking-total > :last-child {
+    font-size: 1.55rem;
+    font-weight: 800;
+}
+
+.seat-availability {
+    padding: .9rem 1rem;
+    border: 1px solid #d8e4ef;
+    border-radius: .75rem;
+    background: #f8fbfe;
+    color: #29445f;
+}
+
+.seat-availability-track {
+    height: .42rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #dfe8f1;
+}
+
+.seat-availability-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #e7a527, #d66f35);
+    transition: width .2s ease;
+}
+
+@media (max-width: 576px) {
+    .transport-hero-shade {
+        background: linear-gradient(0deg, rgba(5, 19, 38, .92), rgba(5, 19, 38, .1));
+    }
+
+    .transport-hero-content {
+        right: 1.25rem;
+    }
+
+    .booking-header-icon {
+        width: 4.25rem;
+        height: 4.25rem;
+        font-size: 2rem;
+    }
 }
