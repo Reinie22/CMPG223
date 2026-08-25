@@ -173,10 +173,9 @@ public class VehicleBooking
 /// <summary>
 /// A seat booked on a flight or a bus shuttle.
 ///
-/// Far simpler than a car, because seats multiplied by the fare is known the
-/// moment the booking is made. There is no availability check: we are not
-/// holding airline inventory, we are recording what the agent booked with the
-/// airline.
+/// Seats multiplied by the fare is known the moment the booking is made.
+/// Availability is tracked per route and travel date against the route's seat
+/// capacity, for both flights and bus shuttles.
 ///
 /// TotalCost is a COMPUTED column (Seats * FarePerSeat). Read-only - never
 /// insert or update it.
@@ -208,7 +207,7 @@ public class RouteBooking
     /// <summary>Computed by SQL Server as Seats * FarePerSeat. Read-only.</summary>
     public decimal TotalCost { get; set; }
 
-    /// <summary>The airline's own reference - what the client is asked for at the airport.</summary>
+    /// <summary>The Nkanyezi reference generated when the booking is confirmed.</summary>
     public string? BookingReference { get; set; }
 
     public string Status { get; set; } = BookingStatus.Confirmed;
