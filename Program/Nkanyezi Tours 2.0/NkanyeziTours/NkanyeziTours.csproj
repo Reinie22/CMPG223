@@ -160,9 +160,7 @@
     <Content Include="Maintain\Attractions\Edit.aspx" />
     <Content Include="Content\site.css" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Transport\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
