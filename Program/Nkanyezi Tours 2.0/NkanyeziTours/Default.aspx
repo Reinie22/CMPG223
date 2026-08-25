@@ -44,6 +44,15 @@
             <asp:BoundField DataField="TotalBudget" HeaderText="Budget"
                             DataFormatString="R{0:N2}" ItemStyle-CssClass="text-end" />
             <asp:BoundField DataField="Status" HeaderText="Status" />
+            <asp:TemplateField HeaderText="">
+                <ItemTemplate>
+                    <asp:HyperLink ID="lnkBookTransport" runat="server"
+                                   CssClass="btn btn-sm btn-outline-primary text-nowrap"
+                                   Text="Book transport"
+                                   Visible='<%# Nkanyezi.Services.AuthService.IsStaff && Convert.ToBoolean(Eval("IsEditable")) %>'
+                                   NavigateUrl='<%# "~/Itineraries/BookTransport.aspx?itineraryId=" + Eval("ItineraryId") %>' />
+                </ItemTemplate>
+            </asp:TemplateField>
         </Columns>
     </asp:GridView>
 
