@@ -68,6 +68,42 @@ public class RouteRepository
     /// <summary>Just the flights, or just the shuttles. Use RouteTypes.</summary>
     public List<Route> GetByType(string routeType) => Search(routeType: routeType);
 
+    /// <summary>Routes with their remaining seats for one travel date.</summary>
+    public List<Route> GetAvailabilityByType(string routeType, DateTime travelDate)
+        => _db.Query(@"
+        SELECT  r.*, availability.SeatsAvailable
+        FROM    dbo.Route AS r
+        CROSS APPLY (
+            SELECT r.SeatCapacity - ISNULL(SUM(rb.Seats), 0) AS SeatsAvailable
+            FROM   dbo.RouteBooking AS rb
+            WHERE  rb.RouteId = r.RouteId
+              AND  rb.TravelDate = @TravelDate
+              AND  rb.Status <> 'Cancelled'
+        ) AS availability
+        WHERE   r.IsActive = 1
+          AND   r.RouteType = @RouteType
+        ORDER BY r.DepartureCity, r.ArrivalCity, r.DepartureTime;",
+        Map,
+        Db.P("@TravelDate", travelDate.Date),
+        Db.P("@RouteType", routeType));
+
+    /// <summary>One route's remaining seats for one travel date.</summary>
+    public Route? GetAvailability(int routeId, DateTime travelDate)
+        => _db.QuerySingle(@"
+        SELECT  r.*, availability.SeatsAvailable
+        FROM    dbo.Route AS r
+        CROSS APPLY (
+            SELECT r.SeatCapacity - ISNULL(SUM(rb.Seats), 0) AS SeatsAvailable
+            FROM   dbo.RouteBooking AS rb
+            WHERE  rb.RouteId = r.RouteId
+              AND  rb.TravelDate = @TravelDate
+              AND  rb.Status <> 'Cancelled'
+        ) AS availability
+        WHERE r.RouteId = @RouteId;",
+        Map,
+        Db.P("@TravelDate", travelDate.Date),
+        Db.P("@RouteId", routeId));
+
     // -------------------------------------------------------------------------
     // Writing
     // -------------------------------------------------------------------------
@@ -76,10 +112,12 @@ public class RouteRepository
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.Route
               (RouteType,  Carrier,  RouteCode,  DepartureCity,  ArrivalCity,
-               DepartureTime,  ArrivalTime,  DurationMinutes,  IndicativeFarePerSeat)
+               DepartureTime,  ArrivalTime,  DurationMinutes,  IndicativeFarePerSeat,
+               SeatCapacity)
         VALUES
               (@RouteType, @Carrier, @RouteCode, @DepartureCity, @ArrivalCity,
-               @DepartureTime, @ArrivalTime, @DurationMinutes, @IndicativeFarePerSeat);
+               @DepartureTime, @ArrivalTime, @DurationMinutes, @IndicativeFarePerSeat,
+               @SeatCapacity);
 
         SELECT CAST(SCOPE_IDENTITY() AS INT);",
         BuildParameters(route));
@@ -106,7 +144,8 @@ public class RouteRepository
                 DepartureTime         = @DepartureTime,
                 ArrivalTime           = @ArrivalTime,
                 DurationMinutes       = @DurationMinutes,
-                IndicativeFarePerSeat = @IndicativeFarePerSeat
+                IndicativeFarePerSeat = @IndicativeFarePerSeat,
+                SeatCapacity          = @SeatCapacity
         WHERE   RouteId = @RouteId;",
         parameters.ToArray());
     }
@@ -148,6 +187,9 @@ public class RouteRepository
         ArrivalTime           = Db.GetNullable<TimeSpan>(r, "ArrivalTime"),
         DurationMinutes       = Db.GetNullable<int>(r, "DurationMinutes"),
         IndicativeFarePerSeat = (decimal)r["IndicativeFarePerSeat"],
+        SeatCapacity          = (int)r["SeatCapacity"],
+        SeatsAvailable        = Db.HasColumn(r, "SeatsAvailable")
+                                    ? Db.GetNullable<int>(r, "SeatsAvailable") : null,
         IsActive              = (bool)r["IsActive"],
         CreatedDate           = (DateTime)r["CreatedDate"]
     };
@@ -162,6 +204,7 @@ public class RouteRepository
         Db.P("@DepartureTime",         route.DepartureTime),
         Db.P("@ArrivalTime",           route.ArrivalTime),
         Db.P("@DurationMinutes",       route.DurationMinutes),
-        Db.P("@IndicativeFarePerSeat", route.IndicativeFarePerSeat)
+        Db.P("@IndicativeFarePerSeat", route.IndicativeFarePerSeat),
+        Db.P("@SeatCapacity",          route.SeatCapacity)
     };
 }
