@@ -347,12 +347,14 @@ CREATE TABLE dbo.Route (
     ArrivalTime             TIME(0)             NULL,
     DurationMinutes         INT                 NULL,
     IndicativeFarePerSeat   DECIMAL(10,2)       NOT NULL,
+    SeatCapacity            INT                 NOT NULL,
     IsActive                BIT                 NOT NULL CONSTRAINT DF_Route_IsActive DEFAULT (1),
     CreatedDate             DATETIME2(0)        NOT NULL CONSTRAINT DF_Route_Created  DEFAULT (SYSDATETIME()),
 
     CONSTRAINT PK_Route         PRIMARY KEY (RouteId),
     CONSTRAINT CK_Route_Type    CHECK (RouteType IN ('Flight','Shuttle')),
     CONSTRAINT CK_Route_Fare    CHECK (IndicativeFarePerSeat > 0),
+    CONSTRAINT CK_Route_Capacity CHECK (SeatCapacity > 0),
     -- A route has to go somewhere else.
     CONSTRAINT CK_Route_Cities  CHECK (DepartureCity <> ArrivalCity)
 );
@@ -556,11 +558,10 @@ GO
 
 /* Flight and shuttle booking.
 
-   Far simpler than a car, because the cost is seats multiplied by the fare and
-   is known the moment the booking is made. There is no availability check: we
-   are not holding airline inventory, we are recording what the agent booked
-   with the airline. BookingReference is the airline's own reference, which is
-   what the client will be asked for at the airport.
+   The cost is seats multiplied by the fare and is known the moment the booking
+   is made. Availability is counted against the route's seat capacity for each
+   travel date. BookingReference is the Nkanyezi reference generated only when
+   the booking is confirmed.
 
    FarePerSeat is copied from the route as a starting point and the agent
    corrects it to the fare actually paid, so the itinerary total reflects real

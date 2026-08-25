@@ -35,6 +35,15 @@ public class Route
 
     public decimal IndicativeFarePerSeat { get; set; }
 
+    /// <summary>Total passenger seats available on this service.</summary>
+    public int SeatCapacity { get; set; } = 1;
+
+    /// <summary>
+    /// Seats remaining for the date being searched. Filled by the booking
+    /// availability query; null on ordinary maintenance queries.
+    /// </summary>
+    public int? SeatsAvailable { get; set; }
+
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; }
 
@@ -47,6 +56,9 @@ public class Route
     public string Display =>
         string.IsNullOrWhiteSpace(RouteCode) ? $"{Carrier} - {Journey}"
                                              : $"{Carrier} {RouteCode} - {Journey}";
+
+    public string BookingDisplay =>
+        $"{Display} — {SeatsAvailable ?? SeatCapacity} of {SeatCapacity} seats available";
 
     /// <summary>"2h 15m", or empty when the duration was never captured.</summary>
     public string DurationDisplay
