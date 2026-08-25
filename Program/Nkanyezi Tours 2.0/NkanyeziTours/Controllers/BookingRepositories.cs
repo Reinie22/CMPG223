@@ -468,8 +468,7 @@ public class VehicleBookingRepository
 /// <summary>
 /// Flight and shuttle seats booked on a trip.
 ///
-/// The simplest of the four. There is no availability check because we do not
-/// hold airline inventory - we record what the agent booked with the airline.
+/// Capacity is enforced per route and travel date for both flights and buses.
 ///
 /// TotalCost is a COMPUTED column (Seats * FarePerSeat). Never insert or update
 /// it.
@@ -511,16 +510,27 @@ public class RouteBookingRepository
         Db.P("@RouteBookingId", routeBookingId));
 
     /// <summary>
-    /// Books seats. TotalCost is not supplied - SQL Server computes it.
+    /// Books seats when enough remain. TotalCost is computed by SQL Server.
+    /// The update/hold lock prevents two simultaneous bookings from both
+    /// taking the last available seats.
     /// </summary>
     public int Create(RouteBooking booking)
         => _db.ExecuteInsert(@"
-        INSERT INTO dbo.RouteBooking (RouteId,  ItineraryId,  TravelDate,  Seats,
-                                      FarePerSeat,  BookingReference,  Status,  CreatedBy)
-        VALUES                       (@RouteId, @ItineraryId, @TravelDate, @Seats,
-                                      @FarePerSeat, @BookingReference, @Status, @CreatedBy);
+        INSERT INTO dbo.RouteBooking (RouteId, ItineraryId, TravelDate, Seats,
+                                      FarePerSeat, BookingReference, Status, CreatedBy)
+        SELECT @RouteId, @ItineraryId, @TravelDate, @Seats,
+               @FarePerSeat, @BookingReference, @Status, @CreatedBy
+        FROM   dbo.Route AS r WITH (UPDLOCK, HOLDLOCK)
+        WHERE  r.RouteId = @RouteId
+          AND  r.IsActive = 1
+          AND  @Seats + ISNULL((
+                   SELECT SUM(existing.Seats)
+                   FROM dbo.RouteBooking AS existing
+                   WHERE existing.RouteId = @RouteId
+                     AND existing.TravelDate = @TravelDate
+                     AND existing.Status <> 'Cancelled'), 0) <= r.SeatCapacity;
 
-        SELECT CAST(SCOPE_IDENTITY() AS INT);",
+        SELECT CAST(ISNULL(SCOPE_IDENTITY(), 0) AS INT);",
         Db.P("@RouteId",          booking.RouteId),
         Db.P("@ItineraryId",      booking.ItineraryId),
         Db.P("@TravelDate",       booking.TravelDate.Date),

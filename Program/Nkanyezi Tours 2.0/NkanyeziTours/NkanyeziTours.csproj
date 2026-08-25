@@ -13,7 +13,6 @@
 -->
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -34,8 +33,8 @@
     <UseGlobalApplicationHostFile />
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <Use64BitIISExpress />
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -45,7 +44,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -54,7 +52,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <!-- Framework assemblies. System.Web is the whole of Web Forms. -->
   <ItemGroup>
     <Reference Include="System" />
@@ -74,12 +71,10 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-
   <!-- NuGet packages, restored by "msbuild -t:restore". -->
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
-
   <!-- C# files -->
   <ItemGroup>
     <Compile Include="GlobalUsings.cs" />
@@ -87,7 +82,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-
     <Compile Include="Models\Accommodation.cs" />
     <Compile Include="Models\AppUser.cs" />
     <Compile Include="Models\Attraction.cs" />
@@ -97,23 +91,20 @@
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\TripExpense.cs" />
     <Compile Include="Models\Vehicle.cs" />
-
-    <Compile Include="Data\AccommodationRepository.cs" />
-    <Compile Include="Data\AttractionRepository.cs" />
-    <Compile Include="Data\BookingRepositories.cs" />
-    <Compile Include="Data\Db.cs" />
-    <Compile Include="Data\ExchangeRateRepository.cs" />
-    <Compile Include="Data\ItineraryRepository.cs" />
-    <Compile Include="Data\LookupRepository.cs" />
-    <Compile Include="Data\PasswordHasher.cs" />
-    <Compile Include="Data\RouteRepository.cs" />
-    <Compile Include="Data\TripExpenseRepository.cs" />
-    <Compile Include="Data\UserRepository.cs" />
-    <Compile Include="Data\VehicleRepository.cs" />
-
+    <Compile Include="Controllers\AccommodationRepository.cs" />
+    <Compile Include="Controllers\AttractionRepository.cs" />
+    <Compile Include="Controllers\BookingRepositories.cs" />
+    <Compile Include="Controllers\Db.cs" />
+    <Compile Include="Controllers\ExchangeRateRepository.cs" />
+    <Compile Include="Controllers\ItineraryRepository.cs" />
+    <Compile Include="Controllers\LookupRepository.cs" />
+    <Compile Include="Controllers\PasswordHasher.cs" />
+    <Compile Include="Controllers\RouteRepository.cs" />
+    <Compile Include="Controllers\TripExpenseRepository.cs" />
+    <Compile Include="Controllers\UserRepository.cs" />
+    <Compile Include="Controllers\VehicleRepository.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\Repositories.cs" />
-
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -121,7 +112,6 @@
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
-
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -129,7 +119,6 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-
     <Compile Include="Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -137,7 +126,6 @@
     <Compile Include="Account\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
-
     <Compile Include="Account\Denied.aspx.cs">
       <DependentUpon>Denied.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -145,7 +133,6 @@
     <Compile Include="Account\Denied.aspx.designer.cs">
       <DependentUpon>Denied.aspx</DependentUpon>
     </Compile>
-
     <Compile Include="Maintain\Attractions\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -153,7 +140,6 @@
     <Compile Include="Maintain\Attractions\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-
     <Compile Include="Maintain\Attractions\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -161,8 +147,28 @@
     <Compile Include="Maintain\Attractions\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Itineraries\BookTransport.aspx.cs">
+      <DependentUpon>BookTransport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookTransport.aspx.designer.cs">
+      <DependentUpon>BookTransport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\BookVehicle.aspx.cs">
+      <DependentUpon>BookVehicle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookVehicle.aspx.designer.cs">
+      <DependentUpon>BookVehicle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\BookRoute.aspx.cs">
+      <DependentUpon>BookRoute.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\BookRoute.aspx.designer.cs">
+      <DependentUpon>BookRoute.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
-
   <!-- Markup and static files -->
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -173,14 +179,35 @@
     <Content Include="Account\Denied.aspx" />
     <Content Include="Maintain\Attractions\Default.aspx" />
     <Content Include="Maintain\Attractions\Edit.aspx" />
+    <Content Include="Itineraries\BookTransport.aspx" />
+    <Content Include="Itineraries\BookVehicle.aspx" />
+    <Content Include="Itineraries\BookRoute.aspx" />
     <Content Include="Content\site.css" />
+    <Content Include="Content\images\transport-hero.png" />
   </ItemGroup>
-
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:52938/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
