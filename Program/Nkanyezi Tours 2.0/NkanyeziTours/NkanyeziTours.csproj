@@ -77,13 +77,6 @@
   </ItemGroup>
   <!-- C# files -->
   <ItemGroup>
-    <Compile Include="Account\Attractions\Attractions.aspx.cs">
-      <DependentUpon>Attractions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Account\Attractions\Attractions.aspx.designer.cs">
-      <DependentUpon>Attractions.aspx</DependentUpon>
-    </Compile>
     <Compile Include="GlobalUsings.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -178,7 +171,6 @@
   </ItemGroup>
   <!-- Markup and static files -->
   <ItemGroup>
-    <Content Include="Account\Attractions\Attractions.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Site.Master" />
