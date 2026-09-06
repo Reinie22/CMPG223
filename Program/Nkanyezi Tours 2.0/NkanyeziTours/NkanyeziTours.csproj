@@ -81,6 +81,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Maintain\Accommodation\AccommodationForm.aspx.cs">
+      <DependentUpon>AccommodationForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Accommodation\AccommodationForm.aspx.designer.cs">
+      <DependentUpon>AccommodationForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Accommodation\AccommodationList.aspx.cs">
+      <DependentUpon>AccommodationList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Accommodation\AccommodationList.aspx.designer.cs">
+      <DependentUpon>AccommodationList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Accommodation.cs" />
     <Compile Include="Models\AppUser.cs" />
@@ -172,6 +186,8 @@
   <!-- Markup and static files -->
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="Maintain\Accommodation\AccommodationForm.aspx" />
+    <Content Include="Maintain\Accommodation\AccommodationList.aspx" />
     <Content Include="Web.config" />
     <Content Include="Site.Master" />
     <Content Include="Default.aspx" />
@@ -185,7 +201,6 @@
     <Content Include="Content\site.css" />
     <Content Include="Content\images\transport-hero.png" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
