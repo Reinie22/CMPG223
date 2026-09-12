@@ -86,6 +86,13 @@ public class VehicleRepository
                       AND   vb.Status   <> 'Cancelled'
                       AND   vb.StartDate <= @EndDate
                       AND   vb.EndDate   >= @StartDate)
+          AND   NOT EXISTS (
+                    SELECT  1
+                    FROM    dbo.VehicleMaintenance AS vm
+                    WHERE   vm.VehicleId = v.VehicleId
+                      AND   vm.Status IN ('Scheduled', 'In progress')
+                      AND   vm.StartDate <= @EndDate
+                      AND   vm.EndDate   >= @StartDate)
         ORDER BY v.Make, v.Model;",
         Map,
         Db.P("@StartDate", startDate.Date),
@@ -99,13 +106,25 @@ public class VehicleRepository
     public bool IsAvailable(int vehicleId, DateTime startDate, DateTime endDate,
                             int? excludeVehicleBookingId = null)
         => _db.Scalar<int>(@"
-        SELECT  COUNT(*)
-        FROM    dbo.VehicleBooking
-        WHERE   VehicleId = @VehicleId
-          AND   Status   <> 'Cancelled'
-          AND   StartDate <= @EndDate
-          AND   EndDate   >= @StartDate
-          AND   (@ExcludeId IS NULL OR VehicleBookingId <> @ExcludeId);",
+        SELECT COUNT(*)
+        FROM (
+            SELECT VehicleBookingId AS ConflictId
+            FROM dbo.VehicleBooking
+            WHERE VehicleId = @VehicleId
+              AND Status <> 'Cancelled'
+              AND StartDate <= @EndDate
+              AND EndDate >= @StartDate
+              AND (@ExcludeId IS NULL OR VehicleBookingId <> @ExcludeId)
+
+            UNION ALL
+
+            SELECT VehicleMaintenanceId
+            FROM dbo.VehicleMaintenance
+            WHERE VehicleId = @VehicleId
+              AND Status IN ('Scheduled', 'In progress')
+              AND StartDate <= @EndDate
+              AND EndDate >= @StartDate
+        ) AS conflicts;",
         Db.P("@VehicleId", vehicleId),
         Db.P("@StartDate", startDate.Date),
         Db.P("@EndDate",   endDate.Date),

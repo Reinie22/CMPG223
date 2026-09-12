@@ -156,6 +156,7 @@
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\TripExpense.cs" />
     <Compile Include="Models\Vehicle.cs" />
+    <Compile Include="Models\VehicleMaintenance.cs" />
     <Compile Include="Controllers\AccommodationRepository.cs" />
     <Compile Include="Controllers\AttractionRepository.cs" />
     <Compile Include="Controllers\BookingRepositories.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Controllers\TripExpenseRepository.cs" />
     <Compile Include="Controllers\UserRepository.cs" />
     <Compile Include="Controllers\VehicleRepository.cs" />
+    <Compile Include="Controllers\VehicleMaintenanceRepository.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\Repositories.cs" />
     <Compile Include="Site.Master.cs">
@@ -212,6 +214,13 @@
     <Compile Include="Maintain\Attractions\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Maintain\Transport\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Transport\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Itineraries\BookTransport.aspx.cs">
       <DependentUpon>BookTransport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -253,6 +262,7 @@
     <Content Include="Account\Denied.aspx" />
     <Content Include="Maintain\Attractions\Default.aspx" />
     <Content Include="Maintain\Attractions\Edit.aspx" />
+    <Content Include="Maintain\Transport\Default.aspx" />
     <Content Include="Itineraries\BookTransport.aspx" />
     <Content Include="Itineraries\BookVehicle.aspx" />
     <Content Include="Itineraries\BookRoute.aspx" />

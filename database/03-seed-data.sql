@@ -230,6 +230,17 @@ INSERT INTO dbo.Vehicle (VehicleDescription, Make, Model, Colour, RegistrationNu
 ('Luxury sedan','Mercedes-Benz','C-Class','Black','GP 111 222',5,'Johannesburg',1800.00,200,6.00);
 GO
 
+INSERT INTO dbo.VehicleMaintenance
+       (VehicleId, MaintenanceType, StartDate, EndDate, Odometer, EstimatedCost,
+        ActualCost, Status, Notes, CompletedDate, CreatedDate, CreatedBy) VALUES
+(5,'60 000 km service','2026-07-01','2026-07-02',44820,4200.00,3980.00,'Completed',
+ 'Oil, filters, brakes and safety inspection.','2026-07-02T15:20:00','2026-06-20T09:00:00',1),
+(2,'Annual service','2026-09-22','2026-09-23',31200,3500.00,NULL,'Scheduled',
+ 'Confirm workshop booking one week before.',NULL,'2026-08-18T10:15:00',2),
+(4,'Tyre replacement','2026-11-28','2026-11-28',88900,7600.00,NULL,'Scheduled',
+ 'Replace all four tyres after the November rental.',NULL,'2026-08-18T10:25:00',2);
+GO
+
 
 /* =============================================================================
    ROUTES (flights and bus shuttles)

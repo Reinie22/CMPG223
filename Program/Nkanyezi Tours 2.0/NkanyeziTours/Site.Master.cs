@@ -39,6 +39,7 @@ public partial class SiteMaster : MasterPage
 
             navMaintain.Visible    = isStaff;
             navAccommodation.Visible = isStaff;
+            navTransport.Visible   = isStaff;
             navItineraries.Visible = isStaff;
             navReports.Visible     = isManagement;
         }
@@ -46,6 +47,7 @@ public partial class SiteMaster : MasterPage
         {
             navMaintain.Visible    = false;
             navAccommodation.Visible = false;
+            navTransport.Visible   = false;
             navItineraries.Visible = false;
             navReports.Visible     = false;
         }

@@ -52,13 +52,38 @@
                         <span>2</span>
                         <div><strong>Select a vehicle</strong><small>Only cars available for the full date range are listed.</small></div>
                     </div>
-                    <asp:Label ID="lblVehicle" runat="server" AssociatedControlID="ddlVehicle"
-                               CssClass="form-label">Available car <span class="text-danger">*</span></asp:Label>
-                    <asp:DropDownList ID="ddlVehicle" runat="server" CssClass="form-select"
-                                      AutoPostBack="true" OnSelectedIndexChanged="ddlVehicle_SelectedIndexChanged" />
-                    <asp:RequiredFieldValidator ID="rfvVehicle" runat="server" ControlToValidate="ddlVehicle"
-                                                InitialValue="" ValidationGroup="Car" Display="Dynamic"
-                                                CssClass="text-danger small" ErrorMessage="Choose an available car." />
+                    <asp:HiddenField ID="hfVehicleId" runat="server" />
+                    <div class="row g-3">
+                        <asp:Repeater ID="rptVehicles" runat="server" OnItemCommand="rptVehicles_ItemCommand">
+                            <ItemTemplate>
+                                <div class="col-md-6 col-xl-4">
+                                    <article class='car-hire-card h-100 <%# Convert.ToBoolean(Eval("IsSelected")) ? "is-selected" : "" %>'>
+                                        <div class="car-hire-card-icon" aria-hidden="true">&#x1F697;</div>
+                                        <div class="d-flex justify-content-between gap-2 align-items-start">
+                                            <div>
+                                                <h3 class="h5 mb-1"><%#: Eval("Display") %></h3>
+                                                <div class="small text-muted"><%#: Eval("RegistrationNumber") %></div>
+                                            </div>
+                                            <span class="badge bg-success">Available</span>
+                                        </div>
+                                        <div class="car-hire-details">
+                                            <span><strong>Branch</strong><%#: Eval("Location") %></span>
+                                            <span><strong>Seats</strong><%#: Eval("Capacity") %></span>
+                                        </div>
+                                        <div class="car-hire-price">
+                                            <span>Per day</span>
+                                            <strong><%#: Eval("PricePerDay", "R{0:N2}") %></strong>
+                                        </div>
+                                        <asp:LinkButton ID="btnSelectCar" runat="server"
+                                            CssClass='<%# Convert.ToBoolean(Eval("IsSelected")) ? "btn btn-success w-100" : "btn btn-outline-primary w-100" %>'
+                                            Text='<%# Convert.ToBoolean(Eval("IsSelected")) ? "Selected" : "Select this car" %>'
+                                            CommandName="SelectCar" CommandArgument='<%# Eval("VehicleId") %>'
+                                            CausesValidation="false" />
+                                    </article>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </div>
                     <asp:Panel ID="pnlRate" runat="server" Visible="false" CssClass="alert alert-light border mt-3 mb-0">
                         <asp:Literal ID="litRate" runat="server" />
                     </asp:Panel>

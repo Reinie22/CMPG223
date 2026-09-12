@@ -354,7 +354,14 @@ public class VehicleBookingRepository
                         WHERE   vb.VehicleId = @VehicleId
                           AND   vb.Status   <> 'Cancelled'
                           AND   vb.StartDate <= @EndDate
-                          AND   vb.EndDate   >= @StartDate);
+                          AND   vb.EndDate   >= @StartDate)
+          AND       NOT EXISTS (
+                        SELECT  1
+                        FROM    dbo.VehicleMaintenance AS vm WITH (UPDLOCK, HOLDLOCK)
+                        WHERE   vm.VehicleId = @VehicleId
+                          AND   vm.Status IN ('Scheduled', 'In progress')
+                          AND   vm.StartDate <= @EndDate
+                          AND   vm.EndDate   >= @StartDate);
 
         SELECT CAST(ISNULL(SCOPE_IDENTITY(), 0) AS INT);",
         Db.P("@VehicleId",   booking.VehicleId),

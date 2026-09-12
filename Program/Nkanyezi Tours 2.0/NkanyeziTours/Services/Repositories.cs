@@ -188,6 +188,7 @@ public static class Repositories
     public static AccommodationRepository Accommodation => new AccommodationRepository(_db);
     public static RoomRepository Rooms => new RoomRepository(_db);
     public static VehicleRepository Vehicles => new VehicleRepository(_db);
+    public static VehicleMaintenanceRepository VehicleMaintenance => new VehicleMaintenanceRepository(_db);
     public static RouteRepository Routes => new RouteRepository(_db);
     public static ExchangeRateRepository ExchangeRates => new ExchangeRateRepository(_db);
 

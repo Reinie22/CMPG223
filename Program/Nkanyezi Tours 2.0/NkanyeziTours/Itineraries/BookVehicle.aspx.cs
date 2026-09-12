@@ -13,6 +13,17 @@ public partial class BookVehicle : Page
     private int? ItineraryId =>
         int.TryParse(Request.QueryString["itineraryId"], out var id) ? id : (int?)null;
 
+    private sealed class CarCard
+    {
+        public int VehicleId { get; set; }
+        public string Display { get; set; } = "";
+        public string RegistrationNumber { get; set; } = "";
+        public string Location { get; set; } = "";
+        public string Capacity { get; set; } = "Not specified";
+        public decimal PricePerDay { get; set; }
+        public bool IsSelected { get; set; }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack) return;
@@ -41,15 +52,9 @@ public partial class BookVehicle : Page
         {
             if (LoadEditableTrip() == null || !TryGetDates(out var start, out var end)) return;
 
-            var available = _vehicles.GetAvailable(start, end);
-            ddlVehicle.DataSource = available;
-            ddlVehicle.DataTextField = "Display";
-            ddlVehicle.DataValueField = "VehicleId";
-            ddlVehicle.DataBind();
-            ddlVehicle.Items.Insert(0, new ListItem("Choose a car", ""));
-
-            pnlVehicle.Visible = true;
-            btnBook.Visible = available.Count > 0;
+            var available = BindAvailableCars(start, end, null);
+            hfVehicleId.Value = "";
+            btnBook.Visible = false;
             pnlRate.Visible = false;
 
             if (available.Count == 0)
@@ -61,8 +66,21 @@ public partial class BookVehicle : Page
         }
     }
 
-    protected void ddlVehicle_SelectedIndexChanged(object sender, EventArgs e)
+    protected void rptVehicles_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
+        if (e.CommandName != "SelectCar" ||
+            !int.TryParse(Convert.ToString(e.CommandArgument), out var vehicleId) ||
+            !TryGetDates(out var start, out var end)) return;
+
+        if (!_vehicles.IsAvailable(vehicleId, start, end))
+        {
+            ShowError("That car is no longer available for those dates. Search again to see the latest cars.");
+            btnBook.Visible = false;
+            return;
+        }
+
+        hfVehicleId.Value = vehicleId.ToString();
+        BindAvailableCars(start, end, vehicleId);
         pnlVehicle.Visible = true;
         btnBook.Visible = true;
         ShowSelectedRate();
@@ -75,7 +93,7 @@ public partial class BookVehicle : Page
         try
         {
             if (LoadEditableTrip() == null || !TryGetDates(out var start, out var end)) return;
-            if (!int.TryParse(ddlVehicle.SelectedValue, out var vehicleId))
+            if (!int.TryParse(hfVehicleId.Value, out var vehicleId))
             {
                 ShowError("Choose an available car.");
                 return;
@@ -155,7 +173,7 @@ public partial class BookVehicle : Page
 
     private void ShowSelectedRate()
     {
-        if (!int.TryParse(ddlVehicle.SelectedValue, out var vehicleId) ||
+        if (!int.TryParse(hfVehicleId.Value, out var vehicleId) ||
             !TryGetDates(out var start, out var end))
         {
             pnlRate.Visible = false;
@@ -176,6 +194,24 @@ public partial class BookVehicle : Page
                      + (days == 1 ? "" : "s")
                      + ". Extra kilometre charges are calculated when the car is returned.";
         pnlRate.Visible = true;
+    }
+
+    private List<Vehicle> BindAvailableCars(DateTime start, DateTime end, int? selectedVehicleId)
+    {
+        var available = _vehicles.GetAvailable(start, end);
+        rptVehicles.DataSource = available.Select(vehicle => new CarCard
+        {
+            VehicleId = vehicle.VehicleId,
+            Display = vehicle.Display,
+            RegistrationNumber = vehicle.RegistrationNumber,
+            Location = string.IsNullOrWhiteSpace(vehicle.Location) ? "Branch not assigned" : vehicle.Location!,
+            Capacity = vehicle.Capacity.HasValue ? $"{vehicle.Capacity.Value} people" : "Not specified",
+            PricePerDay = vehicle.PricePerDay,
+            IsSelected = selectedVehicleId == vehicle.VehicleId
+        }).ToList();
+        rptVehicles.DataBind();
+        pnlVehicle.Visible = true;
+        return available;
     }
 
     private string ChooserUrl() => $"BookTransport.aspx?itineraryId={ItineraryId}";

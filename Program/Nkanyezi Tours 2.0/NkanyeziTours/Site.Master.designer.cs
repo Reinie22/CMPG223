@@ -14,6 +14,7 @@ namespace NkanyeziTours
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl navDashboard;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl navMaintain;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl navAccommodation;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl navTransport;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl navItineraries;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl navReports;
         protected global::System.Web.UI.WebControls.PlaceHolder phSignedIn;

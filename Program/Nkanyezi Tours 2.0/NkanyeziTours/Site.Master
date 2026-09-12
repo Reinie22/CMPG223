@@ -40,6 +40,9 @@
                         <li class="nav-item" runat="server" id="navAccommodation">
                             <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Accommodation/AccommodationList.aspx") %>">Accommodation</a>
                         </li>
+                        <li class="nav-item" runat="server" id="navTransport">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Transport/Default.aspx") %>">Transport</a>
+                        </li>
                         <li class="nav-item" runat="server" id="navItineraries">
                             <a class="nav-link" href="<%: ResolveUrl("~/Itineraries/Default.aspx") %>">Itineraries</a>
                         </li>
