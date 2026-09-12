@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Security;
@@ -87,7 +88,16 @@ public class Global : HttpApplication
         var context = HttpContext.Current;
 
         if (context?.User?.Identity is not FormsIdentity identity || !identity.IsAuthenticated)
+        {
+            // Nobody is signed in. Normally that is the end of it and the
+            // Web.config rules bounce them to the login page. While the testing
+            // bypass is on, hand them an Administrator instead - see
+            // SignInTestUser below.
+            if (context != null && AuthService.BypassLogin)
+                SignInTestUser(context);
+
             return;
+        }
 
         // UserData was packed by AuthService as "RoleName|Full Name".
         // Only the first half is the role.
@@ -100,5 +110,86 @@ public class Global : HttpApplication
         // Handing it back to the context is what User.IsInRole() and the
         // Web.config rules both read from.
         context.User = new GenericPrincipal(identity, new[] { role });
+    }
+
+    // -------------------------------------------------------------------------
+    // The testing bypass
+    // -------------------------------------------------------------------------
+
+    /// <summary>The Administrator the bypass signs in as. Looked up once.</summary>
+    private static AppUser? _testUser;
+    private static bool _testUserLoaded;
+    private static readonly object _testUserLock = new object();
+
+    /// <summary>
+    /// Makes the current request look exactly as though an Administrator had
+    /// signed in a moment ago. Only ever called while BypassLogin is on.
+    ///
+    /// WHY BUILD A REAL TICKET RATHER THAN A PLAIN GenericIdentity
+    /// ==========================================================
+    /// The pages do not all ask the same question. Web.config asks for a role,
+    /// AuthService.CurrentUserId reads the identity's Name, and
+    /// CurrentDisplayName and CurrentRole both dig into the ticket's UserData.
+    /// A plain GenericIdentity has no ticket, so the navigation bar would come
+    /// out blank and CreatedBy would be null on every booking.
+    ///
+    /// Building the same FormsAuthenticationTicket that a genuine login builds
+    /// means every one of those reads finds what it expects, and no page needs
+    /// a special case for the bypass.
+    ///
+    /// Nothing is written to a cookie. This lasts one request and is rebuilt on
+    /// the next, which is what makes a real login able to take over instantly:
+    /// once a genuine cookie exists, the branch above runs and this is skipped.
+    /// </summary>
+    private static void SignInTestUser(HttpContext context)
+    {
+        var user = TestUser();
+
+        if (user == null)
+            return;
+
+        var ticket = new FormsAuthenticationTicket(
+            version:     1,
+            name:        user.UserId.ToString(CultureInfo.InvariantCulture),
+            issueDate:   DateTime.Now,
+            expiration:  DateTime.Now.AddHours(8),
+            isPersistent: false,
+            userData:    user.RoleName + "|" + user.FullName,
+            cookiePath:  FormsAuthentication.FormsCookiePath);
+
+        context.User = new GenericPrincipal(
+            new FormsIdentity(ticket),
+            new[] { user.RoleName });
+    }
+
+    /// <summary>
+    /// The first Administrator in the database, fetched once and then kept.
+    ///
+    /// The id has to be a real one, because bookings are saved with
+    /// CreatedBy = AuthService.CurrentUserId and the foreign key is checked by
+    /// SQL Server. A made-up number would fail on save.
+    ///
+    /// PostAuthenticateRequest runs on every single request, so this must not
+    /// become a database call per request - hence the cache and the lock. A null
+    /// result is cached too: if there is no Administrator seeded yet, we should
+    /// ask once and then stop asking.
+    /// </summary>
+    private static AppUser? TestUser()
+    {
+        if (_testUserLoaded)
+            return _testUser;
+
+        lock (_testUserLock)
+        {
+            if (_testUserLoaded)
+                return _testUser;
+
+            _testUser = Repositories.Users
+                                    .GetByRole(RoleNames.Administrator)
+                                    .FirstOrDefault();
+            _testUserLoaded = true;
+        }
+
+        return _testUser;
     }
 }

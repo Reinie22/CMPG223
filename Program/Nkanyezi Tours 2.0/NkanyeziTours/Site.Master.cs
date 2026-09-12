@@ -16,6 +16,13 @@ public partial class SiteMaster : MasterPage
     {
         var signedIn = AuthService.IsSignedIn;
 
+        // The red strip along the top, so nobody demonstrates the system with
+        // the authorisation rules quietly switched off.
+        phBypassWarning.Visible = AuthService.BypassLogin;
+
+        if (AuthService.BypassLogin)
+            litBypassUser.Text = Server.HtmlEncode(AuthService.CurrentDisplayName);
+
         phSignedIn.Visible  = signedIn;
         phAnonymous.Visible = !signedIn;
 
@@ -31,12 +38,14 @@ public partial class SiteMaster : MasterPage
             var isManagement = role == RoleNames.Administrator || role == RoleNames.Supervisor;
 
             navMaintain.Visible    = isStaff;
+            navAccommodation.Visible = isStaff;
             navItineraries.Visible = isStaff;
             navReports.Visible     = isManagement;
         }
         else
         {
             navMaintain.Visible    = false;
+            navAccommodation.Visible = false;
             navItineraries.Visible = false;
             navReports.Visible     = false;
         }

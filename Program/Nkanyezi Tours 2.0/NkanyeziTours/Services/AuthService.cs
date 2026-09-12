@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Security;
@@ -184,6 +185,37 @@ public class AuthService
     }
 
     public static bool IsSignedIn => CurrentUserId != null;
+
+    // -------------------------------------------------------------------------
+    // The testing bypass
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// True while BypassLogin is "true" in Web.config's appSettings.
+    ///
+    /// WHAT IT IS FOR
+    /// ==============
+    /// The screens are being built by several people at once, and most of them
+    /// are behind a role rule in Web.config. While the login and the user table
+    /// are still being finished, that means nobody can open anybody else's page
+    /// to check it. This switch lets the whole system be clicked through with no
+    /// sign-in at all.
+    ///
+    /// WHAT IT DOES NOT DO
+    /// ===================
+    /// It does not delete or weaken anything. The login screen, the password
+    /// hashing, the ticket and every rule in Web.config are all exactly as they
+    /// were. Global.asax simply hands each request a ready-made Administrator
+    /// when nobody is signed in, so the rules pass instead of failing.
+    ///
+    /// Set it back to "false" in Web.config and everything enforces again, with
+    /// no code to undo.
+    /// </summary>
+    public static bool BypassLogin =>
+        string.Equals(
+            ConfigurationManager.AppSettings["BypassLogin"],
+            "true",
+            StringComparison.OrdinalIgnoreCase);
 
     public static bool IsInRole(string roleName)
         => HttpContext.Current?.User?.IsInRole(roleName) ?? false;

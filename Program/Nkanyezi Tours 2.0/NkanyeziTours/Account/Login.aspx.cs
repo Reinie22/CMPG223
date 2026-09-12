@@ -18,7 +18,12 @@ public partial class Login : Page
     protected void Page_Load(object sender, EventArgs e)
     {
         // Somebody already signed in has no business on the login page.
-        if (!IsPostBack && AuthService.IsSignedIn)
+        //
+        // The exception is the testing bypass: it makes EVERY visitor look
+        // signed in, so without this the login screen could never be opened at
+        // all. Leaving it reachable means a real login can still be tested, and
+        // a real login then takes over from the bypass.
+        if (!IsPostBack && AuthService.IsSignedIn && !AuthService.BypassLogin)
             Response.Redirect("~/Default.aspx");
     }
 

@@ -37,6 +37,9 @@
                         <li class="nav-item" runat="server" id="navMaintain">
                             <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Attractions/Default.aspx") %>">Maintain</a>
                         </li>
+                        <li class="nav-item" runat="server" id="navAccommodation">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Accommodation/AccommodationList.aspx") %>">Accommodation</a>
+                        </li>
                         <li class="nav-item" runat="server" id="navItineraries">
                             <a class="nav-link" href="<%: ResolveUrl("~/Itineraries/Default.aspx") %>">Itineraries</a>
                         </li>
@@ -70,6 +73,19 @@
                 </div>
             </div>
         </nav>
+
+        <%--
+            Only visible while BypassLogin is "true" in Web.config. It is
+            deliberately loud, because a bypass that is easy to forget about is
+            the whole danger of having one.
+        --%>
+        <asp:PlaceHolder ID="phBypassWarning" runat="server" Visible="false">
+            <div class="bg-danger text-white text-center py-2 small fw-bold">
+                LOGIN BYPASS IS ON &mdash; every visitor is signed in as
+                <asp:Literal ID="litBypassUser" runat="server" />.
+                Set BypassLogin to "false" in Web.config before the demo.
+            </div>
+        </asp:PlaceHolder>
 
         <main class="container py-4">
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
