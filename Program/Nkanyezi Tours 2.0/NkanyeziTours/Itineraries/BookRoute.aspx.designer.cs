@@ -5,7 +5,6 @@ namespace NkanyeziTours.Itineraries
         protected global::System.Web.UI.WebControls.Literal litHeading;
         protected global::System.Web.UI.WebControls.Literal litTrip;
         protected global::System.Web.UI.WebControls.Panel pnlHeader;
-        protected global::System.Web.UI.WebControls.Literal litHeaderIcon;
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.ValidationSummary vsRoute;

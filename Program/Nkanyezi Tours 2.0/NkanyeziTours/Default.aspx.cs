@@ -36,6 +36,7 @@ public partial class _Default : Page
             }
 
             litName.Text = Server.HtmlEncode(user.FullName);
+            pnlRequested.Visible = Request.QueryString["requested"] == "1";
 
             if (user.IsClient)
                 LoadClientView(user);
@@ -55,6 +56,7 @@ public partial class _Default : Page
     private void LoadClientView(AppUser user)
     {
         litSubtitle.Text = "Your trips with Nkanyezi Tours";
+        pnlBookTrip.Visible = true;
 
         var trips = _itineraries.GetForClient(user.UserId);
 
@@ -97,6 +99,20 @@ public partial class _Default : Page
             new Stat { Label = "Draft",       Value = all.Count(t => t.Status == ItineraryStatus.Draft).ToString() },
             new Stat { Label = "Unassigned",  Value = all.Count(t => t.IsUnassigned).ToString() }
         });
+
+        // Allocation is management's job, so the shortcut to it lives here. The
+        // badge only appears when there is actually something waiting.
+        pnlManage.Visible = true;
+
+        var waiting = all.Count(t => t.IsUnassigned && t.IsEditable);
+
+        if (waiting > 0)
+        {
+            lblUnassignedCount.Text = waiting == 1
+                ? "1 trip needs an agent"
+                : waiting + " trips need an agent";
+            lblUnassignedCount.Visible = true;
+        }
 
         BindTrips(all);
     }

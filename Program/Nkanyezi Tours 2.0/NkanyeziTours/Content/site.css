@@ -54,22 +54,8 @@ footer {
     box-shadow: 0 .9rem 1.7rem rgba(23, 61, 104, .16);
 }
 
-.transport-icon {
-    display: grid;
-    place-items: center;
-    width: 4.2rem;
-    height: 4.2rem;
-    border-radius: 1.1rem;
-    background: #eaf4fc;
-    font-size: 2.2rem;
-    line-height: 1;
-    margin-bottom: 1.25rem;
-}
-
 .transport-choice-bus { border-top-color: #e49b23; }
-.transport-choice-bus .transport-icon { background: #fff5df; }
 .transport-choice-flight { border-top-color: #5c65c0; }
-.transport-choice-flight .transport-icon { background: #efefff; }
 
 .transport-step {
     color: #c3ccda;
@@ -160,20 +146,6 @@ footer {
     color: #fff;
 }
 
-.booking-header-icon {
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    width: 6rem;
-    height: 6rem;
-    margin-left: 2rem;
-    border: 1px solid rgba(255, 255, 255, .34);
-    border-radius: 1.5rem;
-    background: rgba(255, 255, 255, .16);
-    backdrop-filter: blur(5px);
-    font-size: 3rem;
-}
-
 .booking-card {
     border: 0;
     border-radius: 1rem;
@@ -262,11 +234,5 @@ footer {
 
     .transport-hero-content {
         right: 1.25rem;
-    }
-
-    .booking-header-icon {
-        width: 4.25rem;
-        height: 4.25rem;
-        font-size: 2rem;
     }
 }

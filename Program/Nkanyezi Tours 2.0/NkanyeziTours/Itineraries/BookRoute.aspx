@@ -8,7 +8,6 @@
             <h1><asp:Literal ID="litHeading" runat="server" /></h1>
             <p><asp:Literal ID="litTrip" runat="server" /></p>
         </div>
-        <div class="booking-header-icon" aria-hidden="true"><asp:Literal ID="litHeaderIcon" runat="server" /></div>
     </asp:Panel>
 
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert py-2">

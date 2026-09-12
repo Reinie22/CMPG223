@@ -8,7 +8,6 @@
             <h1>Find the right car</h1>
             <p><asp:Literal ID="litTrip" runat="server" /></p>
         </div>
-        <div class="booking-header-icon" aria-hidden="true">&#x1F697;</div>
     </div>
 
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert py-2">

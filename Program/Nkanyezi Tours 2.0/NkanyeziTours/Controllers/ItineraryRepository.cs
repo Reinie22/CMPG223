@@ -328,6 +328,24 @@ public class ItineraryRepository
         Db.P("@ItineraryId", itineraryId),
         Db.P("@AgentId",     agentId)) > 0;
 
+    /// <summary>
+    /// A supervisor or administrator allocates a trip to an agent, or moves it
+    /// from one agent to another, or sends it back to the queue with a null
+    /// agentId.
+    ///
+    /// Deliberately NOT ClaimByAgent. That one carries "AND AgentId IS NULL" so
+    /// two agents cannot take the same trip, which also means it can never
+    /// reassign. Allocation is the opposite case: the whole point is to
+    /// overwrite whoever is on the trip now.
+    /// </summary>
+    public void AssignToAgent(int itineraryId, int? agentId)
+        => _db.Execute(@"
+        UPDATE  dbo.Itinerary
+        SET     AgentId = @AgentId
+        WHERE   ItineraryId = @ItineraryId;",
+        Db.P("@ItineraryId", itineraryId),
+        Db.P("@AgentId",     agentId));
+
     public void SetStatus(int itineraryId, string status)
         => _db.Execute(@"
         UPDATE  dbo.Itinerary

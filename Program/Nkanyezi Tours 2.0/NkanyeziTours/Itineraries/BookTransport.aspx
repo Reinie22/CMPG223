@@ -24,8 +24,7 @@
             <div class="col-md-4">
                 <div class="card transport-choice transport-choice-car h-100">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="transport-icon" aria-hidden="true">&#x1F697;</div>
+                        <div class="d-flex justify-content-end align-items-start mb-3">
                             <span class="transport-step">01</span>
                         </div>
                         <span class="transport-kicker">Freedom to explore</span>
@@ -43,8 +42,7 @@
             <div class="col-md-4">
                 <div class="card transport-choice transport-choice-bus h-100">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="transport-icon" aria-hidden="true">&#x1F68C;</div>
+                        <div class="d-flex justify-content-end align-items-start mb-3">
                             <span class="transport-step">02</span>
                         </div>
                         <span class="transport-kicker">Comfort on the road</span>
@@ -62,8 +60,7 @@
             <div class="col-md-4">
                 <div class="card transport-choice transport-choice-flight h-100">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="transport-icon" aria-hidden="true">&#x2708;&#xFE0F;</div>
+                        <div class="d-flex justify-content-end align-items-start mb-3">
                             <span class="transport-step">03</span>
                         </div>
                         <span class="transport-kicker">Travel further, faster</span>

@@ -62,6 +62,50 @@
             <p class="text-center text-muted small mt-3">
                 Seeded test accounts use the password <code>Password123</code>
             </p>
+
+            <%--
+                TEST ACCOUNTS - only rendered while BypassLogin is "true" in
+                Web.config. It lists every account on the system, which is
+                exactly what a real login page must never do, so it is tied to
+                the same switch as the bypass banner and disappears with it.
+            --%>
+            <asp:Panel ID="pnlTestAccounts" runat="server" Visible="false" CssClass="card mt-3">
+                <div class="card-body">
+                    <h2 class="h6 mb-1">Test accounts</h2>
+                    <p class="text-muted small mb-3">
+                        Click an email to fill the form in. Password is
+                        <code>Password123</code> for all of them.
+                    </p>
+                    <asp:Repeater ID="rptTestAccounts" runat="server" OnItemCommand="rptTestAccounts_ItemCommand">
+                        <HeaderTemplate>
+                            <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                            <tr>
+                                <td class="text-nowrap">
+                                    <asp:Label ID="lblRole" runat="server"
+                                               CssClass='<%# "badge " + Eval("RoleCssClass") %>'
+                                               Text='<%# Eval("RoleName") %>' />
+                                </td>
+                                <td><%# Eval("FullName") %></td>
+                                <td>
+                                    <asp:LinkButton ID="lnkUse" runat="server"
+                                                    CssClass="font-monospace small"
+                                                    CausesValidation="false"
+                                                    CommandName="UseAccount"
+                                                    CommandArgument='<%# Eval("Email") %>'
+                                                    Text='<%# Eval("Email") %>' />
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            </table>
+                            </div>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+            </asp:Panel>
         </div>
     </div>
 

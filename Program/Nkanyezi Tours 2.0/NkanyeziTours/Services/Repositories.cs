@@ -199,6 +199,9 @@ public static class Repositories
     public static AttractionBookingRepository AttractionBookings => new AttractionBookingRepository(_db);
     public static VehicleBookingRepository VehicleBookings => new VehicleBookingRepository(_db);
     public static RouteBookingRepository RouteBookings => new RouteBookingRepository(_db);
+    /// <summary>What clients have asked for on their own draft trips.</summary>
+    public static TripRequestRepository TripRequests => new TripRequestRepository(_db);
+
     public static TripExpenseRepository Expenses => new TripExpenseRepository(_db);
 
     // -------------------------------------------------------------------------

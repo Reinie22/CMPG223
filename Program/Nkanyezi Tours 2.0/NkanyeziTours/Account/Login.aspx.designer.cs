@@ -9,6 +9,8 @@ namespace NkanyeziTours.Account
 {
     public partial class Login
     {
+        protected global::System.Web.UI.WebControls.Panel pnlTestAccounts;
+        protected global::System.Web.UI.WebControls.Repeater rptTestAccounts;
         protected global::System.Web.UI.WebControls.Panel pnlError;
         protected global::System.Web.UI.WebControls.Literal litError;
         protected global::System.Web.UI.WebControls.Label lblEmail;

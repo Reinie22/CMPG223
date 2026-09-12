@@ -95,6 +95,57 @@
     <Compile Include="Maintain\Accommodation\AccommodationList.aspx.designer.cs">
       <DependentUpon>AccommodationList.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Trips\BookTrip.aspx.cs">
+      <DependentUpon>BookTrip.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\BookTrip.aspx.designer.cs">
+      <DependentUpon>BookTrip.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\EditTrip.aspx.cs">
+      <DependentUpon>EditTrip.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\EditTrip.aspx.designer.cs">
+      <DependentUpon>EditTrip.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\Assign.aspx.cs">
+      <DependentUpon>Assign.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\Assign.aspx.designer.cs">
+      <DependentUpon>Assign.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Trips\MyTrip.aspx.cs">
+      <DependentUpon>MyTrip.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\MyTrip.aspx.designer.cs">
+      <DependentUpon>MyTrip.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Trips\ChooseAccommodation.aspx.cs">
+      <DependentUpon>ChooseAccommodation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\ChooseAccommodation.aspx.designer.cs">
+      <DependentUpon>ChooseAccommodation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Trips\ChooseAttraction.aspx.cs">
+      <DependentUpon>ChooseAttraction.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\ChooseAttraction.aspx.designer.cs">
+      <DependentUpon>ChooseAttraction.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\TripRequestRepository.cs" />
+    <Compile Include="Models\TripRequestItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Accommodation.cs" />
     <Compile Include="Models\AppUser.cs" />
@@ -188,6 +239,13 @@
     <Content Include="Global.asax" />
     <Content Include="Maintain\Accommodation\AccommodationForm.aspx" />
     <Content Include="Maintain\Accommodation\AccommodationList.aspx" />
+    <Content Include="Trips\BookTrip.aspx" />
+    <Content Include="Itineraries\Default.aspx" />
+    <Content Include="Itineraries\EditTrip.aspx" />
+    <Content Include="Itineraries\Assign.aspx" />
+    <Content Include="Trips\MyTrip.aspx" />
+    <Content Include="Trips\ChooseAccommodation.aspx" />
+    <Content Include="Trips\ChooseAttraction.aspx" />
     <Content Include="Web.config" />
     <Content Include="Site.Master" />
     <Content Include="Default.aspx" />

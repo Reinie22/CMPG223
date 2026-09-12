@@ -1,4 +1,6 @@
 using System.Web.Security;
+using System.Web.UI.WebControls;
+using Nkanyezi.Models;
 using System.Web.UI;
 
 namespace NkanyeziTours.Account;
@@ -25,6 +27,13 @@ public partial class Login : Page
         // a real login then takes over from the bypass.
         if (!IsPostBack && AuthService.IsSignedIn && !AuthService.BypassLogin)
             Response.Redirect("~/Default.aspx");
+
+        // The test-account list is a development aid, so it lives and dies
+        // with the same Web.config switch as the bypass.
+        pnlTestAccounts.Visible = AuthService.BypassLogin;
+
+        if (AuthService.BypassLogin && !IsPostBack)
+            BindTestAccounts();
     }
 
     protected void btnSignIn_Click(object sender, EventArgs e)
@@ -60,6 +69,57 @@ public partial class Login : Page
                 ShowError("That email address and password do not match an account.");
                 break;
         }
+    }
+
+    /// <summary>One row of the test-account list.</summary>
+    private sealed class TestAccount
+    {
+        public string RoleName { get; set; } = "";
+        public string FullName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string RoleCssClass { get; set; } = "";
+    }
+
+    /// <summary>
+    /// Every active account, grouped by role so the four roles are easy to
+    /// tell apart while testing.
+    /// </summary>
+    private void BindTestAccounts()
+    {
+        var users = Repositories.Users.GetAll();
+
+        rptTestAccounts.DataSource = users
+            .OrderBy(u => u.RoleId)
+            .ThenBy(u => u.Surname)
+            .Select(u => new TestAccount
+            {
+                RoleName = u.RoleName,
+                FullName = u.FullName,
+                Email    = u.Email,
+                RoleCssClass = u.RoleName switch
+                {
+                    RoleNames.Administrator => "text-bg-danger",
+                    RoleNames.Supervisor    => "text-bg-warning",
+                    RoleNames.TravelAgent   => "text-bg-primary",
+                    _                       => "text-bg-secondary"
+                }
+            })
+            .ToList();
+
+        rptTestAccounts.DataBind();
+    }
+
+    /// <summary>
+    /// Clicking an email fills the form in rather than signing straight in,
+    /// so the real login path is still the thing being exercised.
+    /// </summary>
+    protected void rptTestAccounts_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        if (e.CommandName != "UseAccount")
+            return;
+
+        txtEmail.Text = Convert.ToString(e.CommandArgument) ?? "";
+        txtPassword.Text = "Password123";
     }
 
     /// <summary>

@@ -41,7 +41,6 @@ public partial class BookRoute : Page
 
             var isFlight = RouteType == RouteTypes.Flight;
             litHeading.Text = isFlight ? "Book an aeroplane" : "Book a bus or shuttle";
-            litHeaderIcon.Text = isFlight ? "\u2708\uFE0F" : "\U0001F68C";
             litRouteLabel.Text = isFlight ? "Flight route" : "Bus or shuttle route";
             btnBook.Text = isFlight ? "Book flight" : "Book bus";
             litTrip.Text = Server.HtmlEncode($"{trip.TripName} · {trip.ClientName}");

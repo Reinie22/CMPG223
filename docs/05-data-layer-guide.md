@@ -184,7 +184,7 @@ Every table has a model and a repository, and they all compile:
 - `Data/AttractionRepository.cs` — **the pattern. Copy this one.**
 - `Data/` — a repository for every entity, all handed out by `Services/Repositories.cs`
 
-✅ These are not just compiling — 21 of the queries, including the four-way
+These are not just compiling — 21 of the queries, including the four-way
 UNION on the itinerary page, the budget totals and all four availability
 checks, have been run against a real database with real parameters. The
 Attractions screens have been driven end to end in a browser.
