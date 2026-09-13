@@ -1,4 +1,4 @@
-<%@ Page Title="Sign in" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Sign in" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="Login.aspx.cs" Inherits="NkanyeziTours.Account.Login" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -11,7 +11,6 @@
                     <h1 class="h4 mb-1">Sign in</h1>
                     <p class="text-muted small mb-4">Nkanyezi Tours staff and client portal</p>
 
-                    <%-- The red warning panel. Hidden until there is something to say. --%>
                     <asp:Panel ID="pnlError" runat="server" Visible="false"
                                CssClass="alert alert-danger py-2">
                         <asp:Literal ID="litError" runat="server" />
@@ -20,7 +19,7 @@
                     <div class="mb-3">
                         <asp:Label ID="lblEmail" runat="server" AssociatedControlID="txtEmail"
                                    CssClass="form-label">Email address <span class="text-danger">*</span></asp:Label>
-                        <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control"
+                        <asp:TextBox ID="txtEmail" ToolTip="The email address your account was created with." runat="server" CssClass="form-control"
                                      TextMode="Email" MaxLength="150" />
                         <asp:RequiredFieldValidator ID="rfvEmail" runat="server"
                                                     ControlToValidate="txtEmail"
@@ -33,7 +32,7 @@
                     <div class="mb-3">
                         <asp:Label ID="lblPassword" runat="server" AssociatedControlID="txtPassword"
                                    CssClass="form-label">Password <span class="text-danger">*</span></asp:Label>
-                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control"
+                        <asp:TextBox ID="txtPassword" ToolTip="Passwords are case sensitive." runat="server" CssClass="form-control"
                                      TextMode="Password" />
                         <asp:RequiredFieldValidator ID="rfvPassword" runat="server"
                                                     ControlToValidate="txtPassword"
@@ -44,13 +43,13 @@
                     </div>
 
                     <div class="form-check mb-4">
-                        <asp:CheckBox ID="chkRemember" runat="server" CssClass="form-check-input" />
+                        <asp:CheckBox ID="chkRemember" ToolTip="Stays signed in on this computer. Leave it off on a shared machine." runat="server" CssClass="form-check-input" />
                         <asp:Label ID="lblRemember" runat="server" AssociatedControlID="chkRemember"
                                    CssClass="form-check-label">Keep me signed in</asp:Label>
                     </div>
 
                     <div class="d-grid">
-                        <asp:Button ID="btnSignIn" runat="server" Text="Sign in"
+                        <asp:Button ID="btnSignIn" ToolTip="Checks your details and opens your dashboard." runat="server" Text="Sign in"
                                     CssClass="btn btn-primary"
                                     ValidationGroup="SignIn"
                                     OnClick="btnSignIn_Click" />
@@ -59,16 +58,16 @@
                 </div>
             </div>
 
-            <p class="text-center text-muted small mt-3">
+            <p class="text-center text-muted mt-3 mb-1">
+                New here?
+                <asp:HyperLink ID="lnkRegister" ToolTip="New here? Create a client account in under a minute." runat="server"
+                               NavigateUrl="~/Account/Register.aspx">Create an account</asp:HyperLink>
+            </p>
+
+            <p class="text-center text-muted small">
                 Seeded test accounts use the password <code>Password123</code>
             </p>
 
-            <%--
-                TEST ACCOUNTS - only rendered while BypassLogin is "true" in
-                Web.config. It lists every account on the system, which is
-                exactly what a real login page must never do, so it is tied to
-                the same switch as the bypass banner and disappears with it.
-            --%>
             <asp:Panel ID="pnlTestAccounts" runat="server" Visible="false" CssClass="card mt-3">
                 <div class="card-body">
                     <h2 class="h6 mb-1">Test accounts</h2>
@@ -90,7 +89,7 @@
                                 </td>
                                 <td><%# Eval("FullName") %></td>
                                 <td>
-                                    <asp:LinkButton ID="lnkUse" runat="server"
+                                    <asp:LinkButton ID="lnkUse" ToolTip="Fills the sign-in form in with this test account." runat="server"
                                                     CssClass="font-monospace small"
                                                     CausesValidation="false"
                                                     CommandName="UseAccount"

@@ -1,4 +1,4 @@
-<%@ Page Title="Book transport" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Book transport" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="BookTransport.aspx.cs" Inherits="NkanyeziTours.Itineraries.BookTransport" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -11,7 +11,7 @@
             <h1>How would you like to travel?</h1>
             <p><asp:Literal ID="litTrip" runat="server" /></p>
         </div>
-        <asp:HyperLink ID="lnkDashboard" runat="server" CssClass="btn btn-light transport-back"
+        <asp:HyperLink ID="lnkDashboard" ToolTip="Back to your dashboard." runat="server" CssClass="btn btn-light transport-back"
                        NavigateUrl="~/Default.aspx">&larr; Dashboard</asp:HyperLink>
     </div>
 
@@ -32,7 +32,7 @@
                         <p class="text-muted flex-grow-1">
                             Enjoy the flexibility of your own car, with clear daily pricing and included kilometres.
                         </p>
-                        <asp:HyperLink ID="lnkCar" runat="server" CssClass="btn btn-primary stretched-link">
+                        <asp:HyperLink ID="lnkCar" ToolTip="Hire a car for a stretch of days. Priced per day." runat="server" CssClass="btn btn-primary stretched-link">
                             Choose a car
                         </asp:HyperLink>
                     </div>
@@ -50,7 +50,7 @@
                         <p class="text-muted flex-grow-1">
                             Relax on a comfortable scheduled journey between your departure and destination cities.
                         </p>
-                        <asp:HyperLink ID="lnkBus" runat="server" CssClass="btn btn-primary stretched-link">
+                        <asp:HyperLink ID="lnkBus" ToolTip="Book bus seats on a scheduled route. Priced per seat." runat="server" CssClass="btn btn-primary stretched-link">
                             Choose a bus
                         </asp:HyperLink>
                     </div>
@@ -68,7 +68,7 @@
                         <p class="text-muted flex-grow-1">
                             Reach your destination faster with convenient local and international flights.
                         </p>
-                        <asp:HyperLink ID="lnkFlight" runat="server" CssClass="btn btn-primary stretched-link">
+                        <asp:HyperLink ID="lnkFlight" ToolTip="Book flight seats on a scheduled route. Priced per seat." runat="server" CssClass="btn btn-primary stretched-link">
                             Choose a flight
                         </asp:HyperLink>
                     </div>

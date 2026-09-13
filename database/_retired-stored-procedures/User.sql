@@ -1,23 +1,4 @@
-/* =============================================================================
-   Stored procedures - AppUser
-   CMPG213 Group 6
-
-   Covers logging in and the Maintain > Users and Access screens.
-
-   SECURITY NOTE
-   -------------
-   The database never sees a password. It stores a hash, which is a one way
-   scramble of the password. When somebody logs in, the C# hashes what they
-   typed and compares it to the stored hash. That is why sp_User_GetByEmail
-   returns the hash: the comparison happens in C#, not in SQL.
-
-   Never write a procedure that takes a password and does the comparison in
-   SQL. It would mean sending the real password to the database, and it would
-   not work anyway, because the same password hashes to a different value every
-   time it is hashed.
-   ============================================================================= */
-
-IF OBJECT_ID('dbo.sp_User_GetByEmail','P')   IS NOT NULL DROP PROCEDURE dbo.sp_User_GetByEmail;
+﻿IF OBJECT_ID('dbo.sp_User_GetByEmail','P')   IS NOT NULL DROP PROCEDURE dbo.sp_User_GetByEmail;
 IF OBJECT_ID('dbo.sp_User_GetAll','P')       IS NOT NULL DROP PROCEDURE dbo.sp_User_GetAll;
 IF OBJECT_ID('dbo.sp_User_GetById','P')      IS NOT NULL DROP PROCEDURE dbo.sp_User_GetById;
 IF OBJECT_ID('dbo.sp_User_Insert','P')       IS NOT NULL DROP PROCEDURE dbo.sp_User_Insert;
@@ -26,14 +7,6 @@ IF OBJECT_ID('dbo.sp_User_SetPassword','P')  IS NOT NULL DROP PROCEDURE dbo.sp_U
 IF OBJECT_ID('dbo.sp_User_SetActive','P')    IS NOT NULL DROP PROCEDURE dbo.sp_User_SetActive;
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Used by the login page. Returns the password hash, so this is the only
-   procedure that does.
-
-   Email is matched case insensitively, which is how SQL Server compares text by
-   default. Somebody typing Admin@nkanyezitours.co.za still gets in.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_User_GetByEmail
     @Email NVARCHAR(150)
 AS
@@ -48,11 +21,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   The user list screen. Both filters are optional.
-   The password hash is deliberately NOT returned here.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_User_GetAll
     @RoleId          INT = NULL,
     @IncludeInactive BIT = 0
@@ -71,7 +39,6 @@ BEGIN
 END
 GO
 
-
 CREATE PROCEDURE dbo.sp_User_GetById
     @UserId INT
 AS
@@ -87,14 +54,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Creates a user. Used both by the Administrator adding staff and by a client
-   registering themselves, which is why the role is a parameter. The C# decides
-   which role is allowed: registration always passes Client.
-
-   The hash is worked out in C# before this is called.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_User_Insert
     @RoleId        INT,
     @Name          NVARCHAR(60),
@@ -119,11 +78,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Updates the details. The password is changed separately by sp_User_SetPassword,
-   so that a routine edit cannot wipe somebody's password by accident.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_User_Update
     @UserId        INT,
     @RoleId        INT,
@@ -157,7 +111,6 @@ BEGIN
 END
 GO
 
-
 CREATE PROCEDURE dbo.sp_User_SetPassword
     @UserId       INT,
     @PasswordHash NVARCHAR(255)
@@ -169,12 +122,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Users are never deleted. A user who has captured a booking or an expense is
-   referenced by those records, and deleting them would break the trail of who
-   did what. Deactivating stops them logging in, which is the point.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_User_SetActive
     @UserId   INT,
     @IsActive BIT

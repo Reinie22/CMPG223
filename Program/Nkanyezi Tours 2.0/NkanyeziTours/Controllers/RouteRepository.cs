@@ -1,16 +1,8 @@
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using Nkanyezi.Models;
 
 namespace Nkanyezi.Data;
 
-/// <summary>
-/// Everything the system can do to flights and bus shuttles.
-///
-/// One repository serves both, because a flight and a shuttle are the same
-/// thing in the database: a journey between two cities priced per seat. The
-/// RouteType column is the only difference, so whoever builds the flight
-/// screens gets the shuttle screens for nothing.
-/// </summary>
 public class RouteRepository
 {
     private readonly Db _db;
@@ -23,10 +15,6 @@ public class RouteRepository
     private const string SelectSql = @"
         SELECT  r.*
         FROM    dbo.Route AS r";
-
-    // -------------------------------------------------------------------------
-    // Reading
-    // -------------------------------------------------------------------------
 
     public List<Route> GetAll(bool includeInactive = false)
         => _db.Query(SelectSql + @"
@@ -41,11 +29,6 @@ public class RouteRepository
         Map,
         Db.P("@RouteId", routeId));
 
-    /// <summary>
-    /// Filtered list. The portal uses this to answer "roughly what does
-    /// Johannesburg to New York cost", which is the enquiry that ties up the
-    /// agents' telephones all day.
-    /// </summary>
     public List<Route> Search(string? routeType = null, string? departureCity = null,
                               string? arrivalCity = null, string? carrier = null,
                               decimal? maxFare = null, bool includeInactive = false)
@@ -65,10 +48,8 @@ public class RouteRepository
         Db.P("@MaxFare",         maxFare),
         Db.P("@IncludeInactive", includeInactive));
 
-    /// <summary>Just the flights, or just the shuttles. Use RouteTypes.</summary>
     public List<Route> GetByType(string routeType) => Search(routeType: routeType);
 
-    /// <summary>Routes with their remaining seats for one travel date.</summary>
     public List<Route> GetAvailabilityByType(string routeType, DateTime travelDate)
         => _db.Query(@"
         SELECT  r.*, availability.SeatsAvailable
@@ -87,7 +68,6 @@ public class RouteRepository
         Db.P("@TravelDate", travelDate.Date),
         Db.P("@RouteType", routeType));
 
-    /// <summary>One route's remaining seats for one travel date.</summary>
     public Route? GetAvailability(int routeId, DateTime travelDate)
         => _db.QuerySingle(@"
         SELECT  r.*, availability.SeatsAvailable
@@ -104,10 +84,6 @@ public class RouteRepository
         Db.P("@TravelDate", travelDate.Date),
         Db.P("@RouteId", routeId));
 
-    // -------------------------------------------------------------------------
-    // Writing
-    // -------------------------------------------------------------------------
-
     public int Create(Route route)
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.Route
@@ -122,13 +98,6 @@ public class RouteRepository
         SELECT CAST(SCOPE_IDENTITY() AS INT);",
         BuildParameters(route));
 
-    /// <summary>
-    /// Saves changes to a route.
-    ///
-    /// Changing the indicative fare affects new bookings only. Existing
-    /// bookings keep the fare that was actually paid, because that figure was
-    /// copied onto the booking row.
-    /// </summary>
     public void Update(Route route)
     {
         var parameters = new List<SqlParameter> { Db.P("@RouteId", route.RouteId) };
@@ -150,10 +119,6 @@ public class RouteRepository
         parameters.ToArray());
     }
 
-    /// <summary>
-    /// Removes the route, or deactivates it when seats have been booked on it.
-    /// Returns true when it was deactivated rather than deleted.
-    /// </summary>
     public bool Delete(int routeId)
         => _db.Scalar<bool>(@"
         DECLARE @HasBookings BIT =
@@ -172,8 +137,6 @@ public class RouteRepository
         => _db.Execute(@"
         UPDATE dbo.Route SET IsActive = 1 WHERE RouteId = @RouteId;",
         Db.P("@RouteId", routeId));
-
-    // -------------------------------------------------------------------------
 
     private static Route Map(SqlDataReader r) => new Route
     {

@@ -1,33 +1,16 @@
-using System.Web.UI;
+﻿using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nkanyezi.Data;
 using Nkanyezi.Models;
 
 namespace NkanyeziTours.Itineraries;
 
-/// <summary>
-/// Allocation, for a supervisor or administrator.
-///
-/// HOW THIS DIFFERS FROM THE QUEUE
-/// ===============================
-/// On Itineraries/Default.aspx an agent claims a trip for themselves, and
-/// ClaimByAgent refuses once somebody holds it. That is right for self-service
-/// but it cannot move work between people.
-///
-/// This screen is the other half: management picks the agent, can take a trip
-/// off one agent and give it to another, and can send it back to the queue.
-/// It uses AssignToAgent, which overwrites whoever is on the trip.
-///
-/// The Web.config rule for this page allows Administrator and Supervisor only,
-/// and sits ABOVE the folder rule because the first match wins.
-/// </summary>
 public partial class Assign : Page
 {
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
-    private readonly UserRepository _users = Repositories.Users;
-    private readonly AuthService _auth = Repositories.Auth;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
+    private UserRepository _users => Repositories.Users;
+    private AuthService _auth => Repositories.Auth;
 
-    /// <summary>One card in the workload strip.</summary>
     private sealed class Workload
     {
         public string AgentName { get; set; } = "";
@@ -35,10 +18,6 @@ public partial class Assign : Page
         public int TotalCount { get; set; }
     }
 
-    /// <summary>
-    /// Loaded once per request and reused for every row's dropdown, instead of
-    /// a database call per row.
-    /// </summary>
     private List<AppUser> _agents = new List<AppUser>();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -89,12 +68,6 @@ public partial class Assign : Page
         gvTrips.DataBind();
     }
 
-    /// <summary>
-    /// Fills each row's agent dropdown and preselects whoever is on the trip.
-    ///
-    /// The dropdowns cannot be bound in the markup because the list of agents
-    /// comes from the database, and the selected value differs per row.
-    /// </summary>
     protected void gvTrips_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         if (e.Row.RowType != DataControlRowType.DataRow)
@@ -112,7 +85,6 @@ public partial class Assign : Page
 
         ddl.SelectedValue = trip.AgentId?.ToString() ?? "";
 
-        // A finished trip is history. Let it be looked at, not reallocated.
         if (!trip.IsEditable)
         {
             ddl.Enabled = false;
@@ -134,8 +106,6 @@ public partial class Assign : Page
 
         var itineraryId = Convert.ToInt32(e.CommandArgument);
 
-        // The dropdown lives in the row the button was clicked in, so the
-        // chosen agent has to be read back out of that row.
         var row = ((Control)e.CommandSource).NamingContainer as GridViewRow;
 
         if (row?.FindControl("ddlAgent") is not DropDownList ddl)
@@ -149,7 +119,7 @@ public partial class Assign : Page
 
         ShowMessage(agentId == null
             ? $"\"{Server.HtmlEncode(trip?.TripName)}\" is back in the queue for any agent to pick up."
-            : $"\"{Server.HtmlEncode(trip?.TripName)}\" is now with {Server.HtmlEncode(trip?.AgentName)}.",
+            : $"\"{Server.HtmlEncode(trip?.TripName)}\" is assigned to {Server.HtmlEncode(trip?.AgentName)}.",
             "alert-success");
 
         BindWorkload();

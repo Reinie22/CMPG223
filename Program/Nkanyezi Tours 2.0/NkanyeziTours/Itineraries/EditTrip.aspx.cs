@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nkanyezi.Data;
@@ -6,30 +6,11 @@ using Nkanyezi.Models;
 
 namespace NkanyeziTours.Itineraries;
 
-/// <summary>
-/// One trip: what it costs, what is booked on it, and the agent's controls for
-/// editing and moving it through its statuses.
-///
-/// WHO MAY OPEN IT
-/// ===============
-/// The Web.config rule on this folder lets any staff member in. That is not
-/// enough on its own, because an agent typing another agent's trip id into the
-/// address bar would otherwise be editing somebody else's work. So the page
-/// checks ownership as well: an agent gets their own trips, management gets all
-/// of them.
-///
-/// THE STATUSES
-/// ============
-/// Draft to Confirmed is the agent saying the trip is agreed with the client.
-/// Confirmed to Completed is the trip having happened. Cancel goes through
-/// ItineraryRepository.Delete, which cancels rather than deletes once anything
-/// is booked, so the agency keeps the record of what it sold.
-/// </summary>
 public partial class EditTrip : Page
 {
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
-    private readonly TripRequestRepository _requests = Repositories.TripRequests;
-    private readonly AuthService _auth = Repositories.Auth;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
+    private TripRequestRepository _requests => Repositories.TripRequests;
+    private AuthService _auth => Repositories.Auth;
 
     private AppUser? _user;
     private Itinerary? _trip;
@@ -53,8 +34,6 @@ public partial class EditTrip : Page
         if (!IsPostBack)
             FillForm();
 
-        // Always re-evaluated: a status change during this request has to be
-        // reflected in which buttons are showing when the page comes back.
         ShowStatus();
         SetButtonAvailability();
 
@@ -62,10 +41,6 @@ public partial class EditTrip : Page
             ShowWhatJustHappened();
     }
 
-    /// <summary>
-    /// The action handlers finish with a redirect, so the message they want to
-    /// show has to survive as a query string flag rather than a field.
-    /// </summary>
     private void ShowWhatJustHappened()
     {
         var q = Request.QueryString;
@@ -81,10 +56,6 @@ public partial class EditTrip : Page
                         "alert-warning");
     }
 
-    /// <summary>
-    /// Fetches the trip with its totals and checks the user is allowed it.
-    /// Returns false when the page has already redirected or shown an error.
-    /// </summary>
     private bool LoadTrip()
     {
         if (TripId == null)
@@ -101,13 +72,17 @@ public partial class EditTrip : Page
             return false;
         }
 
-        // An agent may only work on their own trips. Management sees everything.
         var isMine = _trip.AgentId == _user!.UserId;
 
         if (_user.IsAgent && !isMine)
         {
             pnlTrip.Visible = false;
-            ShowMessage("That trip belongs to another agent.", "alert-danger");
+
+            ShowMessage(_trip.AgentId == null
+                            ? "That trip has not been assigned yet. A supervisor decides "
+                              + "who takes it."
+                            : "That trip belongs to another agent.",
+                        "alert-danger");
             return false;
         }
 
@@ -159,10 +134,6 @@ public partial class EditTrip : Page
             "~/Itineraries/BookTransport.aspx?itineraryId=" + _trip.ItineraryId;
     }
 
-    /// <summary>
-    /// A finished trip is history. Hiding the controls rather than disabling
-    /// them keeps the page honest about what can still be done.
-    /// </summary>
     private void SetButtonAvailability()
     {
         var editable = _trip!.IsEditable;
@@ -175,10 +146,6 @@ public partial class EditTrip : Page
         btnComplete.Visible = _trip.Status == ItineraryStatus.Confirmed;
     }
 
-    /// <summary>
-    /// What the client asked for. The panel stays hidden when they have asked
-    /// for nothing, so an agent-built trip is not cluttered by an empty table.
-    /// </summary>
     private void BindRequests()
     {
         var requests = _requests.GetByItinerary(_trip!.ItineraryId);
@@ -210,8 +177,6 @@ public partial class EditTrip : Page
 
         var id = Convert.ToInt32(e.CommandArgument);
 
-        // Decide only changes a row that is still 'Requested', so two agents
-        // with the page open cannot overwrite each other's decision.
         if (_requests.Decide(id, status, agentNote: null))
             ShowMessage(status == RequestStatus.Approved
                 ? "Approved. Now make the real booking on the booking screens."
@@ -231,16 +196,12 @@ public partial class EditTrip : Page
         var startDate = ParseDate(txtStartDate.Text);
         var endDate   = ParseDate(txtEndDate.Text);
 
-        // The database has CHECK (EndDate >= StartDate). Saying so here is
-        // friendlier than letting SQL Server throw.
         if (startDate != null && endDate != null && endDate < startDate)
         {
             ShowMessage("The end date cannot be before the start date.", "alert-danger");
             return;
         }
 
-        // Everything not on the form is carried over from the loaded trip, so
-        // saving never quietly drops the client or the agent off the row.
         _trip.TripName     = txtTripName.Text.Trim();
         _trip.TotalBudget  = decimal.Parse(txtBudget.Text.Trim(), CultureInfo.InvariantCulture);
         _trip.StartDate    = startDate;
@@ -272,18 +233,12 @@ public partial class EditTrip : Page
         if (_trip == null)
             return;
 
-        // Delete cancels instead of deleting once anything is booked, and tells
-        // us which it did. A deleted trip has no page left to go back to.
         if (_itineraries.Delete(_trip.ItineraryId))
             Reload("cancelled");
         else
             Response.Redirect("~/Itineraries/Default.aspx?deleted=1");
     }
 
-    /// <summary>
-    /// Comes back as a fresh GET so the totals, the status badge and the
-    /// buttons are all rebuilt from the database rather than from view state.
-    /// </summary>
     private void Reload(string flag)
         => Response.Redirect($"~/Itineraries/EditTrip.aspx?id={_trip!.ItineraryId}&{flag}=1");
 

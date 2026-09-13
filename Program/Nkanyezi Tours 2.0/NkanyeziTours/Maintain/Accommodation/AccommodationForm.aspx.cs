@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nkanyezi.Data;
@@ -8,12 +8,10 @@ namespace NkanyeziTours.Maintain.Accommodation;
 
 public partial class AccommodationForm : Page
 {
-    private readonly AccommodationRepository _accommodations = Repositories.Accommodation;
+    private AccommodationRepository _accommodations => Repositories.Accommodation;
 
-    // Confirmed against Maintain/Attractions/Default.aspx.cs
-    private readonly LookupRepository _lookups = Repositories.Lookups;
+    private LookupRepository _lookups => Repositories.Lookups;
 
-    // Same page is used for both Add (no querystring) and Edit (?id=5)
     private int? AccommodationId =>
         int.TryParse(Request.QueryString["id"], out var id) ? id : (int?)null;
 
@@ -63,9 +61,17 @@ public partial class AccommodationForm : Page
         txtCity.Text = accommodation.City;
         ddlProvince.SelectedValue = accommodation.ProvinceId?.ToString() ?? "";
         ddlStarRating.SelectedValue = accommodation.StarRating?.ToString() ?? "";
-        txtPricePerNight.Text = accommodation.PricePerNight.ToString("0.00");
-        txtCapacity.Text = accommodation.Capacity.ToString();
+
+        litUnitSummary.Text = accommodation.RoomCount == 0
+            ? " This resort has no units captured yet, so clients cannot book it."
+            : Server.HtmlEncode(
+                  $" Currently {accommodation.RoomCount} unit(s), from "
+                  + $"R{accommodation.FromPricePerNight:N2} a night, sleeping "
+                  + $"{accommodation.TotalCapacity} in total.");
         txtAmenities.Text = accommodation.Amenities;
+
+        pnlCurrentPhoto.Visible = !string.IsNullOrWhiteSpace(accommodation.ImageUrl);
+        imgCurrentPhoto.ImageUrl = accommodation.ImageUrl ?? "";
     }
 
     protected void btnSave_Click(object sender, EventArgs e)
@@ -81,6 +87,16 @@ public partial class AccommodationForm : Page
             return;
         }
 
+        if (!ImageStore.TrySave(fuPhoto, "accommodation", out var newPhoto, out var photoError))
+        {
+            ShowError(photoError!);
+            return;
+        }
+
+        var oldPhoto = AccommodationId.HasValue
+            ? _accommodations.GetById(AccommodationId.Value)?.ImageUrl
+            : null;
+
         var accommodation = new Nkanyezi.Models.Accommodation
         {
             Name = name,
@@ -90,19 +106,34 @@ public partial class AccommodationForm : Page
             City = txtCity.Text.Trim(),
             ProvinceId = int.TryParse(ddlProvince.SelectedValue, out var provinceId) ? provinceId : (int?)null,
             StarRating = byte.TryParse(ddlStarRating.SelectedValue, out var stars) ? stars : (byte?)null,
-            PricePerNight = decimal.Parse(txtPricePerNight.Text.Trim(), CultureInfo.InvariantCulture),
-            Capacity = int.Parse(txtCapacity.Text.Trim()),
+
+            PricePerNight = 0m,
+            Capacity = 0,
             Amenities = txtAmenities.Text.Trim()
         };
+
+        int savedId;
 
         if (AccommodationId.HasValue)
         {
             accommodation.AccommodationId = AccommodationId.Value;
             _accommodations.Update(accommodation);
+            savedId = AccommodationId.Value;
         }
         else
         {
-            _accommodations.Create(accommodation);
+            savedId = _accommodations.Create(accommodation);
+        }
+
+        if (newPhoto != null)
+        {
+            _accommodations.SetImageUrl(savedId, newPhoto);
+            ImageStore.Delete(oldPhoto);
+        }
+        else if (chkRemovePhoto.Checked && oldPhoto != null)
+        {
+            _accommodations.SetImageUrl(savedId, null);
+            ImageStore.Delete(oldPhoto);
         }
 
         Response.Redirect("~/Maintain/Accommodation/AccommodationList.aspx?saved=1");

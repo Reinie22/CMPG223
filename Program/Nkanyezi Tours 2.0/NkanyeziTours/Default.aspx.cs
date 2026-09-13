@@ -1,20 +1,12 @@
-using System.Web.UI;
+﻿using System.Web.UI;
 
 namespace NkanyeziTours;
 
-/// <summary>
-/// The dashboard: the landing page after signing in.
-///
-/// The four roles have almost nothing in common, so this page decides what to
-/// show based on the signed-in role rather than trying to be one thing for
-/// everybody.
-/// </summary>
 public partial class _Default : Page
 {
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
-    private readonly AuthService _auth = Repositories.Auth;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
+    private AuthService _auth => Repositories.Auth;
 
-    /// <summary>A stat card on the dashboard.</summary>
     private sealed class Stat
     {
         public string Label { get; set; } = "";
@@ -24,6 +16,14 @@ public partial class _Default : Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack) return;
+
+        var root = (Request.ApplicationPath ?? "/").TrimEnd('/') + "/";
+        if (string.Equals(Request.RawUrl.Split('?')[0], root, StringComparison.OrdinalIgnoreCase))
+        {
+            Response.Redirect("~/Portal/Discover.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+            return;
+        }
 
         try
         {
@@ -47,22 +47,22 @@ public partial class _Default : Page
         }
         catch (Exception ex)
         {
-            // A missing database is the most likely problem on a new machine,
-            // so say so on the page rather than showing a yellow crash screen.
             ShowError(ex);
         }
     }
 
     private void LoadClientView(AppUser user)
     {
+        Page.Title = "Itineraries";
         litSubtitle.Text = "Your trips with Nkanyezi Tours";
+        litTripsHeading.Text = "My trips";
         pnlBookTrip.Visible = true;
 
         var trips = _itineraries.GetForClient(user.UserId);
 
         BindStats(new[]
         {
-            new Stat { Label = "My trips", Value = trips.Count.ToString() },
+            new Stat { Label = "Total trips", Value = trips.Count.ToString() },
             new Stat { Label = "Active",   Value = trips.Count(t => t.IsEditable).ToString() }
         });
 
@@ -71,14 +71,15 @@ public partial class _Default : Page
 
     private void LoadAgentView(AppUser user)
     {
-        litSubtitle.Text = "Trips assigned to you, and the queue waiting to be picked up";
+        litSubtitle.Text = "Trips assigned to you";
+        litTripsHeading.Text = "My trips";
 
         var mine       = _itineraries.GetForAgent(user.UserId);
         var unassigned = _itineraries.GetUnassigned();
 
         BindStats(new[]
         {
-            new Stat { Label = "My trips",   Value = mine.Count.ToString() },
+            new Stat { Label = "Total trips", Value = mine.Count.ToString() },
             new Stat { Label = "Unassigned", Value = unassigned.Count.ToString() },
             new Stat { Label = "Active",     Value = mine.Count(t => t.IsEditable).ToString() }
         });
@@ -100,8 +101,6 @@ public partial class _Default : Page
             new Stat { Label = "Unassigned",  Value = all.Count(t => t.IsUnassigned).ToString() }
         });
 
-        // Allocation is management's job, so the shortcut to it lives here. The
-        // badge only appears when there is actually something waiting.
         pnlManage.Visible = true;
 
         var waiting = all.Count(t => t.IsUnassigned && t.IsEditable);
@@ -125,7 +124,6 @@ public partial class _Default : Page
 
     private void BindTrips(List<Itinerary> trips)
     {
-        // Newest ten. The full list lives on the itineraries screen.
         gvTrips.DataSource = trips.Take(10).ToList();
         gvTrips.DataBind();
     }
@@ -134,7 +132,15 @@ public partial class _Default : Page
     {
         litError.Text = "Could not load the dashboard. Check that SQL Server is running and that "
                       + "the database has been created by running 01-schema.sql and 03-seed-data.sql."
-                      + "<br /><small class=\"text-muted\">" + Server.HtmlEncode(ex.Message) + "</small>";
+                      + "<br /><small class=\"text-muted\">" + Server.HtmlEncode(RealMessage(ex)) + "</small>";
         pnlError.Visible = true;
+    }
+
+    private static string RealMessage(Exception ex)
+    {
+        while (ex is TypeInitializationException && ex.InnerException != null)
+            ex = ex.InnerException;
+
+        return ex.Message;
     }
 }

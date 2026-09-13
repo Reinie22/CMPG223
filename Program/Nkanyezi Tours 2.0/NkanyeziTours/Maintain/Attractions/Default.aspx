@@ -1,25 +1,14 @@
-<%@ Page Title="Attractions" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Attractions" Language="C#" MasterPageFile="~/Maintain/Maintain.master" AutoEventWireup="true"
          CodeBehind="Default.aspx.cs" Inherits="NkanyeziTours.Maintain.Attractions.Default" %>
 
-<%--
-    THE ATTRACTION LIST - the page to copy when you build your own.
-
-    Notice what is NOT in this markup: no SqlDataSource, no connection string,
-    no SQL. The grid is filled in the code-behind from AttractionRepository.
-
-    Dragging a SqlDataSource onto a page from the toolbox and typing a query
-    into its wizard would put SQL back into the markup. Do not do it. It would
-    be duplicated across 49 pages by 8 people and the repositories would become
-    dead code.
---%>
-<asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
+<asp:Content ID="cMain" ContentPlaceHolderID="MaintainContent" runat="server">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h1 class="h3 mb-0">Attractions</h1>
             <p class="text-muted mb-0 small">Places clients can visit on a trip</p>
         </div>
-        <asp:HyperLink ID="lnkAdd" runat="server" CssClass="btn btn-primary"
+        <asp:HyperLink ID="lnkAdd" ToolTip="Capture a new activity clients can add to a trip." runat="server" CssClass="btn btn-primary"
                        NavigateUrl="~/Maintain/Attractions/Edit.aspx">Add attraction</asp:HyperLink>
     </div>
 
@@ -27,37 +16,38 @@
         <asp:Literal ID="litMessage" runat="server" />
     </asp:Panel>
 
-    <%-- Filter bar --%>
     <div class="card mb-3">
         <div class="card-body">
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
                     <asp:Label ID="lblName" runat="server" AssociatedControlID="txtName"
                                CssClass="form-label small">Name contains</asp:Label>
-                    <asp:TextBox ID="txtName" runat="server" CssClass="form-control form-control-sm" />
+                    <asp:TextBox ID="txtName" ToolTip="Part of the name is enough." runat="server" CssClass="form-control form-control-sm" />
                 </div>
                 <div class="col-md-3">
                     <asp:Label ID="lblCategory" runat="server" AssociatedControlID="ddlCategory"
                                CssClass="form-label small">Category</asp:Label>
-                    <asp:DropDownList ID="ddlCategory" runat="server" CssClass="form-select form-select-sm" />
+                    <asp:DropDownList ID="ddlCategory" ToolTip="Show only one kind of activity." runat="server" CssClass="form-select form-select-sm" />
                 </div>
                 <div class="col-md-3">
                     <asp:Label ID="lblProvince" runat="server" AssociatedControlID="ddlProvince"
                                CssClass="form-label small">Province</asp:Label>
-                    <asp:DropDownList ID="ddlProvince" runat="server" CssClass="form-select form-select-sm" />
+                    <asp:DropDownList ID="ddlProvince" ToolTip="Show only activities in one province." runat="server" CssClass="form-select form-select-sm" />
                 </div>
                 <div class="col-md-2">
                     <asp:Label ID="lblMaxRate" runat="server" AssociatedControlID="txtMaxRate"
                                CssClass="form-label small">Max rate</asp:Label>
-                    <asp:TextBox ID="txtMaxRate" runat="server" CssClass="form-control form-control-sm" />
+                    <asp:TextBox ID="txtMaxRate" ToolTip="Hide anything that costs more than this per person." runat="server" CssClass="form-control form-control-sm" />
                 </div>
-                <div class="col-md-1 d-grid">
-                    <asp:Button ID="btnSearch" runat="server" Text="Search"
+                <div class="col-md-1 d-grid gap-1">
+                    <asp:Button ID="btnSearch" ToolTip="Applies the filters above." runat="server" Text="Search"
                                 CssClass="btn btn-sm btn-outline-primary" OnClick="btnSearch_Click" />
+                    <asp:Button ID="btnClear" ToolTip="Clears every filter and shows the whole list again." runat="server" Text="Clear"
+                                CssClass="btn btn-sm btn-outline-secondary" CausesValidation="false" OnClick="btnClear_Click" />
                 </div>
             </div>
             <div class="form-check mt-2">
-                <asp:CheckBox ID="chkIncludeInactive" runat="server" CssClass="form-check-input"
+                <asp:CheckBox ID="chkIncludeInactive" ToolTip="Also show activities that have been withdrawn from sale." runat="server" CssClass="form-check-input"
                               AutoPostBack="true" OnCheckedChanged="btnSearch_Click" />
                 <asp:Label ID="lblIncludeInactive" runat="server" AssociatedControlID="chkIncludeInactive"
                            CssClass="form-check-label small">Show deactivated attractions</asp:Label>
@@ -99,7 +89,7 @@
                     <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger"
                                     CommandName="DeleteAttraction"
                                     CommandArgument='<%# Eval("AttractionId") %>'
-                                    OnClientClick="return confirm('Delete this attraction?');">Delete</asp:LinkButton>
+                                    data-confirm="Delete this attraction?">Delete</asp:LinkButton>
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>

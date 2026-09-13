@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -6,9 +6,9 @@ namespace NkanyeziTours.Itineraries;
 
 public partial class BookRoute : Page
 {
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
-    private readonly RouteRepository _routes = Repositories.Routes;
-    private readonly RouteBookingRepository _bookings = Repositories.RouteBookings;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
+    private RouteRepository _routes => Repositories.Routes;
+    private RouteBookingRepository _bookings => Repositories.RouteBookings;
 
     private int? ItineraryId =>
         int.TryParse(Request.QueryString["itineraryId"], out var id) ? id : (int?)null;
@@ -118,8 +118,6 @@ public partial class BookRoute : Page
                 return;
             }
 
-            // The reference is created only now, when a valid booking is ready
-            // to be confirmed. It is not displayed on the form beforehand.
             var reference = GenerateReference(RouteType);
 
             var bookingId = _bookings.Create(new RouteBooking
@@ -219,7 +217,7 @@ public partial class BookRoute : Page
         var usedPercent = route.SeatCapacity == 0 ? 100 : used * 100 / route.SeatCapacity;
 
         txtFare.Text = route.IndicativeFarePerSeat.ToString("0.00", CultureInfo.InvariantCulture);
-        litAvailability.Text = $"<strong>{available}</strong> of {route.SeatCapacity} seats available on {travelDate:dd MMM yyyy}";
+        litAvailability.Text = $"<strong>{available}</strong> of {route.SeatCapacity} seats available on {travelDate:dd/MM/yyyy}";
         lblAvailabilityStatus.Text = available > 0 ? "Available" : "Fully booked";
         lblAvailabilityStatus.CssClass = "badge rounded-pill " + (available > 0 ? "bg-success" : "bg-danger");
         pnlAvailabilityFill.Style["width"] = Math.Min(100, usedPercent) + "%";

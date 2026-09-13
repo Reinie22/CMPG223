@@ -1,14 +1,8 @@
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using Nkanyezi.Models;
 
 namespace Nkanyezi.Data;
 
-/// <summary>
-/// Everything the system can do to hire cars.
-///
-/// Built by copying AttractionRepository. If you are writing your own, copy
-/// that one - it has the fullest comments.
-/// </summary>
 public class VehicleRepository
 {
     private readonly Db _db;
@@ -18,15 +12,11 @@ public class VehicleRepository
         _db = db;
     }
 
-    // No joins needed: a vehicle has no lookup columns, so SELECT * is the
-    // whole story here.
     private const string SelectSql = @"
-        SELECT  v.*
-        FROM    dbo.Vehicle AS v";
-
-    // -------------------------------------------------------------------------
-    // Reading
-    // -------------------------------------------------------------------------
+        SELECT      v.*,
+                    p.ProvinceName
+        FROM        dbo.Vehicle  AS v
+        LEFT JOIN   dbo.Province AS p ON p.ProvinceId = v.ProvinceId";
 
     public List<Vehicle> GetAll(bool includeInactive = false)
         => _db.Query(SelectSql + @"
@@ -41,10 +31,6 @@ public class VehicleRepository
         Map,
         Db.P("@VehicleId", vehicleId));
 
-    /// <summary>
-    /// Search by make, model or registration number in one box, which is how
-    /// somebody at a counter actually looks for a car.
-    /// </summary>
     public List<Vehicle> Search(string? text = null, string? location = null,
                                 int? minCapacity = null, decimal? maxPricePerDay = null,
                                 bool includeInactive = false)
@@ -66,16 +52,6 @@ public class VehicleRepository
         Db.P("@MaxPrice",        maxPricePerDay),
         Db.P("@IncludeInactive", includeInactive));
 
-    /// <summary>
-    /// The cars free for a date range, for the booking screen.
-    ///
-    /// The overlap test differs from the accommodation one by a single
-    /// character, and the difference matters. A hire runs from StartDate to
-    /// EndDate INCLUSIVE - hiring a car on the 5th and returning it on the 5th
-    /// is one full day, and the schema's TotalDays computed column counts it
-    /// that way. So a car booked to the 10th is not free again until the 11th,
-    /// and the comparison has to be <= and >= rather than the hotel's < and >.
-    /// </summary>
     public List<Vehicle> GetAvailable(DateTime startDate, DateTime endDate)
         => _db.Query(SelectSql + @"
         WHERE   v.IsActive = 1
@@ -86,36 +62,47 @@ public class VehicleRepository
                       AND   vb.Status   <> 'Cancelled'
                       AND   vb.StartDate <= @EndDate
                       AND   vb.EndDate   >= @StartDate)
+
+          AND   NOT EXISTS (
+                    SELECT  1
+                    FROM    dbo.VehicleMaintenance AS vm
+                    WHERE   vm.VehicleId = v.VehicleId
+                      AND   vm.Status IN ('Scheduled', 'In progress')
+                      AND   vm.StartDate <= @EndDate
+                      AND   vm.EndDate   >= @StartDate)
         ORDER BY v.Make, v.Model;",
         Map,
         Db.P("@StartDate", startDate.Date),
         Db.P("@EndDate",   endDate.Date));
 
-    /// <summary>
-    /// True when this one car is free for the dates. Checked again just before
-    /// saving, because somebody else may have booked it while this user had the
-    /// form open.
-    /// </summary>
     public bool IsAvailable(int vehicleId, DateTime startDate, DateTime endDate,
                             int? excludeVehicleBookingId = null)
         => _db.Scalar<int>(@"
+
         SELECT  COUNT(*)
-        FROM    dbo.VehicleBooking
-        WHERE   VehicleId = @VehicleId
-          AND   Status   <> 'Cancelled'
-          AND   StartDate <= @EndDate
-          AND   EndDate   >= @StartDate
-          AND   (@ExcludeId IS NULL OR VehicleBookingId <> @ExcludeId);",
+        FROM (
+            SELECT  VehicleBookingId AS ConflictId
+            FROM    dbo.VehicleBooking
+            WHERE   VehicleId = @VehicleId
+              AND   Status   <> 'Cancelled'
+              AND   StartDate <= @EndDate
+              AND   EndDate   >= @StartDate
+              AND   (@ExcludeId IS NULL OR VehicleBookingId <> @ExcludeId)
+
+            UNION ALL
+
+            SELECT  VehicleMaintenanceId
+            FROM    dbo.VehicleMaintenance
+            WHERE   VehicleId = @VehicleId
+              AND   Status IN ('Scheduled', 'In progress')
+              AND   StartDate <= @EndDate
+              AND   EndDate   >= @StartDate
+        ) AS conflicts;",
         Db.P("@VehicleId", vehicleId),
         Db.P("@StartDate", startDate.Date),
         Db.P("@EndDate",   endDate.Date),
         Db.P("@ExcludeId", excludeVehicleBookingId)) == 0;
 
-    /// <summary>
-    /// True when the registration number is already on another car. The
-    /// database has a UNIQUE constraint too - this exists so the page can show
-    /// a friendly message instead of an exception.
-    /// </summary>
     public bool RegistrationExists(string registrationNumber, int? excludeVehicleId = null)
         => _db.Scalar<int>(@"
         SELECT  COUNT(*)
@@ -125,30 +112,18 @@ public class VehicleRepository
         Db.P("@Registration", registrationNumber.Trim()),
         Db.P("@ExcludeId",    excludeVehicleId)) > 0;
 
-    // -------------------------------------------------------------------------
-    // Writing
-    // -------------------------------------------------------------------------
-
     public int Create(Vehicle v)
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.Vehicle
               (VehicleDescription,  Make,  Model,  Colour,  RegistrationNumber,
-               Capacity,  Location,  PricePerDay,  IncludedKmPerDay,  RatePerExtraKm)
+               Capacity,  Location,  ProvinceId,  PricePerDay,  IncludedKmPerDay,  RatePerExtraKm)
         VALUES
               (@VehicleDescription, @Make, @Model, @Colour, @RegistrationNumber,
-               @Capacity, @Location, @PricePerDay, @IncludedKmPerDay, @RatePerExtraKm);
+               @Capacity, @Location, @ProvinceId, @PricePerDay, @IncludedKmPerDay, @RatePerExtraKm);
 
         SELECT CAST(SCOPE_IDENTITY() AS INT);",
         BuildParameters(v));
 
-    /// <summary>
-    /// Saves changes to a car.
-    ///
-    /// Changing a rate here affects NEW bookings only. Bookings already made
-    /// keep the rates they were quoted at, because those three values were
-    /// copied onto the booking row when it was created. That is deliberate:
-    /// historic invoices and the revenue report must not change after the fact.
-    /// </summary>
     public void Update(Vehicle v)
     {
         var parameters = new List<SqlParameter> { Db.P("@VehicleId", v.VehicleId) };
@@ -163,6 +138,7 @@ public class VehicleRepository
                 RegistrationNumber = @RegistrationNumber,
                 Capacity           = @Capacity,
                 Location           = @Location,
+                ProvinceId         = @ProvinceId,
                 PricePerDay        = @PricePerDay,
                 IncludedKmPerDay   = @IncludedKmPerDay,
                 RatePerExtraKm     = @RatePerExtraKm
@@ -170,10 +146,6 @@ public class VehicleRepository
         parameters.ToArray());
     }
 
-    /// <summary>
-    /// Removes the car, or deactivates it when it has been hired before.
-    /// Returns true when it was deactivated rather than deleted.
-    /// </summary>
     public bool Delete(int vehicleId)
         => _db.Scalar<bool>(@"
         DECLARE @HasBookings BIT =
@@ -193,8 +165,6 @@ public class VehicleRepository
         UPDATE dbo.Vehicle SET IsActive = 1 WHERE VehicleId = @VehicleId;",
         Db.P("@VehicleId", vehicleId));
 
-    // -------------------------------------------------------------------------
-
     private static Vehicle Map(SqlDataReader r) => new Vehicle
     {
         VehicleId          = (int)r["VehicleId"],
@@ -205,6 +175,8 @@ public class VehicleRepository
         RegistrationNumber = (string)r["RegistrationNumber"],
         Capacity           = Db.GetNullable<int>(r, "Capacity"),
         Location           = Db.GetNullableString(r, "Location"),
+        ProvinceId         = Db.GetNullable<int>(r, "ProvinceId"),
+        ProvinceName       = Db.GetOptionalString(r, "ProvinceName"),
         PricePerDay        = (decimal)r["PricePerDay"],
         IncludedKmPerDay   = (int)r["IncludedKmPerDay"],
         RatePerExtraKm     = (decimal)r["RatePerExtraKm"],
@@ -221,6 +193,7 @@ public class VehicleRepository
         Db.P("@RegistrationNumber", v.RegistrationNumber.Trim()),
         Db.P("@Capacity",           v.Capacity),
         Db.P("@Location",           v.Location),
+        Db.P("@ProvinceId",         v.ProvinceId),
         Db.P("@PricePerDay",        v.PricePerDay),
         Db.P("@IncludedKmPerDay",   v.IncludedKmPerDay),
         Db.P("@RatePerExtraKm",     v.RatePerExtraKm)

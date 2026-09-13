@@ -1,4 +1,4 @@
-namespace NkanyeziTours.Itineraries
+﻿namespace NkanyeziTours.Itineraries
 {
     public partial class BookVehicle
     {
@@ -15,9 +15,8 @@ namespace NkanyeziTours.Itineraries
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEndDate;
         protected global::System.Web.UI.WebControls.Button btnFind;
         protected global::System.Web.UI.WebControls.Panel pnlVehicle;
-        protected global::System.Web.UI.WebControls.Label lblVehicle;
-        protected global::System.Web.UI.WebControls.DropDownList ddlVehicle;
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvVehicle;
+        protected global::System.Web.UI.WebControls.HiddenField hfVehicleId;
+        protected global::System.Web.UI.WebControls.Repeater rptVehicles;
         protected global::System.Web.UI.WebControls.Panel pnlRate;
         protected global::System.Web.UI.WebControls.Literal litRate;
         protected global::System.Web.UI.WebControls.HyperLink lnkCancel;

@@ -1,4 +1,4 @@
-/* Nkanyezi Tours - our own styling.
+﻿/* Nkanyezi Tours - our own styling.
    Bootstrap does the heavy lifting; this file is only for the few things
    Bootstrap does not cover. Keep it short. */
 
@@ -235,4 +235,364 @@ footer {
     .transport-hero-content {
         right: 1.25rem;
     }
+}
+
+/* The Maintain sidebar. Bootstrap's .nav-link is built for a horizontal
+   navbar, so the vertical version needs its own spacing and a visible
+   active state. */
+.maintain-nav .nav-link {
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    color: #1f3351;
+}
+
+.maintain-nav .nav-link:hover { color: #3979aa; }
+
+.maintain-nav .nav-link.active {
+    color: #3979aa;
+    border-left-color: #3979aa;
+}
+.maintain-nav-group {
+    margin-top: 1rem;
+    margin-bottom: .25rem;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #8a94a6;
+}
+
+.maintain-nav-group:first-child { margin-top: 0; }
+
+.maintain-nav .nav-link {
+    padding-left: .5rem;
+    border-left: 3px solid transparent;
+}
+
+.maintain-nav .nav-link.active {
+    margin-left: 0;
+    background: #eef4f9;
+    border-radius: 0 .25rem .25rem 0;
+}
+
+.maintain-nav-here {
+    margin: -.15rem 0 .15rem 1.1rem;
+    padding-left: .75rem;
+    border-left: 2px solid #cfd9e4;
+    font-size: .8rem;
+    color: #6c7789;
+}
+
+.maintain-nav-note {
+    margin: 1rem 0 0;
+    padding-top: .75rem;
+    border-top: 1px solid #e7ecf2;
+    font-size: .75rem;
+    line-height: 1.4;
+    color: #8a94a6;
+}
+
+
+/* ---------------------------------------------------------------------------
+   CLIENT CHOICE CARDS - resorts and activities
+
+   A card carries a picture, and the pictures are not loaded yet. So every
+   card reserves the space now: .choice-card-photo keeps a fixed aspect ratio
+   whether it holds an <img> or the placeholder, which means nothing on the
+   page moves when the real photos arrive.
+   --------------------------------------------------------------------------- */
+.choice-card {
+    height: 100%;
+    border: 1px solid rgba(31, 51, 81, .12);
+    border-radius: .9rem;
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow .15s ease-in-out;
+}
+
+.choice-card:hover { box-shadow: 0 .4rem 1.2rem rgba(31, 51, 81, .12); }
+
+.choice-card-photo {
+    aspect-ratio: 16 / 10;
+    background: #eaf4fc;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.choice-card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Shown until a photo exists. Deliberately plain - it should read as
+   'no picture yet', not as a broken image. */
+.choice-card-photo .placeholder-text {
+    color: #7d93ae;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.choice-card-body { padding: .9rem 1rem 1rem; }
+
+.choice-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: .15rem;
+}
+
+.choice-card-meta { color: #6b7c93; font-size: .82rem; }
+
+.choice-card-price { font-weight: 700; color: #1f3351; }
+
+/* A leg on the client's own trip page. The left bar makes the sequence read
+   as one journey rather than a pile of unrelated cards. */
+.leg-card { border-left: 4px solid #3979aa; }
+
+.leg-card.leg-card-empty { border-left-color: #c3ccda; }
+
+.leg-number {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: #3979aa;
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+   BOOKINGS GANTT CHART
+
+   One column per day of the month, so the table is wider than the page on
+   anything but a long month and a big screen. .gantt-scroll owns the
+   horizontal scrolling; the row header is sticky so you can still tell which
+   unit you are looking at once you have scrolled into the month.
+   --------------------------------------------------------------------------- */
+.gantt-scroll { overflow-x: auto; }
+
+table.gantt {
+    border-collapse: collapse;
+    font-size: .78rem;
+    white-space: nowrap;
+}
+
+table.gantt th, table.gantt td {
+    border: 1px solid #e4e9f0;
+    padding: 0;
+}
+
+.gantt-rowhead {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #fff;
+    padding: .3rem .6rem !important;
+    text-align: left;
+    font-weight: 600;
+    min-width: 11rem;
+    border-right: 2px solid #c3ccda !important;
+}
+
+.gantt-day {
+    width: 1.35rem;
+    min-width: 1.35rem;
+    text-align: center;
+    padding: .25rem 0 !important;
+    color: #6b7c93;
+    font-weight: 600;
+}
+
+.gantt-cell { height: 1.6rem; }
+
+/* A day nobody is in. Kept plain so the occupied days stand out. */
+.gantt-weekend { background: #f4f6f9; }
+
+.gantt-today { box-shadow: inset 0 -3px 0 #3979aa; }
+
+/* Confirmed: capacity really is held. */
+.gantt-booked { background: #3979aa; }
+
+/* Requested but not booked. Striped, because nothing is held yet and it
+   must not be mistaken for a confirmed bar. */
+.gantt-draft {
+    background: repeating-linear-gradient(45deg,
+        #f0c67b, #f0c67b 4px, #fae3bd 4px, #fae3bd 8px);
+}
+
+/* Two things on one unit on one day. Loud on purpose - finding these is why
+   the chart exists. */
+.gantt-clash {
+    background: repeating-linear-gradient(45deg,
+        #c0392b, #c0392b 4px, #e78379 4px, #e78379 8px);
+}
+
+.gantt-group td {
+    background: #eaf4fc;
+    padding: .3rem .6rem !important;
+    font-weight: 700;
+    color: #1f3351;
+    position: sticky;
+    left: 0;
+}
+
+/* The little squares in the legend. */
+.gantt-key {
+    display: inline-block;
+    width: .9rem;
+    height: .9rem;
+    vertical-align: -2px;
+    border: 1px solid #c3ccda;
+    margin-right: .15rem;
+}
+
+/* Transport fleet operations and selectable car-hire cards. */
+.transport-ops-header {
+    padding: clamp(1.5rem, 4vw, 2.6rem);
+    border-radius: 1rem;
+    color: #fff;
+    background:
+        linear-gradient(100deg, rgba(7, 31, 57, .98), rgba(12, 73, 111, .76)),
+        url('images/transport-hero.png') center 60% / cover;
+    box-shadow: 0 .7rem 1.7rem rgba(13, 36, 65, .16);
+}
+
+.transport-ops-header h1 {
+    margin: .3rem 0 .45rem;
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+}
+
+.transport-ops-header p {
+    max-width: 48rem;
+    margin: 0;
+    color: rgba(255, 255, 255, .86);
+}
+
+.transport-ops-kicker {
+    font-size: .78rem;
+    font-weight: 750;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #ffd37c;
+}
+
+.fleet-location-card {
+    padding: 1.25rem;
+    border: 1px solid #dce5ed;
+    border-radius: .9rem;
+    background: #fff;
+    box-shadow: 0 .3rem 1rem rgba(31, 51, 81, .07);
+}
+
+.fleet-location-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .5rem;
+    margin-top: 1.15rem;
+}
+
+.fleet-location-stats div {
+    padding: .65rem .35rem;
+    border-radius: .55rem;
+    background: #f4f7fa;
+    text-align: center;
+}
+
+.fleet-location-stats strong,
+.fleet-location-stats span {
+    display: block;
+}
+
+.fleet-location-stats strong {
+    font-size: 1.25rem;
+    color: #173d68;
+}
+
+.fleet-location-stats span {
+    font-size: .7rem;
+    color: #6c7584;
+}
+
+.transport-maintenance-table th {
+    color: #607080;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.car-hire-card {
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+    padding: 1.15rem;
+    border: 1px solid #d8e3ec;
+    border-radius: .9rem;
+    background: #fff;
+    box-shadow: 0 .25rem .9rem rgba(31, 51, 81, .07);
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.car-hire-card:hover {
+    transform: translateY(-2px);
+    border-color: #9dbdd9;
+    box-shadow: 0 .45rem 1.1rem rgba(31, 51, 81, .11);
+}
+
+.car-hire-card.is-selected {
+    border: 2px solid #198754;
+    background: #f6fffa;
+}
+
+.car-hire-card-icon {
+    display: grid;
+    place-items: center;
+    height: 7rem;
+    border-radius: .7rem;
+    background: linear-gradient(135deg, #e8f3fb, #f4f8fb);
+    font-size: 3.6rem;
+}
+
+.car-hire-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+}
+
+.car-hire-details span {
+    padding: .6rem;
+    border-radius: .55rem;
+    background: #f4f7fa;
+    color: #435465;
+    font-size: .82rem;
+}
+
+.car-hire-details strong {
+    display: block;
+    color: #173d68;
+    font-size: .7rem;
+    text-transform: uppercase;
+}
+
+.car-hire-price {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin-top: auto;
+    color: #607080;
+}
+
+.car-hire-price strong {
+    color: #173d68;
+    font-size: 1.35rem;
+}
+
+.leg-scroll {
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: .25rem;
 }

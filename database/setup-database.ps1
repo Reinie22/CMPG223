@@ -1,4 +1,4 @@
-<#
+﻿<#
     Nkanyezi Tours Information System
     setup-database.ps1  -  one-click database setup for a new machine
     CMPG223 Group 6
@@ -39,7 +39,12 @@ param(
     [switch] $NoSeed,
 
     # Do not touch Web.config
-    [switch] $NoConfigUpdate
+    [switch] $NoConfigUpdate,
+
+    # Build-safe. If the database already has tables, change nothing and exit 0.
+    # The build passes this, and it is not optional there: without it a rebuild
+    # would run 01-schema.sql, which DROPS every table.
+    [switch] $IfMissing
 )
 
 $ErrorActionPreference = 'Stop'
@@ -158,6 +163,24 @@ function Invoke-SqlFile ($file, $label) {
         exit 1
     }
     Write-Ok "$label completed"
+}
+
+if ($IfMissing) {
+    $old = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $existing = & $sqlcmd -S $instance -E -C -d $DbName -h -1 -W `
+                          -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables;" 2>$null
+    $ErrorActionPreference = $old
+
+    $count = 0
+    if ($existing) {
+        [void][int]::TryParse(($existing | Select-Object -First 1).ToString().Trim(), [ref] $count)
+    }
+
+    if ($count -gt 0) {
+        Write-Ok "$DbName already has $count tables - nothing to do"
+        exit 0
+    }
 }
 
 Invoke-SqlFile $SchemaFile '01-schema.sql (tables)'

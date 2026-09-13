@@ -1,4 +1,4 @@
-<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="Default.aspx.cs" Inherits="NkanyeziTours._Default" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -18,27 +18,20 @@
         Thank you - your trip request is in. An agent will pick it up and be in touch.
     </asp:Panel>
 
-    <%-- Clients start their own trips here. Staff have their own screens. --%>
     <asp:Panel ID="pnlBookTrip" runat="server" Visible="false" CssClass="mb-4">
-        <asp:HyperLink ID="lnkBookTrip" runat="server" CssClass="btn btn-primary"
-                       NavigateUrl="~/Trips/BookTrip.aspx">Book a trip</asp:HyperLink>
+        <asp:HyperLink ID="lnkBookTrip" ToolTip="Start a new trip request: give us your dates and budget, then build it up." runat="server" CssClass="btn btn-primary"
+                       NavigateUrl="~/Trips/BookTrip.aspx">Create a new trip</asp:HyperLink>
     </asp:Panel>
 
-    <%--
-        Management's shortcuts. Allocation is the one thing a supervisor does
-        that nobody else can, so it belongs on the landing page rather than two
-        clicks away.
-    --%>
     <asp:Panel ID="pnlManage" runat="server" Visible="false" CssClass="mb-4 d-flex flex-wrap gap-2">
-        <asp:HyperLink ID="lnkAssignTrips" runat="server" CssClass="btn btn-primary"
+        <asp:HyperLink ID="lnkAssignTrips" ToolTip="Hand unclaimed trips to a travel agent." runat="server" CssClass="btn btn-primary"
                        NavigateUrl="~/Itineraries/Assign.aspx">Assign trips to agents</asp:HyperLink>
-        <asp:HyperLink ID="lnkAllTrips" runat="server" CssClass="btn btn-outline-primary"
+        <asp:HyperLink ID="lnkAllTrips" ToolTip="Every trip in the system, whoever it belongs to." runat="server" CssClass="btn btn-outline-primary"
                        NavigateUrl="~/Itineraries/Default.aspx">All itineraries</asp:HyperLink>
         <asp:Label ID="lblUnassignedCount" runat="server" Visible="false"
                    CssClass="badge text-bg-warning align-self-center" />
     </asp:Panel>
 
-    <%-- Stat cards. Which ones show depends on the role. --%>
     <div class="row g-3 mb-4">
         <asp:Repeater ID="rptStats" runat="server">
             <ItemTemplate>
@@ -54,7 +47,7 @@
         </asp:Repeater>
     </div>
 
-    <h2 class="h5">Recent trips</h2>
+    <h2 class="h5"><asp:Literal ID="litTripsHeading" runat="server" Text="Recent trips" /></h2>
     <asp:GridView ID="gvTrips" runat="server"
                   AutoGenerateColumns="false"
                   CssClass="table table-striped table-hover align-middle"
@@ -70,13 +63,13 @@
             <asp:BoundField DataField="Status" HeaderText="Status" />
             <asp:TemplateField HeaderText="">
                 <ItemTemplate>
-                    <%-- Clients open their own trip to choose places and things to do. --%>
-                    <asp:HyperLink ID="lnkMyTrip" runat="server"
+
+                    <asp:HyperLink ID="lnkMyTrip" ToolTip="Open this trip to add legs, resorts and activities." runat="server"
                                    CssClass="btn btn-sm btn-primary text-nowrap"
                                    Text="Open"
                                    Visible='<%# !Nkanyezi.Services.AuthService.IsStaff %>'
                                    NavigateUrl='<%# "~/Trips/MyTrip.aspx?id=" + Eval("ItineraryId") %>' />
-                    <asp:HyperLink ID="lnkBookTransport" runat="server"
+                    <asp:HyperLink ID="lnkBookTransport" ToolTip="Add a hire car, bus or flight to this trip." runat="server"
                                    CssClass="btn btn-sm btn-outline-primary text-nowrap"
                                    Text="Book transport"
                                    Visible='<%# Nkanyezi.Services.AuthService.IsStaff && Convert.ToBoolean(Eval("IsEditable")) %>'

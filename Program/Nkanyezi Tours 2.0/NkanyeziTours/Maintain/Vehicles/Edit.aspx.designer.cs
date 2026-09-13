@@ -1,0 +1,42 @@
+﻿namespace NkanyeziTours.Maintain.Vehicles
+{
+    public partial class Edit
+    {
+        protected global::System.Web.UI.WebControls.Literal litHeading;
+        protected global::System.Web.UI.WebControls.Panel pnlMessage;
+        protected global::System.Web.UI.WebControls.Literal litMessage;
+        protected global::System.Web.UI.WebControls.ValidationSummary vsMain;
+        protected global::System.Web.UI.WebControls.Label lblReg;
+        protected global::System.Web.UI.WebControls.TextBox txtReg;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvReg;
+        protected global::System.Web.UI.WebControls.Label lblMake;
+        protected global::System.Web.UI.WebControls.TextBox txtMake;
+        protected global::System.Web.UI.WebControls.Label lblModel;
+        protected global::System.Web.UI.WebControls.TextBox txtModel;
+        protected global::System.Web.UI.WebControls.Label lblColour;
+        protected global::System.Web.UI.WebControls.TextBox txtColour;
+        protected global::System.Web.UI.WebControls.Label lblDescription;
+        protected global::System.Web.UI.WebControls.TextBox txtDescription;
+        protected global::System.Web.UI.WebControls.Label lblSeats;
+        protected global::System.Web.UI.WebControls.TextBox txtSeats;
+        protected global::System.Web.UI.WebControls.RangeValidator rvSeats;
+        protected global::System.Web.UI.WebControls.Label lblDepot;
+        protected global::System.Web.UI.WebControls.TextBox txtDepot;
+        protected global::System.Web.UI.WebControls.Label lblRegion;
+        protected global::System.Web.UI.WebControls.DropDownList ddlRegion;
+        protected global::System.Web.UI.WebControls.Label lblPrice;
+        protected global::System.Web.UI.WebControls.TextBox txtPrice;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPrice;
+        protected global::System.Web.UI.WebControls.RangeValidator rvPrice;
+        protected global::System.Web.UI.WebControls.Label lblInclKm;
+        protected global::System.Web.UI.WebControls.TextBox txtInclKm;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvInclKm;
+        protected global::System.Web.UI.WebControls.RangeValidator rvInclKm;
+        protected global::System.Web.UI.WebControls.Label lblExtraKm;
+        protected global::System.Web.UI.WebControls.TextBox txtExtraKm;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvExtraKm;
+        protected global::System.Web.UI.WebControls.RangeValidator rvExtraKm;
+        protected global::System.Web.UI.WebControls.HyperLink lnkCancel;
+        protected global::System.Web.UI.WebControls.Button btnSave;
+    }
+}

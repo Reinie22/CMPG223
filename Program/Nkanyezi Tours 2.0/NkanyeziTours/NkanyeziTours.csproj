@@ -130,6 +130,13 @@
     <Compile Include="Trips\MyTrip.aspx.designer.cs">
       <DependentUpon>MyTrip.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Trips\ChooseUnit.aspx.cs">
+      <DependentUpon>ChooseUnit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\ChooseUnit.aspx.designer.cs">
+      <DependentUpon>ChooseUnit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Trips\ChooseAccommodation.aspx.cs">
       <DependentUpon>ChooseAccommodation.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -146,6 +153,110 @@
     </Compile>
     <Compile Include="Controllers\TripRequestRepository.cs" />
     <Compile Include="Models\TripRequestItem.cs" />
+    <Compile Include="Maintain\Maintain.master.cs">
+      <DependentUpon>Maintain.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Maintain.master.designer.cs">
+      <DependentUpon>Maintain.master</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Accommodation\Rooms.aspx.cs">
+      <DependentUpon>Rooms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Accommodation\Rooms.aspx.designer.cs">
+      <DependentUpon>Rooms.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Maintenance.aspx.cs">
+      <DependentUpon>Maintenance.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Vehicles\Maintenance.aspx.designer.cs">
+      <DependentUpon>Maintenance.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Routes\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Routes\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Routes\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Routes\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Users\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Users\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Users\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Users\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Maintain\Rates\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Maintain\Rates\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\TripLegRepository.cs" />
+    <Compile Include="Models\TripLeg.cs" />
+    <Compile Include="Trips\ChooseTransport.aspx.cs">
+      <DependentUpon>ChooseTransport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Trips\ChooseTransport.aspx.designer.cs">
+      <DependentUpon>ChooseTransport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Account\Register.aspx.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\Register.aspx.designer.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Itineraries\Gantt.aspx.cs">
+      <DependentUpon>Gantt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Itineraries\Gantt.aspx.designer.cs">
+      <DependentUpon>Gantt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\GanttRepository.cs" />
+    <Compile Include="Models\GanttBar.cs" />
+    <Compile Include="Controllers\VehicleMaintenanceRepository.cs" />
+    <Compile Include="Models\VehicleMaintenance.cs" />
+    <Compile Include="Portal\Discover.aspx.cs">
+      <DependentUpon>Discover.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Portal\Discover.aspx.designer.cs">
+      <DependentUpon>Discover.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Accommodation.cs" />
     <Compile Include="Models\AppUser.cs" />
@@ -169,6 +280,7 @@
     <Compile Include="Controllers\UserRepository.cs" />
     <Compile Include="Controllers\VehicleRepository.cs" />
     <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\ImageStore.cs" />
     <Compile Include="Services\Repositories.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -245,9 +357,24 @@
     <Content Include="Itineraries\Assign.aspx" />
     <Content Include="Trips\MyTrip.aspx" />
     <Content Include="Trips\ChooseAccommodation.aspx" />
+    <Content Include="Trips\ChooseUnit.aspx" />
     <Content Include="Trips\ChooseAttraction.aspx" />
+    <Content Include="Maintain\Accommodation\Rooms.aspx" />
+    <Content Include="Maintain\Vehicles\Default.aspx" />
+    <Content Include="Maintain\Vehicles\Edit.aspx" />
+    <Content Include="Maintain\Vehicles\Maintenance.aspx" />
+    <Content Include="Maintain\Routes\Default.aspx" />
+    <Content Include="Maintain\Routes\Edit.aspx" />
+    <Content Include="Maintain\Users\Default.aspx" />
+    <Content Include="Maintain\Users\Edit.aspx" />
+    <Content Include="Maintain\Rates\Default.aspx" />
+    <Content Include="Trips\ChooseTransport.aspx" />
+    <Content Include="Account\Register.aspx" />
+    <Content Include="Itineraries\Gantt.aspx" />
+    <Content Include="Portal\Discover.aspx" />
     <Content Include="Web.config" />
     <Content Include="Site.Master" />
+    <Content Include="Maintain\Maintain.master" />
     <Content Include="Default.aspx" />
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\Denied.aspx" />
@@ -266,12 +393,37 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!--
+    AUTO SET-UP THE DATABASE ON BUILD
+    =================================
+    Runs database/setup-database.ps1 before every build, with -IfMissing so it
+    does nothing at all once the database exists. On a machine that has just
+    cloned the repository it creates NkanyeziTours, runs 01-schema.sql and
+    03-seed-data.sql, and presses on - so F5 works first time with no manual
+    step.
+
+    -IfMissing is not optional. Without it every build would run
+    01-schema.sql, which DROPS every table, and a routine rebuild would wipe
+    the data the whole group is working with.
+
+    ContinueOnError: a developer with no SQL Server installed still gets a
+    compiling project and the friendly message on the page, rather than a
+    build they cannot run at all.
+  -->
+  <Target Name="EnsureDatabase" BeforeTargets="Build">
+    <PropertyGroup>
+      <SetupScript>$(MSBuildProjectDirectory)\..\..\..\database\setup-database.ps1</SetupScript>
+    </PropertyGroup>
+    <Exec Condition="Exists('$(SetupScript)')"
+          Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(SetupScript)&quot; -IfMissing -NoConfigUpdate"
+          ContinueOnError="true" />
+  </Target>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
+          <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:52938/</IISUrl>

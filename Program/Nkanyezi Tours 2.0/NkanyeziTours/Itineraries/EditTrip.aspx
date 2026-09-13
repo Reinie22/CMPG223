@@ -1,4 +1,4 @@
-<%@ Page Title="Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="EditTrip.aspx.cs" Inherits="NkanyeziTours.Itineraries.EditTrip" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -18,7 +18,6 @@
 
     <asp:Panel ID="pnlTrip" runat="server">
 
-        <%-- WHAT THE TRIP COSTS SO FAR --%>
         <div class="card mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">Budget</h2>
@@ -53,7 +52,6 @@
             </div>
         </div>
 
-        <%-- THE DETAILS THE AGENT MAY CHANGE --%>
         <div class="card mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">Trip details</h2>
@@ -62,7 +60,7 @@
                     <div class="col-md-8">
                         <asp:Label ID="lblTripName" runat="server" AssociatedControlID="txtTripName"
                                    CssClass="form-label">Trip name <span class="text-danger">*</span></asp:Label>
-                        <asp:TextBox ID="txtTripName" runat="server" CssClass="form-control" MaxLength="120" />
+                        <asp:TextBox ID="txtTripName" ToolTip="What the client calls this trip. It shows on their dashboard." runat="server" CssClass="form-control" MaxLength="120" />
                         <asp:RequiredFieldValidator ID="rfvTripName" runat="server" ControlToValidate="txtTripName"
                                                     ValidationGroup="Trip" Display="Dynamic" CssClass="text-danger small"
                                                     ErrorMessage="The trip needs a name." />
@@ -73,7 +71,7 @@
                                    CssClass="form-label">Budget <span class="text-danger">*</span></asp:Label>
                         <div class="input-group">
                             <span class="input-group-text">R</span>
-                            <asp:TextBox ID="txtBudget" runat="server" CssClass="form-control" />
+                            <asp:TextBox ID="txtBudget" ToolTip="What the client has to spend. Costs are measured against this, but nothing is blocked when it is exceeded." runat="server" CssClass="form-control" />
                         </div>
                         <asp:RequiredFieldValidator ID="rfvBudget" runat="server" ControlToValidate="txtBudget"
                                                     ValidationGroup="Trip" Display="Dynamic" CssClass="text-danger small"
@@ -88,19 +86,19 @@
                     <div class="col-md-4">
                         <asp:Label ID="lblStartDate" runat="server" AssociatedControlID="txtStartDate"
                                    CssClass="form-label">Start date</asp:Label>
-                        <asp:TextBox ID="txtStartDate" runat="server" CssClass="form-control" TextMode="Date" />
+                        <asp:TextBox ID="txtStartDate" ToolTip="The first day of the trip." runat="server" CssClass="form-control" TextMode="Date" />
                     </div>
 
                     <div class="col-md-4">
                         <asp:Label ID="lblEndDate" runat="server" AssociatedControlID="txtEndDate"
                                    CssClass="form-label">End date</asp:Label>
-                        <asp:TextBox ID="txtEndDate" runat="server" CssClass="form-control" TextMode="Date" />
+                        <asp:TextBox ID="txtEndDate" ToolTip="The last day of the trip." runat="server" CssClass="form-control" TextMode="Date" />
                     </div>
 
                     <div class="col-12">
                         <asp:Label ID="lblComments" runat="server" AssociatedControlID="txtComments"
                                    CssClass="form-label">Notes</asp:Label>
-                        <asp:TextBox ID="txtComments" runat="server" CssClass="form-control"
+                        <asp:TextBox ID="txtComments" ToolTip="Notes for whoever picks this trip up next. The client does not see these." runat="server" CssClass="form-control"
                                      TextMode="MultiLine" Rows="4" />
                     </div>
 
@@ -110,34 +108,26 @@
 
                 <div class="d-flex flex-wrap justify-content-between gap-2">
                     <div class="d-flex flex-wrap gap-2">
-                        <asp:Button ID="btnSave" runat="server" Text="Save changes" CssClass="btn btn-primary"
+                        <asp:Button ID="btnSave" ToolTip="Saves your changes. The trip stays in its current state." runat="server" Text="Save changes" CssClass="btn btn-primary"
                                     ValidationGroup="Trip" OnClick="btnSave_Click" />
-                        <asp:HyperLink ID="lnkBookTransport" runat="server" CssClass="btn btn-outline-primary"
+                        <asp:HyperLink ID="lnkBookTransport" ToolTip="Add a hire car, bus or flight to this trip." runat="server" CssClass="btn btn-outline-primary"
                                        Text="Book transport" />
-                        <asp:HyperLink ID="lnkBack" runat="server" CssClass="btn btn-outline-secondary"
+                        <asp:HyperLink ID="lnkBack" ToolTip="Back to the trip list without saving." runat="server" CssClass="btn btn-outline-secondary"
                                        NavigateUrl="~/Itineraries/Default.aspx">Back to itineraries</asp:HyperLink>
                     </div>
 
                     <div class="d-flex flex-wrap gap-2">
-                        <asp:Button ID="btnConfirm" runat="server" Text="Confirm trip" CssClass="btn btn-success"
+                        <asp:Button ID="btnConfirm" ToolTip="Confirms the trip with the client. A confirmed trip cannot be put back to draft." runat="server" Text="Confirm trip" CssClass="btn btn-success"
                                     CausesValidation="false" OnClick="btnConfirm_Click" />
-                        <asp:Button ID="btnComplete" runat="server" Text="Mark completed" CssClass="btn btn-outline-success"
+                        <asp:Button ID="btnComplete" ToolTip="Marks the trip as finished. Use this once the client is home." runat="server" Text="Mark completed" CssClass="btn btn-outline-success"
                                     CausesValidation="false" OnClick="btnComplete_Click" />
-                        <asp:Button ID="btnCancelTrip" runat="server" Text="Cancel trip" CssClass="btn btn-outline-danger"
+                        <asp:Button ID="btnCancelTrip" ToolTip="Cancels the trip. This cannot be undone, and a cancelled trip can no longer be edited." runat="server" Text="Cancel trip" CssClass="btn btn-outline-danger"
                                     CausesValidation="false" OnClick="btnCancelTrip_Click" />
                     </div>
                 </div>
             </div>
         </div>
 
-        <%--
-            WHAT THE CLIENT HAS ASKED FOR
-            =============================
-            TripRequestItem rows the client put on their own draft. Approving
-            one does not itself book anything - it records the agent's decision.
-            The real booking is still made on the booking screens, which is
-            where capacity and the real price are settled.
-        --%>
         <asp:Panel ID="pnlRequests" runat="server" Visible="false" CssClass="card mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">
@@ -163,7 +153,7 @@
                         <asp:BoundField DataField="ItemLocation" HeaderText="Where" />
                         <asp:BoundField DataField="DateDisplay" HeaderText="When" />
                         <asp:BoundField DataField="Guests" HeaderText="People" />
-                        <asp:BoundField DataField="EstimatedCost" HeaderText="Guide cost"
+                        <asp:BoundField DataField="EstimatedCost" HeaderText="Cost"
                                         DataFormatString="R{0:N2}" ItemStyle-CssClass="text-end" />
                         <asp:TemplateField HeaderText="Client note">
                             <ItemTemplate>
@@ -180,14 +170,14 @@
                         <asp:TemplateField HeaderText="">
                             <ItemTemplate>
                                 <div class="d-flex gap-1">
-                                    <asp:LinkButton ID="lnkApprove" runat="server"
+                                    <asp:LinkButton ID="lnkApprove" ToolTip="Accepts what the client asked for and adds it to the trip." runat="server"
                                                     CssClass="btn btn-sm btn-success text-nowrap"
                                                     CommandName="ApproveRequest"
                                                     CommandArgument='<%# Eval("TripRequestItemId") %>'
                                                     CausesValidation="false"
                                                     Visible='<%# Convert.ToBoolean(Eval("IsRequested")) %>'
                                                     Text="Approve" />
-                                    <asp:LinkButton ID="lnkDecline" runat="server"
+                                    <asp:LinkButton ID="lnkDecline" ToolTip="Turns this request down. The client sees it was declined." runat="server"
                                                     CssClass="btn btn-sm btn-outline-danger text-nowrap"
                                                     CommandName="DeclineRequest"
                                                     CommandArgument='<%# Eval("TripRequestItemId") %>'
@@ -207,7 +197,6 @@
             </div>
         </asp:Panel>
 
-        <%-- EVERYTHING BOOKED ON THE TRIP --%>
         <div class="card">
             <div class="card-body">
                 <h2 class="h5 mb-3">What is booked</h2>
@@ -225,7 +214,7 @@
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="Description" HeaderText="Detail" />
-                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:yyyy-MM-dd}" />
+                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="TotalCost" HeaderText="Cost"
                                         DataFormatString="R{0:N2}" ItemStyle-CssClass="text-end" />
                         <asp:BoundField DataField="Status" HeaderText="Status" />

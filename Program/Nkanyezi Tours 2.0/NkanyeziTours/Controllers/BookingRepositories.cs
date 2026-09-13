@@ -1,25 +1,8 @@
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using Nkanyezi.Models;
 
 namespace Nkanyezi.Data;
 
-/* =============================================================================
-   The four booking repositories.
-
-   They live in one file because they are variations on the same short theme and
-   splitting them across four files would hide how similar they are. Each one is
-   registered separately in Program.cs.
-
-   None of them decide whether a booking is ALLOWED. Availability, capacity and
-   budget are rules, and rules live in a service class. These classes check
-   availability only where the check has to happen inside the same statement as
-   the insert - see AttractionBookingRepository.Create for why.
-   ============================================================================= */
-
-
-/// <summary>
-/// Rooms booked on a trip. One row per room per stay.
-/// </summary>
 public class RoomBookingRepository
 {
     private readonly Db _db;
@@ -56,18 +39,6 @@ public class RoomBookingRepository
         Map,
         Db.P("@RoomBookingId", roomBookingId));
 
-    /// <summary>
-    /// Books a room, but only if it is still free.
-    ///
-    /// The availability test is inside the INSERT rather than a separate call
-    /// beforehand. That closes the gap where two agents both see the room as
-    /// free, both pass the check, and both save - which would double-book it.
-    /// INSERT ... SELECT ... WHERE NOT EXISTS inserts nothing when the room has
-    /// been taken in the meantime, and this method returns 0 so the page can
-    /// say so.
-    ///
-    /// Returns the new booking id, or 0 when the room was taken.
-    /// </summary>
     public int Create(RoomBooking booking)
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.RoomBooking (RoomId, ItineraryId, CheckInDate, CheckOutDate,
@@ -105,10 +76,6 @@ public class RoomBookingRepository
         Db.P("@TotalCost",     booking.TotalCost),
         Db.P("@Status",        booking.Status));
 
-    /// <summary>
-    /// Cancels the booking. The row stays so the trip history is complete, but
-    /// it stops counting against the budget and stops holding the room.
-    /// </summary>
     public void Cancel(int roomBookingId)
         => _db.Execute(@"
         UPDATE  dbo.RoomBooking
@@ -116,7 +83,6 @@ public class RoomBookingRepository
         WHERE   RoomBookingId = @RoomBookingId;",
         Db.P("@RoomBookingId", roomBookingId));
 
-    /// <summary>Removes the row completely. Only for a mistake captured seconds ago.</summary>
     public void Delete(int roomBookingId)
         => _db.Execute(@"
         DELETE FROM dbo.RoomBooking WHERE RoomBookingId = @RoomBookingId;",
@@ -143,10 +109,6 @@ public class RoomBookingRepository
     };
 }
 
-
-/// <summary>
-/// Attraction visits booked on a trip, in a named time slot.
-/// </summary>
 public class AttractionBookingRepository
 {
     private readonly Db _db;
@@ -160,19 +122,16 @@ public class AttractionBookingRepository
         SELECT      ab.*,
                     att.Name AS AttractionName,
                     att.City,
-                    ts.TimeStart,
-                    ts.TimeEnd,
                     CASE WHEN u.UserId IS NULL THEN NULL
                          ELSE u.Name + ' ' + u.Surname END AS CreatedByName
         FROM        dbo.AttractionBooking AS ab
         INNER JOIN  dbo.Attraction        AS att ON att.AttractionId = ab.AttractionId
-        INNER JOIN  dbo.TimeSlot          AS ts  ON ts.TimeSlotId    = ab.TimeSlotId
         LEFT JOIN   dbo.AppUser           AS u   ON u.UserId         = ab.CreatedBy";
 
     public List<AttractionBooking> GetByItinerary(int itineraryId)
         => _db.Query(SelectSql + @"
         WHERE   ab.ItineraryId = @ItineraryId
-        ORDER BY ab.BookingDate, ts.TimeStart;",
+        ORDER BY ab.BookingDate;",
         Map,
         Db.P("@ItineraryId", itineraryId));
 
@@ -182,24 +141,12 @@ public class AttractionBookingRepository
         Map,
         Db.P("@AttractionBookingId", attractionBookingId));
 
-    /// <summary>
-    /// Books an attraction, but only if the slot still has room for this many
-    /// people.
-    ///
-    /// Same reasoning as the room booking: the capacity test sits inside the
-    /// INSERT so that two agents booking the last four places at the same
-    /// moment cannot both succeed. The subquery adds up everyone already booked
-    /// into that slot on that date and compares it against the attraction's
-    /// Quantity, which is its capacity per slot.
-    ///
-    /// Returns the new booking id, or 0 when the slot filled up first.
-    /// </summary>
     public int Create(AttractionBooking booking)
         => _db.ExecuteInsert(@"
-        INSERT INTO dbo.AttractionBooking (AttractionId, ItineraryId, TimeSlotId,
+        INSERT INTO dbo.AttractionBooking (AttractionId, ItineraryId,
                                            BookingDate, Quantity, TotalCost,
                                            Status, CreatedBy)
-        SELECT      @AttractionId, @ItineraryId, @TimeSlotId,
+        SELECT      @AttractionId, @ItineraryId,
                     @BookingDate, @Quantity, @TotalCost,
                     @Status, @CreatedBy
         FROM        dbo.Attraction AS a
@@ -207,14 +154,13 @@ public class AttractionBookingRepository
           AND       @Quantity + ISNULL((
                         SELECT  SUM(ab.Quantity)
                         FROM    dbo.AttractionBooking AS ab
-                        WHERE   ab.TimeSlotId  = @TimeSlotId
-                          AND   ab.BookingDate = @BookingDate
+                        WHERE   ab.AttractionId = @AttractionId
+                          AND   ab.BookingDate  = @BookingDate
                           AND   ab.Status     <> 'Cancelled'), 0) <= a.Quantity;
 
         SELECT CAST(ISNULL(SCOPE_IDENTITY(), 0) AS INT);",
         Db.P("@AttractionId", booking.AttractionId),
         Db.P("@ItineraryId",  booking.ItineraryId),
-        Db.P("@TimeSlotId",   booking.TimeSlotId),
         Db.P("@BookingDate",  booking.BookingDate.Date),
         Db.P("@Quantity",     booking.Quantity),
         Db.P("@TotalCost",    booking.TotalCost),
@@ -224,14 +170,12 @@ public class AttractionBookingRepository
     public void Update(AttractionBooking booking)
         => _db.Execute(@"
         UPDATE  dbo.AttractionBooking
-        SET     TimeSlotId  = @TimeSlotId,
-                BookingDate = @BookingDate,
+        SET     BookingDate = @BookingDate,
                 Quantity    = @Quantity,
                 TotalCost   = @TotalCost,
                 Status      = @Status
         WHERE   AttractionBookingId = @AttractionBookingId;",
         Db.P("@AttractionBookingId", booking.AttractionBookingId),
-        Db.P("@TimeSlotId",          booking.TimeSlotId),
         Db.P("@BookingDate",         booking.BookingDate.Date),
         Db.P("@Quantity",            booking.Quantity),
         Db.P("@TotalCost",           booking.TotalCost),
@@ -254,13 +198,8 @@ public class AttractionBookingRepository
         AttractionBookingId = (int)r["AttractionBookingId"],
         AttractionId        = (int)r["AttractionId"],
         ItineraryId         = (int)r["ItineraryId"],
-        TimeSlotId          = (int)r["TimeSlotId"],
         AttractionName      = Db.GetOptionalString(r, "AttractionName"),
         City                = Db.GetOptionalString(r, "City"),
-        TimeStart           = Db.HasColumn(r, "TimeStart")
-                                  ? Db.GetNullable<TimeSpan>(r, "TimeStart") : null,
-        TimeEnd             = Db.HasColumn(r, "TimeEnd")
-                                  ? Db.GetNullable<TimeSpan>(r, "TimeEnd") : null,
         BookingDate         = (DateTime)r["BookingDate"],
         Quantity            = (int)r["Quantity"],
         TotalCost           = (decimal)r["TotalCost"],
@@ -271,16 +210,6 @@ public class AttractionBookingRepository
     };
 }
 
-
-/// <summary>
-/// Car hires on a trip, including the collection and return of the vehicle.
-///
-/// IMPORTANT: TotalDays, KmDriven, KmIncluded, ExtraKm, BaseCost, ExtraKmCost
-/// and TotalCost are COMPUTED columns. SQL Server works them out from the other
-/// columns. They are never inserted and never updated - attempting it fails
-/// with "the column cannot be modified because it is either a computed column
-/// or is the result of a UNION operator".
-/// </summary>
 public class VehicleBookingRepository
 {
     private readonly Db _db;
@@ -315,29 +244,12 @@ public class VehicleBookingRepository
         Map,
         Db.P("@VehicleBookingId", vehicleBookingId));
 
-    /// <summary>
-    /// Cars that are out and have not been brought back, for the returns
-    /// screen. This queue is easy to forget and nothing settles without it -
-    /// a car rental's cost is not final until the odometer comes back.
-    /// </summary>
     public List<VehicleBooking> GetOutstandingReturns()
         => _db.Query(SelectSql + @"
         WHERE   vb.Status = 'Collected'
         ORDER BY vb.EndDate;",
         Map);
 
-    /// <summary>
-    /// Books a car, but only if it is still free for those dates.
-    ///
-    /// The rates are copied from the Vehicle row inside the INSERT itself, so
-    /// they are frozen at the moment of hire and cannot drift if somebody edits
-    /// the vehicle's pricing tomorrow.
-    ///
-    /// Note the date test uses <= and >= rather than the hotel's < and >,
-    /// because a car hire includes both its first and its last day.
-    ///
-    /// Returns the new booking id, or 0 when the car was taken first.
-    /// </summary>
     public int Create(VehicleBooking booking)
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.VehicleBooking (VehicleId, ItineraryId, StartDate, EndDate,
@@ -364,10 +276,6 @@ public class VehicleBookingRepository
         Db.P("@Status",      booking.Status),
         Db.P("@CreatedBy",   booking.CreatedBy));
 
-    /// <summary>
-    /// Changes the dates of an existing hire. The rates are deliberately left
-    /// alone - they were agreed when the car was booked.
-    /// </summary>
     public void UpdateDates(int vehicleBookingId, DateTime startDate, DateTime endDate)
         => _db.Execute(@"
         UPDATE  dbo.VehicleBooking
@@ -378,13 +286,6 @@ public class VehicleBookingRepository
         Db.P("@StartDate",        startDate.Date),
         Db.P("@EndDate",          endDate.Date));
 
-    /// <summary>
-    /// The client collects the car. Captures the opening odometer reading and
-    /// moves the booking to Collected.
-    ///
-    /// Only a Confirmed booking can be collected, so pressing the button twice
-    /// cannot overwrite the reading with a second one.
-    /// </summary>
     public bool Collect(int vehicleBookingId, int odometerOut)
         => _db.Execute(@"
         UPDATE  dbo.VehicleBooking
@@ -395,18 +296,6 @@ public class VehicleBookingRepository
         Db.P("@VehicleBookingId", vehicleBookingId),
         Db.P("@OdometerOut",      odometerOut)) > 0;
 
-    /// <summary>
-    /// The car comes back. Captures the closing odometer and moves the booking
-    /// to Returned, at which point SQL Server recalculates ExtraKm and
-    /// TotalCost automatically and the cost is final.
-    ///
-    /// The reading must be at least the opening one - a car cannot come back
-    /// with fewer kilometres than it left with. The database has a CHECK
-    /// constraint for this too; the condition here means the page gets a clean
-    /// false instead of an exception.
-    ///
-    /// Returns false when the booking was not out, or the reading was too low.
-    /// </summary>
     public bool Return(int vehicleBookingId, int odometerIn)
         => _db.Execute(@"
         UPDATE  dbo.VehicleBooking
@@ -448,7 +337,6 @@ public class VehicleBookingRepository
         OdometerOut        = Db.GetNullable<int>(r, "OdometerOut"),
         OdometerIn         = Db.GetNullable<int>(r, "OdometerIn"),
 
-        // Computed by SQL Server. KmDriven is null until both readings exist.
         TotalDays          = (int)r["TotalDays"],
         KmDriven           = Db.GetNullable<int>(r, "KmDriven"),
         KmIncluded         = (int)r["KmIncluded"],
@@ -464,15 +352,6 @@ public class VehicleBookingRepository
     };
 }
 
-
-/// <summary>
-/// Flight and shuttle seats booked on a trip.
-///
-/// Capacity is enforced per route and travel date for both flights and buses.
-///
-/// TotalCost is a COMPUTED column (Seats * FarePerSeat). Never insert or update
-/// it.
-/// </summary>
 public class RouteBookingRepository
 {
     private readonly Db _db;
@@ -509,11 +388,6 @@ public class RouteBookingRepository
         Map,
         Db.P("@RouteBookingId", routeBookingId));
 
-    /// <summary>
-    /// Books seats when enough remain. TotalCost is computed by SQL Server.
-    /// The update/hold lock prevents two simultaneous bookings from both
-    /// taking the last available seats.
-    /// </summary>
     public int Create(RouteBooking booking)
         => _db.ExecuteInsert(@"
         INSERT INTO dbo.RouteBooking (RouteId, ItineraryId, TravelDate, Seats,

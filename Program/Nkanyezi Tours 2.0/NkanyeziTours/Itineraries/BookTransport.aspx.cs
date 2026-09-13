@@ -1,10 +1,10 @@
-using System.Web.UI;
+﻿using System.Web.UI;
 
 namespace NkanyeziTours.Itineraries;
 
 public partial class BookTransport : Page
 {
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
 
     private int? ItineraryId =>
         int.TryParse(Request.QueryString["itineraryId"], out var id) ? id : (int?)null;

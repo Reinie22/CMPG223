@@ -1,28 +1,14 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace NkanyeziTours.Maintain.Attractions;
 
-/// <summary>
-/// Add or edit one attraction.
-///
-/// THIS IS THE EXAMPLE TO COPY when you build your own form page.
-///
-/// One page does both jobs. With no id in the address bar it adds a new record;
-/// with ?id=7 it loads number 7 and saves over it. Building two nearly
-/// identical pages would mean two places to fix every bug.
-/// </summary>
 public partial class Edit : Page
 {
-    private readonly AttractionRepository _attractions = Repositories.Attractions;
-    private readonly LookupRepository _lookups = Repositories.Lookups;
+    private AttractionRepository _attractions => Repositories.Attractions;
+    private LookupRepository _lookups => Repositories.Lookups;
 
-    /// <summary>
-    /// The record being edited, or null when adding a new one.
-    /// Read from the address bar rather than kept in ViewState, so a refresh
-    /// cannot leave the page editing something different from what it shows.
-    /// </summary>
     private int? AttractionId
     {
         get
@@ -68,7 +54,6 @@ public partial class Edit : Page
         ddlProvince.Items.Insert(0, new ListItem("(none)", ""));
     }
 
-    /// <summary>Fills the form from the database.</summary>
     private void LoadExisting(int id)
     {
         var a = _attractions.GetById(id);
@@ -89,6 +74,9 @@ public partial class Edit : Page
         txtUnit.Text        = a.UnitOfMeasure ?? "";
         txtDuration.Text    = a.DurationMinutes?.ToString() ?? "";
         txtSeason.Text      = a.BestOperatingSeason ?? "";
+
+        pnlCurrentPhoto.Visible  = !string.IsNullOrWhiteSpace(a.ImageUrl);
+        imgCurrentPhoto.ImageUrl = a.ImageUrl ?? "";
         txtOpens.Text       = FormatTime(a.OperatingTimeStart);
         txtCloses.Text      = FormatTime(a.OperatingTimeEnd);
 
@@ -98,15 +86,10 @@ public partial class Edit : Page
 
     protected void btnSave_Click(object sender, EventArgs e)
     {
-        // The validators on the markup have already run. Page.IsValid is what
-        // tells you whether they all passed - without this check the page would
-        // happily save invalid data when JavaScript is disabled.
         if (!Page.IsValid) return;
 
         try
         {
-            // ---- rules that the validators cannot express ----
-
             if (_attractions.NameExists(txtName.Text.Trim(), AttractionId))
             {
                 ShowMessage("alert-danger", "Another attraction already uses that name.");
@@ -116,13 +99,19 @@ public partial class Edit : Page
             var opens  = ParseTime(txtOpens.Text);
             var closes = ParseTime(txtCloses.Text);
 
-            // The database has CHECK (OperatingTimeEnd > OperatingTimeStart), so
-            // saving this would throw. Catching it here gives a readable message.
             if (opens != null && closes != null && closes <= opens)
             {
                 ShowMessage("alert-danger", "The closing time must be later than the opening time.");
                 return;
             }
+
+            if (!ImageStore.TrySave(fuPhoto, "activities", out var newPhoto, out var photoError))
+            {
+                ShowMessage("alert-danger", Server.HtmlEncode(photoError!));
+                return;
+            }
+
+            var oldPhoto = IsNew ? null : _attractions.GetById(AttractionId!.Value)?.ImageUrl;
 
             var attraction = new Attraction
             {
@@ -142,18 +131,33 @@ public partial class Edit : Page
                 BestOperatingSeason = NullIfBlank(txtSeason.Text)
             };
 
+            int savedId;
+
             if (IsNew)
-                _attractions.Create(attraction);
+            {
+                savedId = _attractions.Create(attraction);
+            }
             else
+            {
                 _attractions.Update(attraction);
+                savedId = AttractionId!.Value;
+            }
+
+            if (newPhoto != null)
+            {
+                _attractions.SetImageUrl(savedId, newPhoto);
+                ImageStore.Delete(oldPhoto);
+            }
+            else if (chkRemovePhoto.Checked && oldPhoto != null)
+            {
+                _attractions.SetImageUrl(savedId, null);
+                ImageStore.Delete(oldPhoto);
+            }
 
             Response.Redirect("~/Maintain/Attractions/Default.aspx");
         }
         catch (System.Threading.ThreadAbortException)
         {
-            // Response.Redirect always throws this. Let it through untouched,
-            // otherwise the catch below would swallow a successful save and
-            // report it as a database error.
             throw;
         }
         catch (Exception ex)
@@ -161,10 +165,6 @@ public partial class Edit : Page
             ShowDatabaseError(ex);
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Small helpers
-    // -------------------------------------------------------------------------
 
     private static string? NullIfBlank(string value)
         => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

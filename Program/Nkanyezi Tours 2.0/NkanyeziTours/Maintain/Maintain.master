@@ -1,0 +1,59 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+           CodeBehind="Maintain.master.cs" Inherits="NkanyeziTours.Maintain.MaintainMaster" %>
+
+<asp:Content ID="cSite" ContentPlaceHolderID="MainContent" runat="server">
+
+    <div class="row g-4">
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body py-3">
+                    <h2 class="h6 text-uppercase text-muted mb-3">Settings</h2>
+
+                    <nav class="nav flex-column maintain-nav">
+
+                        <div class="maintain-nav-group">Places and activities</div>
+
+                        <asp:HyperLink ID="lnkAccommodation" ToolTip="Resorts, lodges, hotels and campsites." runat="server" CssClass="nav-link"
+                                       NavigateUrl="~/Maintain/Accommodation/AccommodationList.aspx">Accommodation</asp:HyperLink>
+                        <asp:Panel ID="pnlRoomsHere" runat="server" Visible="false" CssClass="maintain-nav-here">
+                            Units of one resort
+                        </asp:Panel>
+
+                        <asp:HyperLink ID="lnkAttractions" ToolTip="Activities clients can add to a trip." runat="server" CssClass="nav-link"
+                                       NavigateUrl="~/Maintain/Attractions/Default.aspx">Attractions</asp:HyperLink>
+
+                        <div class="maintain-nav-group">Transport</div>
+
+                        <asp:HyperLink ID="lnkVehicles" ToolTip="The hire fleet and where each car is based." runat="server" CssClass="nav-link"
+                                       NavigateUrl="~/Maintain/Vehicles/Default.aspx">Vehicles</asp:HyperLink>
+                        <asp:HyperLink ID="lnkMaintenance" ToolTip="Cars off the road for a service or repair, and where the fleet is sitting." runat="server" CssClass="nav-link"
+                                       NavigateUrl="~/Maintain/Vehicles/Maintenance.aspx">Fleet maintenance</asp:HyperLink>
+                        <asp:HyperLink ID="lnkRoutes" ToolTip="Scheduled bus and flight routes." runat="server" CssClass="nav-link"
+                                       NavigateUrl="~/Maintain/Routes/Default.aspx">Routes and flights</asp:HyperLink>
+
+                        <asp:Panel ID="pnlAdminOnly" runat="server" Visible="false">
+                            <div class="maintain-nav-group">Administrator</div>
+                            <asp:HyperLink ID="lnkUsers" ToolTip="Staff and client accounts, and what each may do." runat="server" CssClass="nav-link"
+                                           NavigateUrl="~/Maintain/Users/Default.aspx">Users and access</asp:HyperLink>
+                            <asp:HyperLink ID="lnkRates" ToolTip="Exchange rates used to show prices in other currencies." runat="server" CssClass="nav-link"
+                                           NavigateUrl="~/Maintain/Rates/Default.aspx">Exchange rates</asp:HyperLink>
+                        </asp:Panel>
+
+                    </nav>
+
+                    <p class="maintain-nav-note">
+                        A resort&#39;s units are opened from its row in the
+                        accommodation list.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <asp:ContentPlaceHolder ID="MaintainContent" runat="server" />
+        </div>
+
+    </div>
+
+</asp:Content>

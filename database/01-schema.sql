@@ -1,30 +1,15 @@
-/* =============================================================================
-   Nkanyezi Tours Information System
-   01 - Database schema
-   CMPG213 Group 6
-
-   Target: Microsoft SQL Server
-
-   HOW TO RUN THIS
-   ---------------
-   1. Open SQL Server Management Studio and connect to your local server.
-   2. Open this file (File > Open > File).
-   3. Press Execute (F5).
-   4. It will drop and recreate everything, so it is safe to run again if you
-      make a mistake. Anything you typed into the tables yourself will be lost.
-*/
-IF OBJECT_ID('dbo.ExchangeRate','U')       IS NOT NULL DROP TABLE dbo.ExchangeRate;
+﻿IF OBJECT_ID('dbo.ExchangeRate','U')       IS NOT NULL DROP TABLE dbo.ExchangeRate;
 IF OBJECT_ID('dbo.TripExpense','U')        IS NOT NULL DROP TABLE dbo.TripExpense;
 IF OBJECT_ID('dbo.AttractionBooking','U')  IS NOT NULL DROP TABLE dbo.AttractionBooking;
 IF OBJECT_ID('dbo.RoomBooking','U')        IS NOT NULL DROP TABLE dbo.RoomBooking;
 IF OBJECT_ID('dbo.RouteBooking','U')       IS NOT NULL DROP TABLE dbo.RouteBooking;
 IF OBJECT_ID('dbo.VehicleBooking','U')     IS NOT NULL DROP TABLE dbo.VehicleBooking;
 IF OBJECT_ID('dbo.Itinerary','U')          IS NOT NULL DROP TABLE dbo.Itinerary;
-IF OBJECT_ID('dbo.TimeSlot','U')           IS NOT NULL DROP TABLE dbo.TimeSlot;
 IF OBJECT_ID('dbo.Attraction','U')         IS NOT NULL DROP TABLE dbo.Attraction;
 IF OBJECT_ID('dbo.Room','U')               IS NOT NULL DROP TABLE dbo.Room;
 IF OBJECT_ID('dbo.Accommodation','U')      IS NOT NULL DROP TABLE dbo.Accommodation;
 IF OBJECT_ID('dbo.Route','U')              IS NOT NULL DROP TABLE dbo.Route;
+IF OBJECT_ID('dbo.VehicleMaintenance','U') IS NOT NULL DROP TABLE dbo.VehicleMaintenance;
 IF OBJECT_ID('dbo.Vehicle','U')            IS NOT NULL DROP TABLE dbo.Vehicle;
 IF OBJECT_ID('dbo.AppUser','U')            IS NOT NULL DROP TABLE dbo.AppUser;
 IF OBJECT_ID('dbo.ExpenseCategory','U')    IS NOT NULL DROP TABLE dbo.ExpenseCategory;
@@ -32,7 +17,6 @@ IF OBJECT_ID('dbo.AttractionCategory','U') IS NOT NULL DROP TABLE dbo.Attraction
 IF OBJECT_ID('dbo.Province','U')           IS NOT NULL DROP TABLE dbo.Province;
 IF OBJECT_ID('dbo.Role','U')               IS NOT NULL DROP TABLE dbo.Role;
 GO
-
 
 CREATE TABLE dbo.Role (
     RoleId      INT IDENTITY(1,1)   NOT NULL,
@@ -70,7 +54,6 @@ CREATE TABLE dbo.ExpenseCategory (
 );
 GO
 
-
 CREATE TABLE dbo.AppUser (
     UserId          INT IDENTITY(1,1)   NOT NULL,
     RoleId          INT                 NOT NULL,
@@ -95,7 +78,7 @@ CREATE TABLE dbo.Accommodation (
     AccommodationId INT IDENTITY(1,1)   NOT NULL,
     Name            NVARCHAR(120)       NOT NULL,
     Description     NVARCHAR(1000)      NULL,
-    Type            NVARCHAR(50)        NULL,       
+    Type            NVARCHAR(50)        NULL,
     Address         NVARCHAR(200)       NULL,
     City            NVARCHAR(80)        NULL,
     ProvinceId      INT                 NULL,
@@ -145,7 +128,7 @@ CREATE TABLE dbo.Attraction (
     Description         NVARCHAR(1000)      NULL,
     Rate                DECIMAL(10,2)       NOT NULL,
     Quantity            INT                 NOT NULL,
-    UnitOfMeasure       NVARCHAR(30)        NULL,      
+    UnitOfMeasure       NVARCHAR(30)        NULL,
     DurationMinutes     INT                 NULL,
     OperatingTimeStart  TIME(0)             NULL,
     OperatingTimeEnd    TIME(0)             NULL,
@@ -166,23 +149,6 @@ CREATE INDEX IX_Attraction_CategoryId ON dbo.Attraction (CategoryId);
 CREATE INDEX IX_Attraction_ProvinceId ON dbo.Attraction (ProvinceId);
 GO
 
-CREATE TABLE dbo.TimeSlot (
-    TimeSlotId      INT IDENTITY(1,1)   NOT NULL,
-    AttractionId    INT                 NOT NULL,
-    TimeStart       TIME(0)             NOT NULL,
-    TimeEnd         TIME(0)             NOT NULL,
-
-    CONSTRAINT PK_TimeSlot            PRIMARY KEY (TimeSlotId),
-    CONSTRAINT FK_TimeSlot_Attraction FOREIGN KEY (AttractionId)
-        REFERENCES dbo.Attraction (AttractionId) ON DELETE CASCADE,
-    CONSTRAINT UQ_TimeSlot            UNIQUE (AttractionId, TimeStart),
-    CONSTRAINT CK_TimeSlot_Order      CHECK (TimeEnd > TimeStart)
-);
-GO
-
-CREATE INDEX IX_TimeSlot_AttractionId ON dbo.TimeSlot (AttractionId);
-GO
-
 CREATE TABLE dbo.Vehicle (
     VehicleId           INT IDENTITY(1,1)   NOT NULL,
     VehicleDescription  NVARCHAR(200)       NULL,
@@ -190,8 +156,8 @@ CREATE TABLE dbo.Vehicle (
     Model               NVARCHAR(50)        NULL,
     Colour              NVARCHAR(30)        NULL,
     RegistrationNumber  NVARCHAR(20)        NOT NULL,
-    Capacity            INT                 NULL,       
-    Location            NVARCHAR(80)        NULL,       
+    Capacity            INT                 NULL,
+    Location            NVARCHAR(80)        NULL,
     PricePerDay         DECIMAL(10,2)       NOT NULL,
     IncludedKmPerDay    INT                 NOT NULL CONSTRAINT DF_Vehicle_InclKm DEFAULT (200),
     RatePerExtraKm      DECIMAL(10,2)       NOT NULL,
@@ -206,11 +172,37 @@ CREATE TABLE dbo.Vehicle (
 );
 GO
 
+CREATE TABLE dbo.VehicleMaintenance (
+    VehicleMaintenanceId INT IDENTITY(1,1) NOT NULL,
+    VehicleId            INT               NOT NULL,
+    MaintenanceType      NVARCHAR(100)     NOT NULL,
+    StartDate            DATE              NOT NULL,
+    EndDate              DATE              NOT NULL,
+    Odometer             INT               NULL,
+    EstimatedCost        DECIMAL(10,2)     NULL,
+    ActualCost           DECIMAL(10,2)     NULL,
+    Status               NVARCHAR(20)      NOT NULL CONSTRAINT DF_VehicleMaintenance_Status DEFAULT ('Scheduled'),
+    Notes                NVARCHAR(500)     NULL,
+    CompletedDate        DATETIME2(0)      NULL,
+    CreatedDate          DATETIME2(0)      NOT NULL CONSTRAINT DF_VehicleMaintenance_Created DEFAULT (SYSDATETIME()),
+    CreatedBy            INT               NULL,
+
+    CONSTRAINT PK_VehicleMaintenance PRIMARY KEY (VehicleMaintenanceId),
+    CONSTRAINT FK_VehicleMaintenance_Vehicle FOREIGN KEY (VehicleId) REFERENCES dbo.Vehicle(VehicleId),
+    CONSTRAINT FK_VehicleMaintenance_User FOREIGN KEY (CreatedBy) REFERENCES dbo.AppUser(UserId),
+    CONSTRAINT CK_VehicleMaintenance_Dates CHECK (EndDate >= StartDate),
+    CONSTRAINT CK_VehicleMaintenance_Odometer CHECK (Odometer IS NULL OR Odometer >= 0),
+    CONSTRAINT CK_VehicleMaintenance_EstimatedCost CHECK (EstimatedCost IS NULL OR EstimatedCost >= 0),
+    CONSTRAINT CK_VehicleMaintenance_ActualCost CHECK (ActualCost IS NULL OR ActualCost >= 0),
+    CONSTRAINT CK_VehicleMaintenance_Status CHECK (Status IN ('Scheduled','In progress','Completed','Cancelled'))
+);
+GO
+
 CREATE TABLE dbo.Route (
     RouteId                 INT IDENTITY(1,1)   NOT NULL,
-    RouteType               NVARCHAR(10)        NOT NULL,   -- Flight or Shuttle
-    Carrier                 NVARCHAR(80)        NOT NULL,   -- airline or bus company
-    RouteCode               NVARCHAR(20)        NULL,       -- flight number or service number
+    RouteType               NVARCHAR(10)        NOT NULL,
+    Carrier                 NVARCHAR(80)        NOT NULL,
+    RouteCode               NVARCHAR(20)        NULL,
     DepartureCity           NVARCHAR(80)        NOT NULL,
     ArrivalCity             NVARCHAR(80)        NOT NULL,
     DepartureTime           TIME(0)             NULL,
@@ -232,7 +224,6 @@ GO
 CREATE INDEX IX_Route_Type_Cities ON dbo.Route (RouteType, DepartureCity, ArrivalCity);
 GO
 
-
 CREATE TABLE dbo.Itinerary (
     ItineraryId     INT IDENTITY(1,1)   NOT NULL,
     ClientId        INT                 NOT NULL,
@@ -241,7 +232,7 @@ CREATE TABLE dbo.Itinerary (
     StartDate       DATE                NULL,
     EndDate         DATE                NULL,
     TotalBudget     DECIMAL(12,2)       NOT NULL,
-    TripComments    NVARCHAR(MAX)       NULL,   -- replaces the agents' notebooks
+    TripComments    NVARCHAR(MAX)       NULL,
     Status          NVARCHAR(20)        NOT NULL CONSTRAINT DF_Itin_Status  DEFAULT ('Draft'),
     CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_Itin_Created DEFAULT (SYSDATETIME()),
 
@@ -286,9 +277,8 @@ CREATE TABLE dbo.AttractionBooking (
     AttractionBookingId INT IDENTITY(1,1)   NOT NULL,
     AttractionId        INT                 NOT NULL,
     ItineraryId         INT                 NOT NULL,
-    TimeSlotId          INT                 NOT NULL,
     BookingDate         DATE                NOT NULL,
-    Quantity            INT                 NOT NULL,  
+    Quantity            INT                 NOT NULL,
     TotalCost           DECIMAL(12,2)       NOT NULL,
     Status              NVARCHAR(20)        NOT NULL CONSTRAINT DF_AttrBk_Status  DEFAULT ('Confirmed'),
     CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_AttrBk_Created DEFAULT (SYSDATETIME()),
@@ -297,14 +287,13 @@ CREATE TABLE dbo.AttractionBooking (
     CONSTRAINT PK_AttractionBooking           PRIMARY KEY (AttractionBookingId),
     CONSTRAINT FK_AttrBooking_Attraction      FOREIGN KEY (AttractionId) REFERENCES dbo.Attraction (AttractionId),
     CONSTRAINT FK_AttrBooking_Itinerary       FOREIGN KEY (ItineraryId)  REFERENCES dbo.Itinerary (ItineraryId) ON DELETE CASCADE,
-    CONSTRAINT FK_AttrBooking_TimeSlot        FOREIGN KEY (TimeSlotId)   REFERENCES dbo.TimeSlot (TimeSlotId),
     CONSTRAINT FK_AttrBooking_User            FOREIGN KEY (CreatedBy)    REFERENCES dbo.AppUser (UserId),
     CONSTRAINT CK_AttrBk_Qty                  CHECK (Quantity > 0),
     CONSTRAINT CK_AttrBk_Cost                 CHECK (TotalCost >= 0)
 );
 GO
 
-CREATE INDEX IX_AttrBooking_Attraction_Date ON dbo.AttractionBooking (AttractionId, BookingDate, TimeSlotId);
+CREATE INDEX IX_AttrBooking_Attraction_Date ON dbo.AttractionBooking (AttractionId, BookingDate);
 CREATE INDEX IX_AttrBooking_Itinerary       ON dbo.AttractionBooking (ItineraryId);
 GO
 
@@ -402,12 +391,12 @@ CREATE TABLE dbo.TripExpense (
     ItineraryId         INT                 NOT NULL,
     ExpenseCategoryId   INT                 NOT NULL,
     Description         NVARCHAR(300)       NOT NULL,
-    Amount              DECIMAL(12,2)       NOT NULL,   -- always in Rand
-    AmountOriginal      DECIMAL(12,2)       NULL,       -- as the client paid it
+    Amount              DECIMAL(12,2)       NOT NULL,
+    AmountOriginal      DECIMAL(12,2)       NULL,
     CurrencyCode        NCHAR(3)            NOT NULL CONSTRAINT DF_Exp_Currency DEFAULT ('ZAR'),
     ExpenseDate         DATE                NOT NULL,
     ReceiptNumber       NVARCHAR(50)        NULL,
-    CapturedBy          INT                 NOT NULL,   -- agent or client, no approval step
+    CapturedBy          INT                 NOT NULL,
     CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_Exp_Created  DEFAULT (SYSDATETIME()),
 
     CONSTRAINT PK_TripExpense           PRIMARY KEY (ExpenseId),
@@ -422,9 +411,9 @@ CREATE INDEX IX_TripExpense_Itinerary ON dbo.TripExpense (ItineraryId);
 GO
 CREATE TABLE dbo.ExchangeRate (
     ExchangeRateId  INT IDENTITY(1,1)   NOT NULL,
-    CurrencyCode    NCHAR(3)            NOT NULL,   
+    CurrencyCode    NCHAR(3)            NOT NULL,
     CurrencyName    NVARCHAR(50)        NOT NULL,
-    RateToZar       DECIMAL(12,6)       NOT NULL,   
+    RateToZar       DECIMAL(12,6)       NOT NULL,
     EffectiveFrom   DATE                NOT NULL,
     CapturedBy      INT                 NULL,
     CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_Rate_Created DEFAULT (SYSDATETIME()),

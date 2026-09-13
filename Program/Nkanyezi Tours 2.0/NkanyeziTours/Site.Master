@@ -1,4 +1,4 @@
-<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="NkanyeziTours.SiteMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="NkanyeziTours.SiteMaster" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,17 +13,9 @@
 <body>
     <form id="form1" runat="server">
 
-        <%--
-            The navigation bar.
-
-            Each menu item is a <li runat="server"> so the code-behind can hide
-            it from roles that may not open anything inside it. Hiding the menu
-            is only tidiness - the real protection is the <location> rules in
-            Web.config, which stop somebody typing the URL in directly.
-        --%>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="<%: ResolveUrl("~/Default.aspx") %>">Nkanyezi Tours</a>
+                <a class="navbar-brand" href="<%: ResolveUrl("~/Portal/Discover.aspx") %>">Nkanyezi Tours</a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
@@ -31,14 +23,15 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%: ResolveUrl("~/Portal/Discover.aspx") %>">Discover</a>
+                        </li>
                         <li class="nav-item" runat="server" id="navDashboard">
-                            <a class="nav-link" href="<%: ResolveUrl("~/Default.aspx") %>">Dashboard</a>
+                            <a class="nav-link" href="<%: ResolveUrl("~/Default.aspx") %>"><asp:Literal ID="litDashboardLabel" runat="server" Text="Dashboard" /></a>
                         </li>
                         <li class="nav-item" runat="server" id="navMaintain">
-                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Attractions/Default.aspx") %>">Maintain</a>
-                        </li>
-                        <li class="nav-item" runat="server" id="navAccommodation">
-                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Accommodation/AccommodationList.aspx") %>">Accommodation</a>
+                            <a class="nav-link" href="<%: ResolveUrl("~/Maintain/Attractions/Default.aspx") %>">Settings</a>
                         </li>
                         <li class="nav-item" runat="server" id="navItineraries">
                             <a class="nav-link" href="<%: ResolveUrl("~/Itineraries/Default.aspx") %>">Itineraries</a>
@@ -59,7 +52,7 @@
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <asp:LinkButton ID="btnSignOut" runat="server" CssClass="nav-link"
+                                <asp:LinkButton ID="btnSignOut" ToolTip="Signs you out and returns to the sign-in screen." runat="server" CssClass="nav-link"
                                                 OnClick="btnSignOut_Click" CausesValidation="false">Sign out</asp:LinkButton>
                             </li>
                         </asp:PlaceHolder>
@@ -74,11 +67,6 @@
             </div>
         </nav>
 
-        <%--
-            Only visible while BypassLogin is "true" in Web.config. It is
-            deliberately loud, because a bypass that is easy to forget about is
-            the whole danger of having one.
-        --%>
         <asp:PlaceHolder ID="phBypassWarning" runat="server" Visible="false">
             <div class="bg-danger text-white text-center py-2 small fw-bold">
                 LOGIN BYPASS IS ON &mdash; every visitor is signed in as
@@ -97,7 +85,65 @@
             </div>
         </footer>
 
+        <div class="modal fade" id="confirmModal" tabindex="-1"
+             aria-labelledby="confirmModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalTitle">Please confirm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0" id="confirmModalText"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">No, go back</button>
+                        <button type="button" class="btn btn-danger" id="confirmModalOk">Yes, do it</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="<%: ResolveUrl("~/Scripts/bootstrap.bundle.min.js") %>"></script>
+        <script>
+            (function () {
+                var pending = null;
+                var el = document.getElementById('confirmModal');
+                var box = new bootstrap.Modal(el);
+                var text = document.getElementById('confirmModalText');
+                var ok = document.getElementById('confirmModalOk');
+
+                document.addEventListener('click', function (e) {
+                    var t = e.target.closest('[data-confirm]');
+                    if (!t) return;
+
+                    if (t.getAttribute('data-confirmed') === '1') {
+                        t.removeAttribute('data-confirmed');
+                        return;
+                    }
+
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    pending = t;
+                    text.textContent = t.getAttribute('data-confirm');
+                    box.show();
+                }, true);
+
+                ok.addEventListener('click', function () {
+                    if (!pending) return;
+                    var t = pending;
+                    pending = null;
+                    box.hide();
+                    t.setAttribute('data-confirmed', '1');
+                    t.click();
+                });
+
+                el.addEventListener('hidden.bs.modal', function () { pending = null; });
+            })();
+        </script>
     </form>
 </body>
 </html>

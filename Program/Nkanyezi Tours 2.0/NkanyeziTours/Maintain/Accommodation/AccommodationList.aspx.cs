@@ -1,4 +1,4 @@
-using System.Web.UI.WebControls;
+﻿using System.Web.UI.WebControls;
 using System.Web.UI;
 using Nkanyezi.Data;
 
@@ -6,10 +6,9 @@ namespace NkanyeziTours.Maintain.Accommodation;
 
 public partial class AccommodationList : Page
 {
-    private readonly AccommodationRepository _accommodations = Repositories.Accommodation;
+    private AccommodationRepository _accommodations => Repositories.Accommodation;
 
-    // Confirmed against Maintain/Attractions/Default.aspx.cs
-    private readonly LookupRepository _lookups = Repositories.Lookups;
+    private LookupRepository _lookups => Repositories.Lookups;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -40,10 +39,6 @@ public partial class AccommodationList : Page
         ddlSearchProvince.Items.Insert(0, new ListItem("All locations", ""));
     }
 
-    /// <summary>
-    /// Search by name, type, location (province), star rating or price - the
-    /// fields on the page. Falls back to the full list when nothing is filled in.
-    /// </summary>
     private void BindGrid()
     {
         var name = txtSearchName.Text.Trim();
@@ -89,14 +84,17 @@ public partial class AccommodationList : Page
         {
             var deactivatedInstead = _accommodations.Delete(accommodationId);
             ShowMessage(deactivatedInstead
-                ? "This accommodation has existing room bookings, so it was deactivated rather than deleted."
-                : "Accommodation deleted.", "alert-success");
+                ? "This resort has existing bookings, so it was deactivated rather than deleted. "
+                + "Its units have been taken out of service with it."
+                : "Resort deleted, along with its units.", "alert-success");
             BindGrid();
         }
         else if (e.CommandName == "ReactivateAccommodation")
         {
             _accommodations.Reactivate(accommodationId);
-            ShowMessage("Accommodation reactivated.", "alert-success");
+            ShowMessage("Resort reactivated. Its units are still out of service - "
+                      + "switch the ones you want back on from the Rooms screen.",
+                        "alert-warning");
             BindGrid();
         }
     }

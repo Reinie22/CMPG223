@@ -1,4 +1,4 @@
-<%@ Page Title="Book bus or flight" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Book bus or flight" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="BookRoute.aspx.cs" Inherits="NkanyeziTours.Itineraries.BookRoute" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -27,7 +27,7 @@
                 <div class="col-12">
                     <asp:Label ID="lblRoute" runat="server" AssociatedControlID="ddlRoute"
                                CssClass="form-label"><asp:Literal ID="litRouteLabel" runat="server" /></asp:Label>
-                    <asp:DropDownList ID="ddlRoute" runat="server" CssClass="form-select"
+                    <asp:DropDownList ID="ddlRoute" ToolTip="Only routes running on your travel date are listed." runat="server" CssClass="form-select"
                                       AutoPostBack="true" OnSelectedIndexChanged="ddlRoute_SelectedIndexChanged" />
                     <asp:RequiredFieldValidator ID="rfvRoute" runat="server" ControlToValidate="ddlRoute"
                                                 InitialValue="" ValidationGroup="Route" Display="Dynamic"
@@ -47,7 +47,7 @@
                 <div class="col-md-4">
                     <asp:Label ID="lblTravelDate" runat="server" AssociatedControlID="txtTravelDate"
                                CssClass="form-label">Travel date <span class="text-danger">*</span></asp:Label>
-                    <asp:TextBox ID="txtTravelDate" runat="server" CssClass="form-control" TextMode="Date"
+                    <asp:TextBox ID="txtTravelDate" ToolTip="The day you travel, not the day you book." runat="server" CssClass="form-control" TextMode="Date"
                                  AutoPostBack="true" OnTextChanged="txtTravelDate_TextChanged" />
                     <asp:RequiredFieldValidator ID="rfvTravelDate" runat="server" ControlToValidate="txtTravelDate"
                                                 ValidationGroup="Route" Display="Dynamic" CssClass="text-danger small"
@@ -57,7 +57,7 @@
                 <div class="col-md-4">
                     <asp:Label ID="lblSeats" runat="server" AssociatedControlID="txtSeats"
                                CssClass="form-label">Seats <span class="text-danger">*</span></asp:Label>
-                    <asp:TextBox ID="txtSeats" runat="server" CssClass="form-control" TextMode="Number" Text="1" />
+                    <asp:TextBox ID="txtSeats" ToolTip="How many seats to hold. The route must have that many left." runat="server" CssClass="form-control" TextMode="Number" Text="1" />
                     <asp:RequiredFieldValidator ID="rfvSeats" runat="server" ControlToValidate="txtSeats"
                                                 ValidationGroup="Route" Display="Dynamic" CssClass="text-danger small"
                                                 ErrorMessage="Number of seats is required." />
@@ -72,7 +72,7 @@
                                CssClass="form-label">Fare per passenger <span class="text-danger">*</span></asp:Label>
                     <div class="input-group">
                         <span class="input-group-text">R</span>
-                        <asp:TextBox ID="txtFare" runat="server" CssClass="form-control" />
+                        <asp:TextBox ID="txtFare" ToolTip="Fare per seat. It starts at the published price - change it only if the carrier quoted something else." runat="server" CssClass="form-control" />
                     </div>
                     <div class="form-text">Price for one passenger.</div>
                     <asp:RequiredFieldValidator ID="rfvFare" runat="server" ControlToValidate="txtFare"
@@ -95,8 +95,8 @@
 
             <hr class="my-4" />
             <div class="d-flex justify-content-end gap-2">
-                <asp:HyperLink ID="lnkCancel" runat="server" CssClass="btn btn-outline-secondary">Cancel</asp:HyperLink>
-                <asp:Button ID="btnBook" runat="server" Text="Book transport" CssClass="btn btn-primary"
+                <asp:HyperLink ID="lnkCancel" ToolTip="Goes back without booking anything." runat="server" CssClass="btn btn-outline-secondary">Cancel</asp:HyperLink>
+                <asp:Button ID="btnBook" ToolTip="Holds the seats and adds the fare to the trip total." runat="server" Text="Book transport" CssClass="btn btn-primary"
                             ValidationGroup="Route" OnClick="btnBook_Click" />
             </div>
         </div>

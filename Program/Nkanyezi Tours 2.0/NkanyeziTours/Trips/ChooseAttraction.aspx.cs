@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nkanyezi.Data;
@@ -6,26 +6,20 @@ using Nkanyezi.Models;
 
 namespace NkanyeziTours.Trips;
 
-/// <summary>
-/// The client browses attractions and puts one onto their own draft trip.
-///
-/// The same shape as ChooseAccommodation: adding creates a TripRequestItem, not
-/// an AttractionBooking, so no slot capacity is held and no price is committed.
-/// The rate shown is the published one per person.
-/// </summary>
 public partial class ChooseAttraction : Page
 {
-    private readonly AttractionRepository _attractions = Repositories.Attractions;
-    private readonly ItineraryRepository _itineraries = Repositories.Itineraries;
-    private readonly TripRequestRepository _requests = Repositories.TripRequests;
-    private readonly LookupRepository _lookups = Repositories.Lookups;
-    private readonly AuthService _auth = Repositories.Auth;
+    private AttractionRepository _attractions => Repositories.Attractions;
+    private ItineraryRepository _itineraries => Repositories.Itineraries;
+    private TripRequestRepository _requests => Repositories.TripRequests;
+    private TripLegRepository _legs => Repositories.TripLegs;
+    private LookupRepository _lookups => Repositories.Lookups;
+    private AuthService _auth => Repositories.Auth;
 
     private AppUser? _user;
-    private Itinerary? _trip;
+    private TripLeg? _leg;
 
-    private int? TripId =>
-        int.TryParse(Request.QueryString["tripId"], out var id) ? id : (int?)null;
+    private int? TripLegId =>
+        int.TryParse(Request.QueryString["tripLegId"], out var id) ? id : (int?)null;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -37,53 +31,68 @@ public partial class ChooseAttraction : Page
             return;
         }
 
-        if (!LoadTrip())
+        if (!LoadLeg())
             return;
 
-        lnkBack.NavigateUrl = "~/Trips/MyTrip.aspx?id=" + _trip!.ItineraryId;
+        lnkBack.NavigateUrl = "~/Trips/MyTrip.aspx?id=" + _leg!.ItineraryId;
 
         if (!IsPostBack)
         {
-            litSubtitle.Text = Server.HtmlEncode($"For \"{_trip.TripName}\"");
+            litSubtitle.Text = Server.HtmlEncode(
+                $"For {_leg.Title} - {_leg.DateDisplay}");
 
-            txtVisitDate.Text = _trip.StartDate?.ToString("yyyy-MM-dd") ?? "";
+            txtPeople.Text = _leg.Guests.ToString();
 
+            BindDays();
             BindLookups();
             BindOptions();
         }
     }
 
-    private bool LoadTrip()
+    private bool LoadLeg()
     {
-        if (TripId == null)
+        if (TripLegId == null)
         {
             Response.Redirect("~/Default.aspx");
             return false;
         }
 
-        if (!_itineraries.BelongsToClient(TripId.Value, _user!.UserId))
+        _leg = _legs.GetById(TripLegId.Value);
+
+        if (_leg == null)
+        {
+            Response.Redirect("~/Default.aspx");
+            return false;
+        }
+
+        if (!_itineraries.BelongsToClient(_leg.ItineraryId, _user!.UserId))
         {
             pnlBody.Visible = false;
             ShowMessage("That trip is not yours.", "alert-danger");
             return false;
         }
 
-        _trip = _itineraries.GetById(TripId.Value);
+        var trip = _itineraries.GetById(_leg.ItineraryId);
 
-        if (_trip == null)
-        {
-            Response.Redirect("~/Default.aspx");
-            return false;
-        }
-
-        if (!_trip.IsEditable)
+        if (trip == null || !trip.ClientCanEdit)
         {
             pnlBody.Visible = false;
-            ShowMessage("This trip is finished, so nothing more can be added to it.", "alert-warning");
+            ShowMessage("This trip is finished, so it cannot be changed.", "alert-warning");
             return false;
         }
 
         return true;
+    }
+
+    private void BindDays()
+    {
+        ddlVisitDate.Items.Clear();
+
+        for (var day = _leg!.StartDate; day < _leg.EndDate; day = day.AddDays(1))
+        {
+            var value = day.ToString("yyyy-MM-dd");
+            ddlVisitDate.Items.Add(new ListItem(day.ToString("ddd dd/MM/yyyy"), value));
+        }
     }
 
     private void BindLookups()
@@ -93,28 +102,35 @@ public partial class ChooseAttraction : Page
         ddlCategory.DataValueField = "Id";
         ddlCategory.DataBind();
         ddlCategory.Items.Insert(0, new ListItem("Anything", ""));
-
-        ddlProvince.DataSource = _lookups.GetProvinces();
-        ddlProvince.DataTextField = "Name";
-        ddlProvince.DataValueField = "Id";
-        ddlProvince.DataBind();
-        ddlProvince.Items.Insert(0, new ListItem("Anywhere", ""));
     }
 
     private void BindOptions()
     {
         var name = txtSearchName.Text.Trim();
         int? categoryId = int.TryParse(ddlCategory.SelectedValue, out var cid) ? cid : (int?)null;
-        int? provinceId = int.TryParse(ddlProvince.SelectedValue, out var pid) ? pid : (int?)null;
 
-        var hasFilter = name.Length > 0 || categoryId.HasValue || provinceId.HasValue;
+        var region = _leg!.ProvinceId;
 
-        // Inactive attractions are never offered to a client.
-        gvOptions.DataSource = hasFilter
-            ? _attractions.Search(name, categoryId, provinceId)
-            : _attractions.GetAll();
+        litRegionNote.Text = region == null
+            ? "This leg has no region yet, so nothing can be offered. Set the "
+              + "region of the leg on your trip page first."
+            : Server.HtmlEncode($"Things to do in {_leg.ProvinceName}. A leg happens "
+                                + "in one province, so only that province is offered.");
 
-        gvOptions.DataBind();
+        if (region == null)
+        {
+            rptOptions.DataSource = null;
+            rptOptions.DataBind();
+            pnlNone.Visible = false;
+            return;
+        }
+
+        var options = _attractions.Search(name, categoryId, region);
+
+        pnlNone.Visible = options.Count == 0;
+
+        rptOptions.DataSource = options;
+        rptOptions.DataBind();
     }
 
     protected void btnSearch_Click(object sender, EventArgs e)
@@ -122,19 +138,26 @@ public partial class ChooseAttraction : Page
         BindOptions();
     }
 
-    protected void gvOptions_RowCommand(object sender, GridViewCommandEventArgs e)
+    protected void btnClear_Click(object sender, EventArgs e)
     {
-        if (e.CommandName != "ChooseItem" || _trip == null)
+        txtSearchName.Text = "";
+        ddlCategory.SelectedIndex = 0;
+        BindOptions();
+    }
+
+    protected void rptOptions_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        if (e.CommandName != "ChooseItem" || _leg == null)
             return;
 
         if (!Page.IsValid)
             return;
 
-        var visitDate = ParseDate(txtVisitDate.Text);
+        var visitDate = ParseDate(ddlVisitDate.SelectedValue);
 
         if (visitDate == null)
         {
-            ShowMessage("Please give a date for the visit.", "alert-danger");
+            ShowMessage("Please choose which day.", "alert-danger");
             return;
         }
 
@@ -142,20 +165,21 @@ public partial class ChooseAttraction : Page
 
         _requests.Add(new TripRequestItem
         {
-            ItineraryId  = _trip.ItineraryId,
+            ItineraryId  = _leg.ItineraryId,
+            TripLegId    = _leg.TripLegId,
             ItemType     = RequestItemTypes.Attraction,
             AttractionId = attractionId,
             StartDate    = visitDate,
             EndDate      = null,
             Guests       = int.TryParse(txtPeople.Text.Trim(), out var people) ? people : 1,
-            ClientNote   = txtNote.Text.Trim()
+            ClientNote   = null
         });
 
-        Response.Redirect($"~/Trips/MyTrip.aspx?id={_trip.ItineraryId}&added=1");
+        Response.Redirect($"~/Trips/MyTrip.aspx?id={_leg.ItineraryId}&added=1");
     }
 
     private static DateTime? ParseDate(string value)
-        => DateTime.TryParseExact(value.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
+        => DateTime.TryParseExact((value ?? "").Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
                                   DateTimeStyles.None, out var result)
                ? result
                : (DateTime?)null;

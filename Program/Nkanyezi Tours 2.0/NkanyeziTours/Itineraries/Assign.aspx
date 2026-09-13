@@ -1,22 +1,20 @@
-<%@ Page Title="Assign trips" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Assign trips" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
          CodeBehind="Assign.aspx.cs" Inherits="NkanyeziTours.Itineraries.Assign" %>
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
 
     <h1 class="h3 mb-1">Assign trips</h1>
     <p class="text-muted mb-4">
-        Allocate a trip to an agent, move it to a different agent, or send it back
-        to the queue for anybody to pick up.
+        Allocate a trip to an agent, or move it to a different agent.
     </p>
 
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert py-2">
         <asp:Literal ID="litMessage" runat="server" />
     </asp:Panel>
 
-    <%-- WORKLOAD, so the allocation is an informed one --%>
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="h5 mb-3">Who is carrying what</h2>
+            <h2 class="h5 mb-3">Agents&#39; current workload</h2>
             <div class="row g-3">
                 <asp:Repeater ID="rptWorkload" runat="server">
                     <ItemTemplate>
@@ -41,7 +39,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <asp:Label ID="lblFilter" runat="server" AssociatedControlID="ddlFilter"
                                CssClass="form-label mb-0 text-nowrap">Show</asp:Label>
-                    <asp:DropDownList ID="ddlFilter" runat="server" CssClass="form-select"
+                    <asp:DropDownList ID="ddlFilter" ToolTip="Narrow the list down to trips in a particular state." runat="server" CssClass="form-select"
                                       AutoPostBack="true" OnSelectedIndexChanged="ddlFilter_Changed">
                         <asp:ListItem Text="Needing an agent" Value="unassigned" />
                         <asp:ListItem Text="Live trips" Value="live" />
@@ -67,17 +65,17 @@
                     <asp:BoundField DataField="Status" HeaderText="Status" />
                     <asp:TemplateField HeaderText="Agent">
                         <ItemTemplate>
-                            <asp:DropDownList ID="ddlAgent" runat="server" CssClass="form-select form-select-sm" />
+                            <asp:DropDownList ID="ddlAgent" ToolTip="The agent who will take this trip on." runat="server" CssClass="form-select form-select-sm" />
                         </ItemTemplate>
                     </asp:TemplateField>
                     <asp:TemplateField HeaderText="">
                         <ItemTemplate>
-                            <asp:LinkButton ID="lnkAssign" runat="server"
+                            <asp:LinkButton ID="lnkAssign" ToolTip="Gives this trip to the chosen agent. They see it on their dashboard straight away." runat="server"
                                             CssClass="btn btn-sm btn-primary text-nowrap"
                                             CommandName="AssignTrip"
                                             CommandArgument='<%# Eval("ItineraryId") %>'
                                             Text="Save agent" />
-                            <asp:HyperLink ID="lnkOpen" runat="server"
+                            <asp:HyperLink ID="lnkOpen" ToolTip="Open the trip to see its legs and costs." runat="server"
                                            CssClass="btn btn-sm btn-outline-secondary text-nowrap"
                                            Text="Open"
                                            NavigateUrl='<%# "~/Itineraries/EditTrip.aspx?id=" + Eval("ItineraryId") %>' />

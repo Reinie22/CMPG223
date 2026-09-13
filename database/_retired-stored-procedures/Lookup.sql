@@ -1,13 +1,4 @@
-/* =============================================================================
-   Stored procedures - Lookups
-   CMPG213 Group 6
-
-   The small tables that fill dropdown lists. They all return the same two
-   columns, Id and Name, so that one C# class and one mapping method can handle
-   all of them.
-   ============================================================================= */
-
-IF OBJECT_ID('dbo.sp_Lookup_Provinces','P')           IS NOT NULL DROP PROCEDURE dbo.sp_Lookup_Provinces;
+﻿IF OBJECT_ID('dbo.sp_Lookup_Provinces','P')           IS NOT NULL DROP PROCEDURE dbo.sp_Lookup_Provinces;
 IF OBJECT_ID('dbo.sp_Lookup_AttractionCategories','P') IS NOT NULL DROP PROCEDURE dbo.sp_Lookup_AttractionCategories;
 IF OBJECT_ID('dbo.sp_Lookup_ExpenseCategories','P')   IS NOT NULL DROP PROCEDURE dbo.sp_Lookup_ExpenseCategories;
 IF OBJECT_ID('dbo.sp_Lookup_Roles','P')               IS NOT NULL DROP PROCEDURE dbo.sp_Lookup_Roles;

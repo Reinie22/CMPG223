@@ -1,26 +1,4 @@
-/* =============================================================================
-   Stored procedures - Attraction
-   CMPG213 Group 6
-
-   This file is the pattern for every other entity. Copy it, replace the table
-   and column names, and you have the procedures for accommodation, vehicles,
-   routes and the rest.
-
-   NAMING
-   ------
-   sp_<Entity>_<Action>       sp_Attraction_GetAll, sp_Attraction_Insert
-
-   RULES
-   -----
-   - Every procedure starts with SET NOCOUNT ON. Without it ADO.NET receives
-     extra "3 rows affected" messages that confuse the reader.
-   - Insert returns the new id with SCOPE_IDENTITY so the C# code knows what was
-     created.
-   - Nothing is ever deleted outright where bookings exist. Delete deactivates.
-   - Parameters are named after the columns so nobody has to guess.
-   ============================================================================= */
-
-IF OBJECT_ID('dbo.sp_Attraction_GetAll','P')     IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_GetAll;
+﻿IF OBJECT_ID('dbo.sp_Attraction_GetAll','P')     IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_GetAll;
 IF OBJECT_ID('dbo.sp_Attraction_GetById','P')    IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_GetById;
 IF OBJECT_ID('dbo.sp_Attraction_Search','P')     IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_Search;
 IF OBJECT_ID('dbo.sp_Attraction_Insert','P')     IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_Insert;
@@ -29,11 +7,6 @@ IF OBJECT_ID('dbo.sp_Attraction_Delete','P')     IS NOT NULL DROP PROCEDURE dbo.
 IF OBJECT_ID('dbo.sp_Attraction_Availability','P') IS NOT NULL DROP PROCEDURE dbo.sp_Attraction_Availability;
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Every active attraction, with the category and province names joined in so
-   the list screen does not have to look them up separately.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_GetAll
     @IncludeInactive BIT = 0
 AS
@@ -53,11 +26,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   One attraction. Returns no rows if the id does not exist, which the C# turns
-   into null.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_GetById
     @AttractionId INT
 AS
@@ -76,11 +44,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Search for the list screen. Every parameter is optional: pass NULL to ignore
-   that filter. This is why the WHERE clause tests for NULL first.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_Search
     @Name       NVARCHAR(120) = NULL,
     @CategoryId INT           = NULL,
@@ -107,15 +70,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Insert. Returns the new id.
-
-   The validation rules from Phase 2 that the database can enforce are already
-   CHECK constraints on the table, so they are not repeated here. What this
-   procedure adds is the duplicate name check, which a constraint cannot express
-   politely.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_Insert
     @Name                NVARCHAR(120),
     @CategoryId          INT,
@@ -153,10 +107,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Update.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_Update
     @AttractionId        INT,
     @Name                NVARCHAR(120),
@@ -207,15 +157,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Delete, which follows the rule agreed by the group: an attraction that has
-   been booked is deactivated so that historic bookings and reports still work.
-   Only an attraction nobody has ever booked is removed for real.
-
-   @WasDeactivated tells the C# which of the two happened, so the screen can say
-   so instead of guessing.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_Delete
     @AttractionId    INT,
     @WasDeactivated  BIT = NULL OUTPUT
@@ -243,15 +184,6 @@ BEGIN
 END
 GO
 
-
-/* -----------------------------------------------------------------------------
-   Availability for the booking screen.
-
-   Capacity is counted per slot, so this returns every slot for the attraction
-   on the chosen date with the number of people already booked and the number
-   still free. The booking page uses this to fill the dropdown and to refuse a
-   booking that does not fit.
-   ----------------------------------------------------------------------------- */
 CREATE PROCEDURE dbo.sp_Attraction_Availability
     @AttractionId INT,
     @BookingDate  DATE
