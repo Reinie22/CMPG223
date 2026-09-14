@@ -14,12 +14,16 @@
         protected global::System.Web.UI.WebControls.DropDownList ddlType;
         protected global::System.Web.UI.WebControls.Label lblProvince;
         protected global::System.Web.UI.WebControls.DropDownList ddlProvince;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvProvince;
         protected global::System.Web.UI.WebControls.Label lblDescription;
         protected global::System.Web.UI.WebControls.TextBox txtDescription;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvDescription;
         protected global::System.Web.UI.WebControls.Label lblAddress;
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAddress;
         protected global::System.Web.UI.WebControls.Label lblCity;
         protected global::System.Web.UI.WebControls.TextBox txtCity;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvCity;
         protected global::System.Web.UI.WebControls.Label lblStarRating;
         protected global::System.Web.UI.WebControls.DropDownList ddlStarRating;
         protected global::System.Web.UI.WebControls.Literal litUnitSummary;

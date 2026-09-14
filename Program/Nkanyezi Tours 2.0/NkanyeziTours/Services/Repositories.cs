@@ -6,7 +6,26 @@ namespace Nkanyezi.Services;
 
 public static class Repositories
 {
-    private static readonly Db _db = new Db(ResolveConnectionString());
+    private static readonly object _dbLock = new object();
+    private static Db? _db;
+
+    private static Db Current
+    {
+        get
+        {
+            var db = _db;
+            if (db != null)
+                return db;
+
+            lock (_dbLock)
+            {
+                if (_db == null)
+                    _db = new Db(ResolveConnectionString());
+
+                return _db;
+            }
+        }
+    }
 
     public static string? ServerInUse { get; private set; }
 
@@ -141,33 +160,33 @@ public static class Repositories
         return builder.ConnectionString;
     }
 
-    public static Db Database => _db;
+    public static Db Database => Current;
 
-    public static LookupRepository Lookups => new LookupRepository(_db);
-    public static UserRepository Users => new UserRepository(_db);
-    public static AttractionRepository Attractions => new AttractionRepository(_db);
-    public static AccommodationRepository Accommodation => new AccommodationRepository(_db);
-    public static RoomRepository Rooms => new RoomRepository(_db);
-    public static VehicleRepository Vehicles => new VehicleRepository(_db);
-    public static VehicleMaintenanceRepository VehicleMaintenance => new VehicleMaintenanceRepository(_db);
-    public static RouteRepository Routes => new RouteRepository(_db);
-    public static ExchangeRateRepository ExchangeRates => new ExchangeRateRepository(_db);
+    public static LookupRepository Lookups => new LookupRepository(Current);
+    public static UserRepository Users => new UserRepository(Current);
+    public static AttractionRepository Attractions => new AttractionRepository(Current);
+    public static AccommodationRepository Accommodation => new AccommodationRepository(Current);
+    public static RoomRepository Rooms => new RoomRepository(Current);
+    public static VehicleRepository Vehicles => new VehicleRepository(Current);
+    public static VehicleMaintenanceRepository VehicleMaintenance => new VehicleMaintenanceRepository(Current);
+    public static RouteRepository Routes => new RouteRepository(Current);
+    public static ExchangeRateRepository ExchangeRates => new ExchangeRateRepository(Current);
 
-    public static ItineraryRepository Itineraries => new ItineraryRepository(_db);
-    public static RoomBookingRepository RoomBookings => new RoomBookingRepository(_db);
-    public static AttractionBookingRepository AttractionBookings => new AttractionBookingRepository(_db);
-    public static VehicleBookingRepository VehicleBookings => new VehicleBookingRepository(_db);
-    public static RouteBookingRepository RouteBookings => new RouteBookingRepository(_db);
+    public static ItineraryRepository Itineraries => new ItineraryRepository(Current);
+    public static RoomBookingRepository RoomBookings => new RoomBookingRepository(Current);
+    public static AttractionBookingRepository AttractionBookings => new AttractionBookingRepository(Current);
+    public static VehicleBookingRepository VehicleBookings => new VehicleBookingRepository(Current);
+    public static RouteBookingRepository RouteBookings => new RouteBookingRepository(Current);
 
-    public static GanttRepository Gantt => new GanttRepository(_db);
+    public static GanttRepository Gantt => new GanttRepository(Current);
 
-    public static TripLegRepository TripLegs => new TripLegRepository(_db);
+    public static TripLegRepository TripLegs => new TripLegRepository(Current);
 
-    public static TripRequestRepository TripRequests => new TripRequestRepository(_db);
+    public static TripRequestRepository TripRequests => new TripRequestRepository(Current);
 
-    public static TripExpenseRepository Expenses => new TripExpenseRepository(_db);
+    public static TripExpenseRepository Expenses => new TripExpenseRepository(Current);
 
-    public static ReportRepository Reports => new ReportRepository(_db);
+    public static ReportRepository Reports => new ReportRepository(Current);
 
     public static AuthService Auth => new AuthService(Users);
 }

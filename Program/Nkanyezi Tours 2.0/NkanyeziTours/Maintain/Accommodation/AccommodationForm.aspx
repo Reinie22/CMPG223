@@ -20,7 +20,7 @@
                     <div class="col-md-6">
                         <asp:Label ID="lblName" runat="server" AssociatedControlID="txtName"
                                    CssClass="form-label">Name <span class="text-danger">*</span></asp:Label>
-                        <asp:TextBox ID="txtName" ToolTip="The name clients see on the resort cards." runat="server" CssClass="form-control" MaxLength="150" />
+                        <asp:TextBox ID="txtName" ToolTip="The name clients see on the resort cards." runat="server" CssClass="form-control" MaxLength="120" />
                         <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtName"
                                                     ValidationGroup="Accommodation" Display="Dynamic"
                                                     CssClass="text-danger small"
@@ -41,27 +41,44 @@
 
                     <div class="col-md-3">
                         <asp:Label ID="lblProvince" runat="server" AssociatedControlID="ddlProvince"
-                                   CssClass="form-label">Province</asp:Label>
+                                   CssClass="form-label">Province <span class="text-danger">*</span></asp:Label>
                         <asp:DropDownList ID="ddlProvince" ToolTip="Which province it is in. This is how cars and legs are matched to it." runat="server" CssClass="form-select" />
+                        <asp:RequiredFieldValidator ID="rfvProvince" runat="server" ControlToValidate="ddlProvince"
+                                                    InitialValue=""
+                                                    ValidationGroup="Accommodation" Display="Dynamic"
+                                                    CssClass="text-danger small"
+                                                    ErrorMessage="Choose a province." />
                     </div>
 
                     <div class="col-12">
                         <asp:Label ID="lblDescription" runat="server" AssociatedControlID="txtDescription"
-                                   CssClass="form-label">Description</asp:Label>
+                                   CssClass="form-label">Description <span class="text-danger">*</span></asp:Label>
                         <asp:TextBox ID="txtDescription" ToolTip="A short sell. Clients read this when choosing where to stay." runat="server" CssClass="form-control"
                                      TextMode="MultiLine" Rows="3" MaxLength="1000" />
+                        <asp:RequiredFieldValidator ID="rfvDescription" runat="server" ControlToValidate="txtDescription"
+                                                    ValidationGroup="Accommodation" Display="Dynamic"
+                                                    CssClass="text-danger small"
+                                                    ErrorMessage="Description is required." />
                     </div>
 
                     <div class="col-md-6">
                         <asp:Label ID="lblAddress" runat="server" AssociatedControlID="txtAddress"
-                                   CssClass="form-label">Address</asp:Label>
+                                   CssClass="form-label">Address <span class="text-danger">*</span></asp:Label>
                         <asp:TextBox ID="txtAddress" ToolTip="Street address, for the client itinerary." runat="server" CssClass="form-control" MaxLength="200" />
+                        <asp:RequiredFieldValidator ID="rfvAddress" runat="server" ControlToValidate="txtAddress"
+                                                    ValidationGroup="Accommodation" Display="Dynamic"
+                                                    CssClass="text-danger small"
+                                                    ErrorMessage="Address is required." />
                     </div>
 
                     <div class="col-md-6">
                         <asp:Label ID="lblCity" runat="server" AssociatedControlID="txtCity"
-                                   CssClass="form-label">City</asp:Label>
+                                   CssClass="form-label">City <span class="text-danger">*</span></asp:Label>
                         <asp:TextBox ID="txtCity" ToolTip="The nearest town or city." runat="server" CssClass="form-control" MaxLength="80" />
+                        <asp:RequiredFieldValidator ID="rfvCity" runat="server" ControlToValidate="txtCity"
+                                                    ValidationGroup="Accommodation" Display="Dynamic"
+                                                    CssClass="text-danger small"
+                                                    ErrorMessage="City is required." />
                     </div>
 
                     <div class="col-md-3">

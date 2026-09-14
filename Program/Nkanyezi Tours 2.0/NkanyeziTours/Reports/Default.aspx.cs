@@ -11,6 +11,10 @@ public partial class _Default : Page
     private const string FriendlyFailure =
         "The report could not be created just now. Please try again in a moment. If it keeps happening, let your administrator know.";
 
+    protected const string LegendKey = "legend";
+
+    protected bool IsSelected(string key) => string.Equals(hfSection.Value, key, StringComparison.Ordinal);
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack)
@@ -32,6 +36,7 @@ public partial class _Default : Page
     {
         pnlReport.Visible  = false;
         pnlMessage.Visible = false;
+        hfSection.Value    = "";
         ShowOptionsForReport();
     }
 
@@ -87,6 +92,13 @@ public partial class _Default : Page
         var report = TryBuild();
         if (report == null)
             return;
+
+        var chosen = report.Sections.FirstOrDefault(s => IsSelected(s.Key));
+        if (chosen != null)
+        {
+            report.Sections.RemoveAll(s => s != chosen);
+            report.SectionShown = chosen.Heading;
+        }
 
         byte[] file;
         try
@@ -164,6 +176,9 @@ public partial class _Default : Page
 
         rptStats.DataSource = report.Stats;
         rptStats.DataBind();
+
+        if (!IsSelected(LegendKey) && !report.Sections.Any(s => IsSelected(s.Key)))
+            hfSection.Value = report.Sections.FirstOrDefault()?.Key ?? LegendKey;
 
         rptNav.DataSource = report.Sections;
         rptNav.DataBind();

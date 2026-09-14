@@ -45,13 +45,13 @@ public partial class Edit : Page
         ddlCategory.DataTextField = "Name";
         ddlCategory.DataValueField = "Id";
         ddlCategory.DataBind();
-        ddlCategory.Items.Insert(0, new ListItem("(none)", ""));
+        ddlCategory.Items.Insert(0, new ListItem("Choose a category", ""));
 
         ddlProvince.DataSource = _lookups.GetProvinces();
         ddlProvince.DataTextField = "Name";
         ddlProvince.DataValueField = "Id";
         ddlProvince.DataBind();
-        ddlProvince.Items.Insert(0, new ListItem("(none)", ""));
+        ddlProvince.Items.Insert(0, new ListItem("Choose a province", ""));
     }
 
     private void LoadExisting(int id)

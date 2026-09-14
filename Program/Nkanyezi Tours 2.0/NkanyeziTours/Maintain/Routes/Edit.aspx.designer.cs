@@ -21,8 +21,10 @@
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvTo;
         protected global::System.Web.UI.WebControls.Label lblDeparts;
         protected global::System.Web.UI.WebControls.TextBox txtDeparts;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvDeparts;
         protected global::System.Web.UI.WebControls.Label lblArrives;
         protected global::System.Web.UI.WebControls.TextBox txtArrives;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvArrives;
         protected global::System.Web.UI.WebControls.Label lblDuration;
         protected global::System.Web.UI.WebControls.TextBox txtDuration;
         protected global::System.Web.UI.WebControls.RangeValidator rvDuration;

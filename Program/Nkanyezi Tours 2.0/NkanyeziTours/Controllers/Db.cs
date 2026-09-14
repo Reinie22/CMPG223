@@ -90,7 +90,12 @@ public class Db
         if (string.IsNullOrWhiteSpace(value))
             return P(name, null);
 
-        var escaped = value!.Trim()
+        var trimmed = value!.Trim();
+
+        if (trimmed.Length > 200)
+            trimmed = trimmed.Substring(0, 200);
+
+        var escaped = trimmed
                            .Replace("\\", "\\\\")
                            .Replace("%",  "\\%")
                            .Replace("_",  "\\_")

@@ -23,6 +23,7 @@ namespace NkanyeziTours.Reports
         protected global::System.Web.UI.WebControls.Repeater rptFilters;
         protected global::System.Web.UI.WebControls.Literal litGenerated;
         protected global::System.Web.UI.WebControls.Repeater rptStats;
+        protected global::System.Web.UI.WebControls.HiddenField hfSection;
         protected global::System.Web.UI.WebControls.Repeater rptNav;
         protected global::System.Web.UI.WebControls.Repeater rptSections;
         protected global::System.Web.UI.WebControls.Repeater rptLegend;

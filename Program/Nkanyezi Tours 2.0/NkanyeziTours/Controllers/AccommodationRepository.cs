@@ -80,7 +80,7 @@ public class AccommodationRepository
                StarRating,  PricePerNight,  Capacity,  Amenities)
         VALUES
               (@Name, @Description, @Type, @Address, @City, @ProvinceId,
-               @StarRating, @PricePerNight, @Capacity, @Amenities);
+               @StarRating, 1.00,           1,         @Amenities);
 
         SELECT CAST(SCOPE_IDENTITY() AS INT);",
         BuildParameters(a));
@@ -99,8 +99,6 @@ public class AccommodationRepository
                 City          = @City,
                 ProvinceId    = @ProvinceId,
                 StarRating    = @StarRating,
-                PricePerNight = @PricePerNight,
-                Capacity      = @Capacity,
                 Amenities     = @Amenities
         WHERE   AccommodationId = @AccommodationId;",
         parameters.ToArray());
@@ -185,8 +183,6 @@ public class AccommodationRepository
         Db.P("@City",          a.City),
         Db.P("@ProvinceId",    a.ProvinceId),
         Db.P("@StarRating",    a.StarRating),
-        Db.P("@PricePerNight", a.PricePerNight),
-        Db.P("@Capacity",      a.Capacity),
         Db.P("@Amenities",     a.Amenities)
     };
 }

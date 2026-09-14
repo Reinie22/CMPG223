@@ -55,6 +55,8 @@
         <asp:Literal ID="litMessage" runat="server" />
     </asp:Panel>
 
+    <asp:HiddenField ID="hfSection" runat="server" />
+
     <asp:Panel ID="pnlReport" runat="server" Visible="false">
 
         <div class="report-header mb-3">
@@ -85,45 +87,41 @@
             </asp:Repeater>
         </div>
 
-        <div class="report-nav d-flex flex-wrap align-items-center gap-2 mb-3">
-            <span class="small fw-semibold text-muted me-1">Go to:</span>
+        <ul class="nav nav-tabs report-nav" role="tablist">
             <asp:Repeater ID="rptNav" runat="server">
                 <ItemTemplate>
-                    <a class="btn btn-sm btn-light border" href="#<%#: Eval("Key") %>" title="Jump to this part of the report."><%#: Eval("Heading") %></a>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" role="tab" data-report-tab="<%#: Eval("Key") %>"
+                                class="nav-link <%# IsSelected((string)Eval("Key")) ? "active" : "" %>"
+                                title="Show only this part of the report."><%#: Eval("Heading") %></button>
+                    </li>
                 </ItemTemplate>
             </asp:Repeater>
-            <a class="btn btn-sm btn-light border" href="#report-legend" title="Jump to the meaning of the terms used.">Legend</a>
-            <span class="ms-auto d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-report-toggle="open" title="Show every part of the report.">Expand all</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-report-toggle="close" title="Hide every part, leaving only the headings.">Collapse all</button>
-            </span>
-        </div>
+            <li class="nav-item" role="presentation">
+                <button type="button" role="tab" data-report-tab="<%: LegendKey %>"
+                        class="nav-link <%: IsSelected(LegendKey) ? "active" : "" %>"
+                        title="Show what the terms and short forms in this report mean.">Legend</button>
+            </li>
+        </ul>
 
-        <asp:Repeater ID="rptSections" runat="server" OnItemDataBound="rptSections_ItemDataBound">
-            <ItemTemplate>
-                <details class="card mb-3 report-section" id="<%#: Eval("Key") %>" <%# (bool)Eval("StartCollapsed") ? "" : "open" %>>
-                    <summary class="card-header" title="Select to show or hide this part.">
-                        <span class="h6 mb-0"><%#: Eval("Heading") %></span>
-                    </summary>
-                    <div class="card-body">
+        <div class="card border-top-0 rounded-top-0 mb-3">
+            <asp:Repeater ID="rptSections" runat="server" OnItemDataBound="rptSections_ItemDataBound">
+                <ItemTemplate>
+                    <div class="card-body report-section" data-report-section="<%#: Eval("Key") %>" <%# IsSelected((string)Eval("Key")) ? "" : "hidden" %>>
+                        <h3 class="h5 mb-1"><%#: Eval("Heading") %></h3>
                         <p class="text-muted small mb-2"><%#: Eval("Description") %></p>
                         <div class="table-responsive">
                             <asp:GridView ID="gvSection" runat="server"
                                           AutoGenerateColumns="true"
-                                          CssClass="table table-sm table-striped align-middle mb-2 report-table"
+                                          CssClass="table table-sm table-striped align-middle mb-0 report-table"
                                           GridLines="None" />
                         </div>
-                        <a class="small" href="#report-top" title="Back to the report options.">Back to top</a>
                     </div>
-                </details>
-            </ItemTemplate>
-        </asp:Repeater>
+                </ItemTemplate>
+            </asp:Repeater>
 
-        <details class="card mb-3 report-section" id="report-legend" open>
-            <summary class="card-header" title="Select to show or hide the legend.">
-                <span class="h6 mb-0">Legend</span>
-            </summary>
-            <div class="card-body">
+            <div class="card-body report-section" data-report-section="<%: LegendKey %>" <%: IsSelected(LegendKey) ? "" : "hidden" %>>
+                <h3 class="h5 mb-1">Legend</h3>
                 <p class="text-muted small mb-2">What the terms and short forms in this report mean.</p>
                 <dl class="row mb-0 small">
                     <asp:Repeater ID="rptLegend" runat="server">
@@ -134,22 +132,26 @@
                     </asp:Repeater>
                 </dl>
             </div>
-        </details>
+        </div>
+
+        <p class="text-muted small">
+            Save as Excel or Save as PDF saves the part that is showing. On the Legend tab they save the whole report.
+        </p>
 
     </asp:Panel>
 
     <script>
         document.addEventListener('click', function (e) {
-            var button = e.target.closest('[data-report-toggle]');
-            if (!button) return;
-            var open = button.getAttribute('data-report-toggle') === 'open';
-            document.querySelectorAll('details.report-section').forEach(function (d) { d.open = open; });
-        });
-        document.addEventListener('click', function (e) {
-            var link = e.target.closest('.report-nav a[href^="#"]');
-            if (!link) return;
-            var target = document.querySelector(link.getAttribute('href'));
-            if (target && target.tagName === 'DETAILS') target.open = true;
+            var tab = e.target.closest('[data-report-tab]');
+            if (!tab) return;
+            var key = tab.getAttribute('data-report-tab');
+            document.querySelectorAll('[data-report-tab]').forEach(function (t) {
+                t.classList.toggle('active', t === tab);
+            });
+            document.querySelectorAll('[data-report-section]').forEach(function (s) {
+                s.hidden = s.getAttribute('data-report-section') !== key;
+            });
+            document.getElementById('<%= hfSection.ClientID %>').value = key;
         });
     </script>
 

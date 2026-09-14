@@ -28,20 +28,32 @@
 
                 <div class="col-md-3">
                     <asp:Label ID="lblMake" runat="server" AssociatedControlID="txtMake"
-                               CssClass="form-label">Make</asp:Label>
+                               CssClass="form-label">Make <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtMake" ToolTip="Manufacturer, for example: Toyota." runat="server" CssClass="form-control" MaxLength="50" />
+                    <asp:RequiredFieldValidator ID="rfvMake" runat="server" ControlToValidate="txtMake"
+                                                ValidationGroup="Vehicle" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Make is required." />
                 </div>
 
                 <div class="col-md-3">
                     <asp:Label ID="lblModel" runat="server" AssociatedControlID="txtModel"
-                               CssClass="form-label">Model</asp:Label>
+                               CssClass="form-label">Model <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtModel" ToolTip="Model, for example: Corolla." runat="server" CssClass="form-control" MaxLength="50" />
+                    <asp:RequiredFieldValidator ID="rfvModel" runat="server" ControlToValidate="txtModel"
+                                                ValidationGroup="Vehicle" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Model is required." />
                 </div>
 
                 <div class="col-md-3">
                     <asp:Label ID="lblColour" runat="server" AssociatedControlID="txtColour"
-                               CssClass="form-label">Colour</asp:Label>
+                               CssClass="form-label">Colour <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtColour" ToolTip="Colour, so the client can pick it out in the car park." runat="server" CssClass="form-control" MaxLength="30" />
+                    <asp:RequiredFieldValidator ID="rfvColour" runat="server" ControlToValidate="txtColour"
+                                                ValidationGroup="Vehicle" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Colour is required." />
                 </div>
 
                 <div class="col-12">
@@ -53,8 +65,12 @@
 
                 <div class="col-md-3">
                     <asp:Label ID="lblSeats" runat="server" AssociatedControlID="txtSeats"
-                               CssClass="form-label">Seats</asp:Label>
+                               CssClass="form-label">Seats <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtSeats" ToolTip="How many people it seats, driver included." runat="server" CssClass="form-control" />
+                    <asp:RequiredFieldValidator ID="rfvSeats" runat="server" ControlToValidate="txtSeats"
+                                                ValidationGroup="Vehicle" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Seats is required." />
                     <asp:RangeValidator ID="rvSeats" runat="server" ControlToValidate="txtSeats"
                                         ValidationGroup="Vehicle" Display="Dynamic"
                                         Type="Integer" MinimumValue="1" MaximumValue="100"
@@ -64,9 +80,13 @@
 
                 <div class="col-md-3">
                     <asp:Label ID="lblDepot" runat="server" AssociatedControlID="txtDepot"
-                               CssClass="form-label">Depot town</asp:Label>
+                               CssClass="form-label">Depot town <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtDepot" ToolTip="The branch the car lives at." runat="server" CssClass="form-control" MaxLength="80"
                                  placeholder="e.g. Cape Town" />
+                    <asp:RequiredFieldValidator ID="rfvDepot" runat="server" ControlToValidate="txtDepot"
+                                                ValidationGroup="Vehicle" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Depot town is required." />
                 </div>
 
                 <div class="col-md-3">

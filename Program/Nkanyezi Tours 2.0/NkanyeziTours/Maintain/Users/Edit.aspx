@@ -60,8 +60,17 @@
 
                 <div class="col-md-6">
                     <asp:Label ID="lblPhone" runat="server" AssociatedControlID="txtPhone"
-                               CssClass="form-label">Telephone</asp:Label>
+                               CssClass="form-label">Telephone <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtPhone" ToolTip="Contact number." runat="server" CssClass="form-control" MaxLength="20" />
+                    <asp:RequiredFieldValidator ID="rfvPhone" runat="server" ControlToValidate="txtPhone"
+                                                ValidationGroup="User" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Telephone is required." />
+                    <asp:RegularExpressionValidator ID="revPhone" runat="server" ControlToValidate="txtPhone"
+                                                    ValidationGroup="User" Display="Dynamic"
+                                                    ValidationExpression="^\s*\+?[0-9\s\-\(\)]{7,20}\s*$"
+                                                    CssClass="text-danger small"
+                                                    ErrorMessage="That does not look like a phone number." />
                 </div>
 
                 <div class="col-md-6">

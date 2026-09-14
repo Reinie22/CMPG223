@@ -17,6 +17,7 @@
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revEmail;
         protected global::System.Web.UI.WebControls.Label lblPhone;
         protected global::System.Web.UI.WebControls.TextBox txtPhone;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPhone;
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revPhone;
         protected global::System.Web.UI.WebControls.Label lblPassword;
         protected global::System.Web.UI.WebControls.TextBox txtPassword;

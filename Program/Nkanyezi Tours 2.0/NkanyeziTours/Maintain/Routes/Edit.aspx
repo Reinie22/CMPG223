@@ -65,14 +65,22 @@
 
                 <div class="col-md-3">
                     <asp:Label ID="lblDeparts" runat="server" AssociatedControlID="txtDeparts"
-                               CssClass="form-label">Departs</asp:Label>
+                               CssClass="form-label">Departs <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtDeparts" ToolTip="Departure time, as 24-hour time." runat="server" CssClass="form-control" TextMode="Time" />
+                    <asp:RequiredFieldValidator ID="rfvDeparts" runat="server" ControlToValidate="txtDeparts"
+                                                ValidationGroup="Route" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Departure time is required." />
                 </div>
 
                 <div class="col-md-3">
                     <asp:Label ID="lblArrives" runat="server" AssociatedControlID="txtArrives"
-                               CssClass="form-label">Arrives</asp:Label>
+                               CssClass="form-label">Arrives <span class="text-danger">*</span></asp:Label>
                     <asp:TextBox ID="txtArrives" ToolTip="Arrival time, as 24-hour time." runat="server" CssClass="form-control" TextMode="Time" />
+                    <asp:RequiredFieldValidator ID="rfvArrives" runat="server" ControlToValidate="txtArrives"
+                                                ValidationGroup="Route" Display="Dynamic"
+                                                CssClass="text-danger small"
+                                                ErrorMessage="Arrival time is required." />
                 </div>
 
                 <div class="col-md-3">

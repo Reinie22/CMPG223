@@ -44,8 +44,6 @@ public class ReportSection
 
     public string EmptyText { get; set; } = "Nothing to show for the dates chosen.";
 
-    public bool StartCollapsed { get; set; }
-
     public List<ReportColumn> Columns { get; } = new List<ReportColumn>();
 
     public List<object?[]> Rows { get; } = new List<object?[]>();
@@ -91,6 +89,8 @@ public class ReportDocument
 
     public bool HasClientFilter { get; set; }
 
+    public string? SectionShown { get; set; }
+
     public string? ClientName { get; set; }
 
     public DateTime GeneratedAt { get; set; }
@@ -124,6 +124,9 @@ public class ReportDocument
             if (HasClientFilter)
                 filters.Add(new KeyValuePair<string, string>("Client",
                     string.IsNullOrWhiteSpace(ClientName) ? "All clients" : ClientName!));
+
+            if (!string.IsNullOrWhiteSpace(SectionShown))
+                filters.Add(new KeyValuePair<string, string>("Part shown", SectionShown!));
 
             return filters;
         }

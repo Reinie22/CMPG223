@@ -253,6 +253,13 @@
     <Compile Include="Services\ReportBuilder.cs" />
     <Compile Include="Services\ReportExcelWriter.cs" />
     <Compile Include="Services\ReportPdfWriter.cs" />
+    <Compile Include="Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Itineraries\Gantt.aspx.cs">
       <DependentUpon>Gantt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -385,6 +392,8 @@
     <Content Include="Trips\ChooseTransport.aspx" />
     <Content Include="Account\Register.aspx" />
     <Content Include="Reports\Default.aspx" />
+    <Content Include="Error.aspx" />
+    <Content Include="NotFound.aspx" />
     <Content Include="Itineraries\Gantt.aspx" />
     <Content Include="Portal\Discover.aspx" />
     <Content Include="Web.config" />

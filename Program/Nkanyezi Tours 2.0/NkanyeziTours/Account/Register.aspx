@@ -62,8 +62,12 @@
 
                         <div class="col-12">
                             <asp:Label ID="lblPhone" runat="server" AssociatedControlID="txtPhone"
-                                       CssClass="form-label">Telephone</asp:Label>
+                                       CssClass="form-label">Telephone <span class="text-danger">*</span></asp:Label>
                             <asp:TextBox ID="txtPhone" ToolTip="How your travel agent reaches you about your trip." runat="server" CssClass="form-control" MaxLength="20" />
+                            <asp:RequiredFieldValidator ID="rfvPhone" runat="server" ControlToValidate="txtPhone"
+                                                        ValidationGroup="SignUp" Display="Dynamic"
+                                                        CssClass="text-danger small"
+                                                        ErrorMessage="Telephone is required." />
                             <asp:RegularExpressionValidator ID="revPhone" runat="server"
                                                             ControlToValidate="txtPhone"
                                                             ValidationGroup="SignUp" Display="Dynamic"

@@ -12,6 +12,65 @@ public class Global : HttpApplication
         RegisterJQueryForValidators();
     }
 
+    private const int SingleLineLimit = 200;
+    private const int MultiLineLimit  = 4000;
+
+    protected void Application_PreRequestHandlerExecute(object sender, EventArgs e)
+    {
+        if (Context.Handler is System.Web.UI.Page page)
+            page.PreLoad += (s, args) => LimitTextLength(page);
+    }
+
+    private static void LimitTextLength(System.Web.UI.Control parent)
+    {
+        foreach (System.Web.UI.Control child in parent.Controls)
+        {
+            if (child is System.Web.UI.WebControls.TextBox box)
+            {
+                var limit = box.MaxLength > 0
+                    ? box.MaxLength
+                    : box.TextMode == System.Web.UI.WebControls.TextBoxMode.MultiLine ? MultiLineLimit : SingleLineLimit;
+
+                if (box.Text.Length > limit)
+                    box.Text = box.Text.Substring(0, limit);
+            }
+
+            if (child.HasControls())
+                LimitTextLength(child);
+        }
+    }
+
+    private static readonly object _errorLogLock = new object();
+
+    protected void Application_Error(object sender, EventArgs e)
+    {
+        try
+        {
+            var error = Server.GetLastError();
+
+            if (error == null)
+                return;
+
+            if (error is HttpException http && http.GetHttpCode() == 404)
+                return;
+
+            var folder = Server.MapPath("~/App_Data/Logs");
+            System.IO.Directory.CreateDirectory(folder);
+
+            var entry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {Request.HttpMethod} {Request.RawUrl}"
+                        + Environment.NewLine + error.GetBaseException()
+                        + Environment.NewLine + new string('-', 80) + Environment.NewLine;
+
+            lock (_errorLogLock)
+            {
+                System.IO.File.AppendAllText(System.IO.Path.Combine(folder, "errors.log"), entry);
+            }
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     private static void RegisterJQueryForValidators()
     {
         System.Web.UI.ScriptManager.ScriptResourceMapping.AddDefinition(
@@ -89,7 +148,7 @@ public class Global : HttpApplication
                 _testUser = null;
             }
 
-            _testUserLoaded = true;
+            _testUserLoaded = _testUser != null;
         }
 
         return _testUser;

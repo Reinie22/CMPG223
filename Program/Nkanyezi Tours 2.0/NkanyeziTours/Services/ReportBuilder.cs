@@ -363,8 +363,7 @@ public class ReportBuilder
         {
             Key         = key,
             Heading     = heading,
-            Description = description,
-            StartCollapsed = true
+            Description = description
         };
         section.Columns.Add(new ReportColumn("Trip",       ReportColumnKind.Text,  4.2));
         section.Columns.Add(new ReportColumn("Client",     ReportColumnKind.Text,  3.6));
