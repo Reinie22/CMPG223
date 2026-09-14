@@ -167,5 +167,7 @@ public static class Repositories
 
     public static TripExpenseRepository Expenses => new TripExpenseRepository(_db);
 
+    public static ReportRepository Reports => new ReportRepository(_db);
+
     public static AuthService Auth => new AuthService(Users);
 }

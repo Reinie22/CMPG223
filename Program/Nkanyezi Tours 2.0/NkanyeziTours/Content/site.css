@@ -596,3 +596,54 @@ table.gantt th, table.gantt td {
     overflow-y: auto;
     padding-right: .25rem;
 }
+
+.report-header {
+    border-left: 4px solid #1f3351;
+    padding-left: .9rem;
+}
+
+.report-stat {
+    border-top: 3px solid #1f3351;
+}
+
+.report-section > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.report-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.report-section > summary::before {
+    content: "\25B8";
+    color: #6b7c93;
+    transition: transform .15s ease;
+}
+
+.report-section[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.report-section:not([open]) > summary {
+    border-bottom: 0;
+}
+
+.report-table .report-total td {
+    font-weight: 600;
+    background-color: #e9eef5 !important;
+    border-top: 2px solid #1f3351;
+}
+
+@media print {
+    .navbar, footer, .report-options, .report-nav, .report-section a[href="#report-top"] {
+        display: none !important;
+    }
+
+    .report-section {
+        break-inside: avoid;
+    }
+}

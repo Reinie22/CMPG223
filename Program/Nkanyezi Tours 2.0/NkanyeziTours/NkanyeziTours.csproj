@@ -74,6 +74,8 @@
   <!-- NuGet packages, restored by "msbuild -t:restore". -->
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.2" />
   </ItemGroup>
   <!-- C# files -->
   <ItemGroup>
@@ -239,6 +241,18 @@
     <Compile Include="Account\Register.aspx.designer.cs">
       <DependentUpon>Register.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Reports\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\ReportRepository.cs" />
+    <Compile Include="Models\Report.cs" />
+    <Compile Include="Services\ReportBuilder.cs" />
+    <Compile Include="Services\ReportExcelWriter.cs" />
+    <Compile Include="Services\ReportPdfWriter.cs" />
     <Compile Include="Itineraries\Gantt.aspx.cs">
       <DependentUpon>Gantt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -370,6 +384,7 @@
     <Content Include="Maintain\Rates\Default.aspx" />
     <Content Include="Trips\ChooseTransport.aspx" />
     <Content Include="Account\Register.aspx" />
+    <Content Include="Reports\Default.aspx" />
     <Content Include="Itineraries\Gantt.aspx" />
     <Content Include="Portal\Discover.aspx" />
     <Content Include="Web.config" />
