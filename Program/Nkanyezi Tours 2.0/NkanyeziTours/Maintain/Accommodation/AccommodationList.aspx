@@ -113,7 +113,7 @@
                                 Visible='<%# (bool)Eval("IsActive") %>'
                                 CommandName="DeleteAccommodation"
                                 CommandArgument='<%# Eval("AccommodationId") %>'
-                                data-confirm="Delete this accommodation? If it has bookings it will be deactivated instead.">
+                                data-confirm="Delete this accommodation? If it is booked or on a client's trip, it will be deactivated instead.">
                                 Delete</asp:LinkButton>
 
                             <asp:LinkButton ID="lnkReactivate" ToolTip="Puts the resort back on sale. Its units stay out of service until you switch them on individually." runat="server" CssClass="btn btn-sm btn-outline-success"

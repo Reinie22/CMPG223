@@ -86,6 +86,14 @@ public partial class Default : Page
 
     protected void gvAttractions_RowCommand(object sender, GridViewCommandEventArgs e)
     {
+        if (e.CommandName == "ReactivateAttraction")
+        {
+            _attractions.Reactivate(Convert.ToInt32(e.CommandArgument));
+            ShowMessage("alert-success", "The attraction is active again and can be booked.");
+            Bind();
+            return;
+        }
+
         if (e.CommandName != "DeleteAttraction") return;
 
         try
@@ -95,7 +103,7 @@ public partial class Default : Page
 
             if (wasDeactivated)
                 ShowMessage("alert-warning",
-                    "This attraction has bookings against it, so it was deactivated rather than "
+                    "This attraction is booked or chosen on a client's trip, so it was deactivated rather than "
                     + "deleted. Its history stays intact and it no longer appears on booking screens.");
             else
                 ShowMessage("alert-success", "The attraction was deleted.");

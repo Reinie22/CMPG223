@@ -121,6 +121,8 @@ public class AccommodationRepository
                               WHERE       r.AccommodationId = @AccommodationId)
                    OR EXISTS (SELECT 1 FROM dbo.TripLeg AS l
                               WHERE  l.AccommodationId = @AccommodationId)
+                   OR EXISTS (SELECT 1 FROM dbo.TripRequestItem AS tr
+                              WHERE  tr.AccommodationId = @AccommodationId)
                    OR EXISTS (SELECT 1
                               FROM        dbo.TripLegRoom AS lr
                               INNER JOIN  dbo.Room        AS r ON r.RoomId = lr.RoomId

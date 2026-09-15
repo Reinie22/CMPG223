@@ -149,7 +149,9 @@ public class VehicleRepository
     public bool Delete(int vehicleId)
         => _db.Scalar<bool>(@"
         DECLARE @HasBookings BIT =
-            CASE WHEN EXISTS (SELECT 1 FROM dbo.VehicleBooking WHERE VehicleId = @VehicleId)
+            CASE WHEN EXISTS (SELECT 1 FROM dbo.VehicleBooking     WHERE VehicleId = @VehicleId)
+                   OR EXISTS (SELECT 1 FROM dbo.TripRequestItem    WHERE VehicleId = @VehicleId)
+                   OR EXISTS (SELECT 1 FROM dbo.VehicleMaintenance WHERE VehicleId = @VehicleId)
                  THEN 1 ELSE 0 END;
 
         IF @HasBookings = 1

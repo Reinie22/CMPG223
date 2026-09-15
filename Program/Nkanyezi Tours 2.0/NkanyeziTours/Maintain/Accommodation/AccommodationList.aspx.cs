@@ -84,7 +84,7 @@ public partial class AccommodationList : Page
         {
             var deactivatedInstead = _accommodations.Delete(accommodationId);
             ShowMessage(deactivatedInstead
-                ? "This resort has existing bookings, so it was deactivated rather than deleted. "
+                ? "This resort is booked or chosen on a client's trip, so it was deactivated rather than deleted. "
                 + "Its units have been taken out of service with it."
                 : "Resort deleted, along with its units.", "alert-success");
             BindGrid();

@@ -88,7 +88,7 @@
                                                 CommandArgument='<%# Eval("RouteId") %>'
                                                 Visible='<%# Convert.ToBoolean(Eval("IsActive")) %>'
                                                 Text="Withdraw"
-                                                data-confirm="Withdraw this route? If seats have been booked it is kept and marked withdrawn." />
+                                                data-confirm="Withdraw this route? If it is booked or on a client's trip, it is kept and marked withdrawn." />
                                 <asp:LinkButton ID="lnkReactivate" ToolTip="Puts the route back on sale." runat="server"
                                                 CssClass="btn btn-sm btn-outline-success text-nowrap"
                                                 CommandName="ReactivateRoute"

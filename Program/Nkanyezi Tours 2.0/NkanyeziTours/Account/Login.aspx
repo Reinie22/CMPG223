@@ -68,7 +68,7 @@
                 Seeded test accounts use the password <code>Password123</code>
             </p>
 
-            <asp:Panel ID="pnlTestAccounts" runat="server" Visible="false" CssClass="card mt-3">
+            <asp:Panel ID="pnlTestAccounts" runat="server" Visible="true" CssClass="card mt-3">
                 <div class="card-body">
                     <h2 class="h6 mb-1">Test accounts</h2>
                     <p class="text-muted small mb-3">

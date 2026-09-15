@@ -52,7 +52,7 @@ public partial class _Default : Page
             var keptAndRetired = _vehicles.Delete(vehicleId);
 
             ShowMessage(keptAndRetired
-                ? "That vehicle has hire bookings against it, so it was retired rather than deleted."
+                ? "That vehicle has hire bookings, is chosen on a client's trip or has maintenance history, so it was retired rather than deleted."
                 : "Vehicle deleted.",
                 keptAndRetired ? "alert-warning" : "alert-success");
 

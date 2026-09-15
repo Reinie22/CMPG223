@@ -122,7 +122,8 @@ public class RouteRepository
     public bool Delete(int routeId)
         => _db.Scalar<bool>(@"
         DECLARE @HasBookings BIT =
-            CASE WHEN EXISTS (SELECT 1 FROM dbo.RouteBooking WHERE RouteId = @RouteId)
+            CASE WHEN EXISTS (SELECT 1 FROM dbo.RouteBooking    WHERE RouteId = @RouteId)
+                   OR EXISTS (SELECT 1 FROM dbo.TripRequestItem WHERE RouteId = @RouteId)
                  THEN 1 ELSE 0 END;
 
         IF @HasBookings = 1

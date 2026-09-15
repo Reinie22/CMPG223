@@ -6,9 +6,7 @@
     <div id="report-top"></div>
 
     <h1 class="h3 mb-1">Reports</h1>
-    <p class="text-muted mb-4">
-        Choose a report and a period, then select Show report. Any report can be saved as an Excel or PDF file.
-    </p>
+    <p class="text-muted mb-4"></p>
 
     <div class="card mb-4 report-options">
         <div class="card-body">
@@ -41,11 +39,11 @@
             </p>
 
             <div class="d-flex flex-wrap gap-2">
-                <asp:Button ID="btnShow" ToolTip="Create the report on screen." runat="server" Text="Show report"
+                <asp:Button ID="btnShow" ToolTip="Create the report on screen." runat="server" Text="Preview Report"
                             CssClass="btn btn-primary" OnClick="btnShow_Click" />
-                <asp:Button ID="btnExcel" ToolTip="Save this report as an Excel workbook." runat="server" Text="Save as Excel"
+                <asp:Button ID="btnExcel" ToolTip="Save this report as an Excel workbook." runat="server" Text="Export to Excel"
                             CssClass="btn btn-outline-success" OnClick="btnExcel_Click" />
-                <asp:Button ID="btnPdf" ToolTip="Save this report as a PDF, ready to print or email." runat="server" Text="Save as PDF"
+                <asp:Button ID="btnPdf" ToolTip="Save this report as a PDF, ready to print or email." runat="server" Text="Export to PDF"
                             CssClass="btn btn-outline-danger" OnClick="btnPdf_Click" />
             </div>
         </div>

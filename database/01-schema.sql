@@ -1,4 +1,8 @@
 ﻿IF OBJECT_ID('dbo.ExchangeRate','U')       IS NOT NULL DROP TABLE dbo.ExchangeRate;
+IF OBJECT_ID('dbo.TripLegRoom','U')        IS NOT NULL DROP TABLE dbo.TripLegRoom;
+IF OBJECT_ID('dbo.TripRequestItem','U')    IS NOT NULL DROP TABLE dbo.TripRequestItem;
+IF OBJECT_ID('dbo.TripLeg','U')            IS NOT NULL DROP TABLE dbo.TripLeg;
+IF OBJECT_ID('dbo.TimeSlot','U')           IS NOT NULL DROP TABLE dbo.TimeSlot;
 IF OBJECT_ID('dbo.TripExpense','U')        IS NOT NULL DROP TABLE dbo.TripExpense;
 IF OBJECT_ID('dbo.AttractionBooking','U')  IS NOT NULL DROP TABLE dbo.AttractionBooking;
 IF OBJECT_ID('dbo.RoomBooking','U')        IS NOT NULL DROP TABLE dbo.RoomBooking;
@@ -83,11 +87,12 @@ CREATE TABLE dbo.Accommodation (
     City            NVARCHAR(80)        NULL,
     ProvinceId      INT                 NULL,
     StarRating      TINYINT             NULL,
-    PricePerNight   DECIMAL(10,2)       NOT NULL,
-    Capacity        INT                 NOT NULL,
+    PricePerNight   DECIMAL(10,2)       NOT NULL CONSTRAINT DF_Accom_PriceDead    DEFAULT (0),
+    Capacity        INT                 NOT NULL CONSTRAINT DF_Accom_CapacityDead DEFAULT (0),
     Amenities       NVARCHAR(500)       NULL,
     IsActive        BIT                 NOT NULL CONSTRAINT DF_Accom_IsActive DEFAULT (1),
     CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_Accom_Created  DEFAULT (SYSDATETIME()),
+    ImageUrl        NVARCHAR(300)       NULL,
 
     CONSTRAINT PK_Accommodation          PRIMARY KEY (AccommodationId),
     CONSTRAINT FK_Accommodation_Province FOREIGN KEY (ProvinceId) REFERENCES dbo.Province (ProvinceId),
@@ -106,12 +111,16 @@ CREATE TABLE dbo.Room (
     Size                NVARCHAR(30)        NULL,
     Bathroom            BIT                 NOT NULL CONSTRAINT DF_Room_Bathroom DEFAULT (1),
     AvailabilityStatus  BIT                 NOT NULL CONSTRAINT DF_Room_Available DEFAULT (1),
+    PricePerNight       DECIMAL(10,2)       NOT NULL,
+    Capacity            INT                 NOT NULL,
 
     CONSTRAINT PK_Room               PRIMARY KEY (RoomId),
     CONSTRAINT FK_Room_Accommodation FOREIGN KEY (AccommodationId)
         REFERENCES dbo.Accommodation (AccommodationId) ON DELETE CASCADE,
     CONSTRAINT UQ_Room_Number        UNIQUE (AccommodationId, RoomNumber),
-    CONSTRAINT CK_Room_Beds          CHECK (Beds > 0)
+    CONSTRAINT CK_Room_Beds          CHECK (Beds > 0),
+    CONSTRAINT CK_Room_Price         CHECK (PricePerNight > 0),
+    CONSTRAINT CK_Room_Capacity      CHECK (Capacity > 0)
 );
 GO
 
@@ -135,6 +144,7 @@ CREATE TABLE dbo.Attraction (
     BestOperatingSeason NVARCHAR(50)        NULL,
     IsActive            BIT                 NOT NULL CONSTRAINT DF_Attr_IsActive DEFAULT (1),
     CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_Attr_Created  DEFAULT (SYSDATETIME()),
+    ImageUrl            NVARCHAR(300)       NULL,
 
     CONSTRAINT PK_Attraction          PRIMARY KEY (AttractionId),
     CONSTRAINT FK_Attraction_Category FOREIGN KEY (CategoryId) REFERENCES dbo.AttractionCategory (CategoryId),
@@ -163,9 +173,11 @@ CREATE TABLE dbo.Vehicle (
     RatePerExtraKm      DECIMAL(10,2)       NOT NULL,
     IsActive            BIT                 NOT NULL CONSTRAINT DF_Vehicle_IsActive DEFAULT (1),
     CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_Vehicle_Created  DEFAULT (SYSDATETIME()),
+    ProvinceId          INT                 NULL,
 
     CONSTRAINT PK_Vehicle         PRIMARY KEY (VehicleId),
     CONSTRAINT UQ_Vehicle_Reg     UNIQUE (RegistrationNumber),
+    CONSTRAINT FK_Vehicle_Province FOREIGN KEY (ProvinceId) REFERENCES dbo.Province (ProvinceId),
     CONSTRAINT CK_Vehicle_Price   CHECK (PricePerDay > 0),
     CONSTRAINT CK_Vehicle_InclKm  CHECK (IncludedKmPerDay > 0),
     CONSTRAINT CK_Vehicle_ExtraKm CHECK (RatePerExtraKm >= 0)
@@ -425,6 +437,99 @@ CREATE TABLE dbo.ExchangeRate (
 );
 GO
 
+CREATE TABLE dbo.TripLeg (
+    TripLegId       INT IDENTITY(1,1)   NOT NULL,
+    ItineraryId     INT                 NOT NULL,
+    LegNumber       INT                 NOT NULL,
+    Destination     NVARCHAR(120)       NULL,
+    StartDate       DATE                NOT NULL,
+    EndDate         DATE                NOT NULL,
+    AccommodationId INT                 NULL,
+    Guests          INT                 NOT NULL CONSTRAINT DF_TripLeg_Guests  DEFAULT (2),
+    ClientNote      NVARCHAR(500)       NULL,
+    CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_TripLeg_Created DEFAULT (SYSDATETIME()),
+    ProvinceId      INT                 NULL,
+
+    CONSTRAINT PK_TripLeg               PRIMARY KEY (TripLegId),
+    CONSTRAINT FK_TripLeg_Itinerary     FOREIGN KEY (ItineraryId)
+        REFERENCES dbo.Itinerary (ItineraryId) ON DELETE CASCADE,
+    CONSTRAINT FK_TripLeg_Accommodation FOREIGN KEY (AccommodationId) REFERENCES dbo.Accommodation (AccommodationId),
+    CONSTRAINT FK_TripLeg_Province      FOREIGN KEY (ProvinceId)      REFERENCES dbo.Province (ProvinceId),
+    CONSTRAINT UQ_TripLeg_Number        UNIQUE (ItineraryId, LegNumber),
+    CONSTRAINT CK_TripLeg_Dates         CHECK (EndDate > StartDate),
+    CONSTRAINT CK_TripLeg_Number        CHECK (LegNumber > 0),
+    CONSTRAINT CK_TripLeg_Guests        CHECK (Guests > 0)
+);
+GO
+
+CREATE INDEX IX_TripLeg_Itinerary ON dbo.TripLeg (ItineraryId, LegNumber);
+GO
+
+CREATE TABLE dbo.TripLegRoom (
+    TripLegId       INT                 NOT NULL,
+    RoomId          INT                 NOT NULL,
+    CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_TripLegRoom_Created DEFAULT (SYSDATETIME()),
+
+    CONSTRAINT PK_TripLegRoom         PRIMARY KEY (TripLegId, RoomId),
+    CONSTRAINT FK_TripLegRoom_TripLeg FOREIGN KEY (TripLegId)
+        REFERENCES dbo.TripLeg (TripLegId) ON DELETE CASCADE,
+    CONSTRAINT FK_TripLegRoom_Room    FOREIGN KEY (RoomId) REFERENCES dbo.Room (RoomId)
+);
+GO
+
+CREATE INDEX IX_TripLegRoom_RoomId ON dbo.TripLegRoom (RoomId);
+GO
+
+CREATE TABLE dbo.TripRequestItem (
+    TripRequestItemId   INT IDENTITY(1,1)   NOT NULL,
+    ItineraryId         INT                 NOT NULL,
+    ItemType            NVARCHAR(20)        NOT NULL,
+    AccommodationId     INT                 NULL,
+    AttractionId        INT                 NULL,
+    StartDate           DATE                NULL,
+    EndDate             DATE                NULL,
+    Guests              INT                 NOT NULL CONSTRAINT DF_TripReq_Guests  DEFAULT (1),
+    ClientNote          NVARCHAR(500)       NULL,
+    Status              NVARCHAR(20)        NOT NULL CONSTRAINT DF_TripReq_Status  DEFAULT ('Requested'),
+    AgentNote           NVARCHAR(500)       NULL,
+    CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_TripReq_Created DEFAULT (SYSDATETIME()),
+    TripLegId           INT                 NULL,
+    VehicleId           INT                 NULL,
+    RouteId             INT                 NULL,
+
+    CONSTRAINT PK_TripRequestItem       PRIMARY KEY (TripRequestItemId),
+    CONSTRAINT FK_TripReq_Itinerary     FOREIGN KEY (ItineraryId)
+        REFERENCES dbo.Itinerary (ItineraryId) ON DELETE CASCADE,
+    CONSTRAINT FK_TripReq_Accommodation FOREIGN KEY (AccommodationId) REFERENCES dbo.Accommodation (AccommodationId),
+    CONSTRAINT FK_TripReq_Attraction    FOREIGN KEY (AttractionId)    REFERENCES dbo.Attraction (AttractionId),
+    CONSTRAINT FK_TripReq_TripLeg       FOREIGN KEY (TripLegId)       REFERENCES dbo.TripLeg (TripLegId),
+    CONSTRAINT FK_TripReq_Vehicle       FOREIGN KEY (VehicleId)       REFERENCES dbo.Vehicle (VehicleId),
+    CONSTRAINT FK_TripReq_Route         FOREIGN KEY (RouteId)         REFERENCES dbo.Route (RouteId),
+    CONSTRAINT CK_TripReq_Type          CHECK (ItemType IN ('Accommodation','Attraction','Vehicle','Route')),
+    CONSTRAINT CK_TripReq_Status        CHECK (Status   IN ('Requested','Approved','Declined')),
+    CONSTRAINT CK_TripReq_OneItem       CHECK (
+          (ItemType = 'Accommodation'
+               AND AccommodationId IS NOT NULL
+               AND AttractionId IS NULL AND VehicleId IS NULL AND RouteId IS NULL)
+       OR (ItemType = 'Attraction'
+               AND AttractionId IS NOT NULL
+               AND AccommodationId IS NULL AND VehicleId IS NULL AND RouteId IS NULL)
+       OR (ItemType = 'Vehicle'
+               AND VehicleId IS NOT NULL
+               AND AccommodationId IS NULL AND AttractionId IS NULL AND RouteId IS NULL)
+       OR (ItemType = 'Route'
+               AND RouteId IS NOT NULL
+               AND AccommodationId IS NULL AND AttractionId IS NULL AND VehicleId IS NULL)),
+    CONSTRAINT CK_TripReq_Dates         CHECK (EndDate IS NULL OR StartDate IS NULL OR EndDate >= StartDate),
+    CONSTRAINT CK_TripReq_Guests        CHECK (Guests > 0)
+);
+GO
+
+CREATE INDEX IX_TripReq_Itinerary ON dbo.TripRequestItem (ItineraryId);
+CREATE INDEX IX_TripReq_Status    ON dbo.TripRequestItem (Status);
+CREATE INDEX IX_TripReq_TripLeg   ON dbo.TripRequestItem (TripLegId);
+GO
+
 INSERT INTO dbo.Role (RoleName) VALUES
     ('Administrator'), ('Supervisor'), ('Travel Agent'), ('Client');
 
@@ -440,5 +545,5 @@ INSERT INTO dbo.ExpenseCategory (CategoryName) VALUES
     ('Meals'), ('Fuel'), ('Entrance fees'), ('Shopping'), ('Other');
 GO
 
-PRINT 'Schema created. 18 tables. Now run 03-seed-data.sql for test data.';
+PRINT 'Schema created. 21 tables. Now run 03-seed-data.sql for test data.';
 GO

@@ -81,7 +81,7 @@
                                                 CommandArgument='<%# Eval("VehicleId") %>'
                                                 Visible='<%# Convert.ToBoolean(Eval("IsActive")) %>'
                                                 Text="Retire"
-                                                data-confirm="Retire this vehicle? If it has hire bookings it is kept and marked retired." />
+                                                data-confirm="Retire this vehicle? If it has bookings, is on a client's trip or has maintenance history, it is kept and marked retired." />
                                 <asp:LinkButton ID="lnkReactivate" ToolTip="Puts the car back on hire." runat="server"
                                                 CssClass="btn btn-sm btn-outline-success text-nowrap"
                                                 CommandName="ReactivateVehicle"

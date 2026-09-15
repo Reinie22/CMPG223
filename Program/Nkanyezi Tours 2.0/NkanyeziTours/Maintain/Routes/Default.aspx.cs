@@ -52,7 +52,7 @@ public partial class _Default : Page
             var keptAndWithdrawn = _routes.Delete(routeId);
 
             ShowMessage(keptAndWithdrawn
-                ? "Seats have been booked on that route, so it was withdrawn rather than deleted."
+                ? "That route is booked or chosen on a client's trip, so it was withdrawn rather than deleted."
                 : "Route deleted.",
                 keptAndWithdrawn ? "alert-warning" : "alert-success");
 

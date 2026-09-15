@@ -77,31 +77,31 @@ INSERT INTO dbo.Accommodation (Name, Description, Type, Address, City, ProvinceI
     (SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Northern Cape'),3,1100.00,16,'Stargazing deck, Restaurant, Guided walks');
 GO
 
-INSERT INTO dbo.Room (AccommodationId, RoomNumber, RoomType, Beds, Size, Bathroom, AvailabilityStatus) VALUES
+INSERT INTO dbo.Room (AccommodationId, RoomNumber, RoomType, Beds, Size, Bathroom, AvailabilityStatus, PricePerNight, Capacity) VALUES
 
-(1,'101','Single',1,'22 sqm',1,1),
-(1,'102','Double',2,'30 sqm',1,1),
-(1,'103','Double',2,'30 sqm',1,1),
-(1,'201','Family',4,'48 sqm',1,1),
+(1,'101','Single',1,'22 sqm',1,1,1450.00,1),
+(1,'102','Double',2,'30 sqm',1,1,1450.00,2),
+(1,'103','Double',2,'30 sqm',1,1,1450.00,2),
+(1,'201','Family',4,'48 sqm',1,1,1450.00,4),
 
-(2,'A1','Double',2,'28 sqm',1,1),
-(2,'A2','Double',2,'28 sqm',1,1),
-(2,'B1','Suite',2,'45 sqm',1,1),
+(2,'A1','Double',2,'28 sqm',1,1,1850.00,2),
+(2,'A2','Double',2,'28 sqm',1,1,1850.00,2),
+(2,'B1','Suite',2,'45 sqm',1,1,1850.00,2),
 
-(3,'C1','Double',2,'26 sqm',1,1),
-(3,'C2','Family',4,'40 sqm',1,1),
-(3,'C3','Single',1,'18 sqm',0,1),
+(3,'C1','Double',2,'26 sqm',1,1,980.00,2),
+(3,'C2','Family',4,'40 sqm',1,1,980.00,4),
+(3,'C3','Single',1,'18 sqm',0,1,980.00,1),
 
-(4,'T1','Tent',2,'20 sqm',1,1),
-(4,'T2','Tent',2,'20 sqm',1,1),
-(4,'T3','Family tent',4,'35 sqm',1,1),
+(4,'T1','Tent',2,'20 sqm',1,1,2200.00,2),
+(4,'T2','Tent',2,'20 sqm',1,1,2200.00,2),
+(4,'T3','Family tent',4,'35 sqm',1,1,2200.00,4),
 
-(5,'301','Double',2,'32 sqm',1,1),
-(5,'302','Sea facing',2,'38 sqm',1,1),
-(5,'401','Suite',4,'65 sqm',1,1),
+(5,'301','Double',2,'32 sqm',1,1,3100.00,2),
+(5,'302','Sea facing',2,'38 sqm',1,1,3100.00,2),
+(5,'401','Suite',4,'65 sqm',1,1,3100.00,4),
 
-(6,'D1','Chalet',2,'24 sqm',1,1),
-(6,'D2','Chalet',2,'24 sqm',1,1);
+(6,'D1','Chalet',2,'24 sqm',1,1,1100.00,2),
+(6,'D2','Chalet',2,'24 sqm',1,1,1100.00,2);
 GO
 
 INSERT INTO dbo.Attraction (Name, CategoryId, Address, City, ProvinceId, Description, Rate, Quantity, UnitOfMeasure, DurationMinutes, OperatingTimeStart, OperatingTimeEnd, BestOperatingSeason) VALUES
@@ -131,13 +131,13 @@ INSERT INTO dbo.Attraction (Name, CategoryId, Address, City, ProvinceId, Descrip
     'Guided evening under some of the darkest skies in the country.',320.00,12,'Per person',120,'19:00','23:00','Winter');
 GO
 
-INSERT INTO dbo.Vehicle (VehicleDescription, Make, Model, Colour, RegistrationNumber, Capacity, Location, PricePerDay, IncludedKmPerDay, RatePerExtraKm) VALUES
-('Compact hatchback, manual','Volkswagen','Polo Vivo','White','CA 123 456',5,'Cape Town',450.00,200,2.50),
-('Compact hatchback, automatic','Toyota','Starlet','Silver','GP 789 012',5,'Johannesburg',520.00,200,2.50),
-('Family sedan','Toyota','Corolla','Grey','GP 345 678',5,'Johannesburg',680.00,200,3.00),
-('Seven seater people carrier','Volkswagen','Kombi','White','CA 901 234',7,'Cape Town',1250.00,200,4.50),
-('Four wheel drive, suited to game reserves','Ford','Ranger','Blue','MP 567 890',5,'Nelspruit',1450.00,200,5.00),
-('Luxury sedan','Mercedes-Benz','C-Class','Black','GP 111 222',5,'Johannesburg',1800.00,200,6.00);
+INSERT INTO dbo.Vehicle (VehicleDescription, Make, Model, Colour, RegistrationNumber, Capacity, Location, PricePerDay, IncludedKmPerDay, RatePerExtraKm, ProvinceId) VALUES
+('Compact hatchback, manual','Volkswagen','Polo Vivo','White','CA 123 456',5,'Cape Town',450.00,200,2.50,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Western Cape')),
+('Compact hatchback, automatic','Toyota','Starlet','Silver','GP 789 012',5,'Johannesburg',520.00,200,2.50,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Gauteng')),
+('Family sedan','Toyota','Corolla','Grey','GP 345 678',5,'Johannesburg',680.00,200,3.00,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Gauteng')),
+('Seven seater people carrier','Volkswagen','Kombi','White','CA 901 234',7,'Cape Town',1250.00,200,4.50,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Western Cape')),
+('Four wheel drive, suited to game reserves','Ford','Ranger','Blue','MP 567 890',5,'Nelspruit',1450.00,200,5.00,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Mpumalanga')),
+('Luxury sedan','Mercedes-Benz','C-Class','Black','GP 111 222',5,'Johannesburg',1800.00,200,6.00,(SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Gauteng'));
 GO
 
 INSERT INTO dbo.Route (RouteType, Carrier, RouteCode, DepartureCity, ArrivalCity, DepartureTime, ArrivalTime, DurationMinutes, IndicativeFarePerSeat, SeatCapacity) VALUES
@@ -247,7 +247,9 @@ UNION ALL SELECT 'RoomBooking',   COUNT(*) FROM dbo.RoomBooking
 UNION ALL SELECT 'AttractionBooking', COUNT(*) FROM dbo.AttractionBooking
 UNION ALL SELECT 'VehicleBooking',COUNT(*) FROM dbo.VehicleBooking
 UNION ALL SELECT 'RouteBooking',  COUNT(*) FROM dbo.RouteBooking
-UNION ALL SELECT 'TripExpense',   COUNT(*) FROM dbo.TripExpense;
+UNION ALL SELECT 'TripExpense',   COUNT(*) FROM dbo.TripExpense
+UNION ALL SELECT 'TripLeg',       COUNT(*) FROM dbo.TripLeg
+UNION ALL SELECT 'TripRequestItem', COUNT(*) FROM dbo.TripRequestItem;
 
 PRINT '';
 PRINT 'Car rental calculation check (expect 1580 km, 380 extra, R10600 total):';

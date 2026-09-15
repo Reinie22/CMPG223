@@ -111,6 +111,9 @@ public class AttractionRepository
             CASE WHEN EXISTS (SELECT 1
                               FROM   dbo.AttractionBooking
                               WHERE  AttractionId = @AttractionId)
+                   OR EXISTS (SELECT 1
+                              FROM   dbo.TripRequestItem
+                              WHERE  AttractionId = @AttractionId)
                  THEN 1 ELSE 0 END;
 
         IF @HasBookings = 1

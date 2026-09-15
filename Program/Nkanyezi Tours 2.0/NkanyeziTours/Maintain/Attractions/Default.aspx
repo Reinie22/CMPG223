@@ -86,10 +86,17 @@
                 <ItemTemplate>
                     <asp:HyperLink runat="server" CssClass="btn btn-sm btn-outline-secondary"
                                    NavigateUrl='<%# "~/Maintain/Attractions/Edit.aspx?id=" + Eval("AttractionId") %>'>Edit</asp:HyperLink>
-                    <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger"
+                    <asp:LinkButton ID="lnkDelete" runat="server" CssClass="btn btn-sm btn-outline-danger"
+                                    ToolTip="Removes the activity. If clients have booked or chosen it, it is deactivated instead."
                                     CommandName="DeleteAttraction"
                                     CommandArgument='<%# Eval("AttractionId") %>'
+                                    Visible='<%# (bool)Eval("IsActive") %>'
                                     data-confirm="Delete this attraction?">Delete</asp:LinkButton>
+                    <asp:LinkButton ID="lnkReactivate" runat="server" CssClass="btn btn-sm btn-outline-success"
+                                    ToolTip="Puts the activity back on sale."
+                                    CommandName="ReactivateAttraction"
+                                    CommandArgument='<%# Eval("AttractionId") %>'
+                                    Visible='<%# !(bool)Eval("IsActive") %>'>Reactivate</asp:LinkButton>
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
