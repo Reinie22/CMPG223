@@ -27,7 +27,7 @@
                         <div class="fs-5 fw-semibold"><asp:Literal ID="litBudgetTotal" runat="server" /></div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="text-muted small">Bookings</div>
+                        <div class="text-muted small" title="The rooms on the trip's legs plus everything you have approved.">Amount</div>
                         <div class="fs-5 fw-semibold"><asp:Literal ID="litBookingsTotal" runat="server" /></div>
                     </div>
                     <div class="col-6 col-md-3">
@@ -191,37 +191,11 @@
                 </asp:GridView>
 
                 <p class="text-muted small mb-0 mt-2">
-                    Approving records the decision. Make the actual booking on the
-                    booking screens, where the room or slot and the real price are captured.
+                    Approving an item adds its cost to the trip amount above. Declined and waiting
+                    items are not counted.
                 </p>
             </div>
         </asp:Panel>
-
-        <div class="card">
-            <div class="card-body">
-                <h2 class="h5 mb-3">What is booked</h2>
-                <asp:GridView ID="gvBookings" runat="server"
-                              AutoGenerateColumns="false"
-                              CssClass="table table-striped align-middle"
-                              EmptyDataText="Nothing booked on this trip yet."
-                              GridLines="None">
-                    <Columns>
-                        <asp:TemplateField HeaderText="Type">
-                            <ItemTemplate>
-                                <asp:Label ID="lblType" runat="server"
-                                           CssClass='<%# "badge " + Eval("TypeCssClass") %>'
-                                           Text='<%# Eval("BookingType") %>' />
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:BoundField DataField="Description" HeaderText="Detail" />
-                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="TotalCost" HeaderText="Cost"
-                                        DataFormatString="R{0:N2}" ItemStyle-CssClass="text-end" />
-                        <asp:BoundField DataField="Status" HeaderText="Status" />
-                    </Columns>
-                </asp:GridView>
-            </div>
-        </div>
 
     </asp:Panel>
 

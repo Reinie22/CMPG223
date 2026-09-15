@@ -65,7 +65,7 @@ public class ReportBuilder
             Heading     = "Revenue by month",
             Description = "Revenue for each month, split by booking type. Trips are placed in the month they start."
         };
-        byMonth.Columns.Add(new ReportColumn("Month",                   ReportColumnKind.Text,   3.0));
+        byMonth.Columns.Add(new ReportColumn("Month",                   ReportColumnKind.Month,  3.0));
         byMonth.Columns.Add(new ReportColumn("Trips",                   ReportColumnKind.Number, 1.4));
         byMonth.Columns.Add(new ReportColumn("Accommodation",           ReportColumnKind.Money,  2.6));
         byMonth.Columns.Add(new ReportColumn("Activities",              ReportColumnKind.Money,  2.4));
@@ -79,7 +79,7 @@ public class ReportBuilder
 
             byMonth.Rows.Add(new object?[]
             {
-                month.ToString("MMMM yyyy"),
+                month,
                 inMonth.Count,
                 inMonth.Sum(t => t.Accommodation),
                 inMonth.Sum(t => t.Activities),
@@ -204,12 +204,12 @@ public class ReportBuilder
             Heading     = "Trips by month",
             Description = "How many trips start in each month, to show busy and quiet seasons."
         };
-        byMonth.Columns.Add(new ReportColumn("Month",          ReportColumnKind.Text,    6.0));
+        byMonth.Columns.Add(new ReportColumn("Month",          ReportColumnKind.Month,   6.0));
         byMonth.Columns.Add(new ReportColumn("Trips",          ReportColumnKind.Number,  5.5));
         byMonth.Columns.Add(new ReportColumn("Share of trips", ReportColumnKind.Percent, 5.5));
 
         foreach (var month in months)
-            byMonth.Rows.Add(new object?[] { month.Month.ToString("MMMM yyyy"), month.Trips, Share(month.Trips, trips.Count) });
+            byMonth.Rows.Add(new object?[] { month.Month, month.Trips, Share(month.Trips, trips.Count) });
 
         byMonth.TotalRow = new object?[] { "Total", trips.Count, trips.Count == 0 ? 0m : 100m };
 

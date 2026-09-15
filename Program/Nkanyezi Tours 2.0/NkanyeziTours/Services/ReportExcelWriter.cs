@@ -148,6 +148,18 @@ public static class ReportExcelWriter
                             cell.Value = value.ToString();
                         }
                         break;
+                    case ReportColumnKind.Month:
+                        if (value is DateTime month)
+                        {
+                            cell.Value = month;
+                            cell.Style.NumberFormat.Format = "mmmm yyyy";
+                            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                        }
+                        else
+                        {
+                            cell.Value = value.ToString();
+                        }
+                        break;
                     default:
                         cell.Value = value.ToString();
                         break;

@@ -629,7 +629,7 @@ table.gantt th, table.gantt td {
 }
 
 @media print {
-    .navbar, footer, .report-options, .report-nav {
+    .navbar, footer, .report-options, .report-nav, .report-sort {
         display: none !important;
     }
 

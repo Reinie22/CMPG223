@@ -41,7 +41,11 @@ public partial class _Default : Page
             if (user.IsClient)
                 LoadClientView(user);
             else if (user.IsAgent)
-                LoadAgentView(user);
+            {
+                Response.Redirect("~/Itineraries/Default.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
             else
                 LoadManagementView();
         }
@@ -67,24 +71,6 @@ public partial class _Default : Page
         });
 
         BindTrips(trips);
-    }
-
-    private void LoadAgentView(AppUser user)
-    {
-        litSubtitle.Text = "Trips assigned to you";
-        litTripsHeading.Text = "My trips";
-
-        var mine       = _itineraries.GetForAgent(user.UserId);
-        var unassigned = _itineraries.GetUnassigned();
-
-        BindStats(new[]
-        {
-            new Stat { Label = "Total trips", Value = mine.Count.ToString() },
-            new Stat { Label = "Unassigned", Value = unassigned.Count.ToString() },
-            new Stat { Label = "Active",     Value = mine.Count(t => t.IsEditable).ToString() }
-        });
-
-        BindTrips(mine);
     }
 
     private void LoadManagementView()

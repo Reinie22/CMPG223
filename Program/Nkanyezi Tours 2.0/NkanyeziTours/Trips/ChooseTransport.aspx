@@ -19,12 +19,12 @@
                                 Text="Car Rentals" />
             </li>
             <li class="nav-item">
-                <asp:LinkButton ID="lnkTabFlights" ToolTip="Seats on a scheduled flight. Priced per seat." runat="server" CssClass="nav-link"
+                <asp:LinkButton ID="lnkTabFlights" ToolTip="Tickets on a scheduled flight, one per person." runat="server" CssClass="nav-link"
                                 CausesValidation="false" OnClick="lnkTabFlights_Click"
                                 Text="Flights" />
             </li>
             <li class="nav-item">
-                <asp:LinkButton ID="lnkTabBuses" ToolTip="Seats on a scheduled bus. Priced per seat." runat="server" CssClass="nav-link"
+                <asp:LinkButton ID="lnkTabBuses" ToolTip="Tickets on a scheduled bus, one per person." runat="server" CssClass="nav-link"
                                 CausesValidation="false" OnClick="lnkTabBuses_Click"
                                 Text="Bus tickets" />
             </li>
@@ -93,10 +93,11 @@
                                        CssClass="form-label">Travelling on <span class="text-danger">*</span></asp:Label>
                             <asp:DropDownList ID="ddlTravelDate" ToolTip="Which day of this leg you travel." runat="server" CssClass="form-select" />
                         </div>
-                        <div class="col-md-2">
-                            <asp:Label ID="lblSeats" runat="server" AssociatedControlID="txtSeats"
-                                       CssClass="form-label">Seats <span class="text-danger">*</span></asp:Label>
-                            <asp:TextBox ID="txtSeats" ToolTip="How many seats you need." runat="server" CssClass="form-control" />
+                        <div class="col-md-5">
+                            <div class="form-label">Tickets</div>
+                            <div class="form-control-plaintext fw-semibold" title="One ticket for every person on this leg.">
+                                <asp:Literal ID="litTickets" runat="server" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,14 +125,14 @@
                                 </div>
                                 <div class="mt-2 mb-3 choice-card-price">
                                     R<%# string.Format("{0:N2}", Eval("IndicativeFarePerSeat")) %>
-                                    <span class="text-muted fw-normal small">per seat</span>
+                                    <span class="text-muted fw-normal small">per ticket</span>
                                 </div>
                                 <div class="mt-auto">
-                                    <asp:LinkButton ID="lnkTakeSeats" ToolTip="Asks for these seats. Your agent confirms them when they book." runat="server"
+                                    <asp:LinkButton ID="lnkTakeSeats" ToolTip="Asks for one ticket per person on this leg. Your agent confirms them." runat="server"
                                                     CssClass="btn btn-sm btn-primary w-100"
                                                     CommandName="TakeSeats"
                                                     CommandArgument='<%# Eval("RouteId") %>'
-                                                    Text="Add these seats" />
+                                                    Text="Add tickets" />
                                 </div>
                             </div>
                         </div>

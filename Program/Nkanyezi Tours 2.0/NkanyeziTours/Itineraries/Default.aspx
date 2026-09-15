@@ -58,10 +58,34 @@
         <div class="card-body">
             <h2 class="h5 mb-3"><asp:Literal ID="litMineHeading" runat="server" /></h2>
 
+            <asp:Panel ID="pnlFilters" runat="server" DefaultButton="btnFilter" CssClass="row g-2 align-items-end mb-3">
+                <div class="col-md-5">
+                    <asp:Label ID="lblSearch" runat="server" AssociatedControlID="txtSearch" CssClass="form-label small mb-1">Trip or client</asp:Label>
+                    <asp:TextBox ID="txtSearch" ToolTip="Type part of a trip name or a client's name." runat="server" CssClass="form-control"
+                                 MaxLength="100" placeholder="Search by trip or client name" />
+                </div>
+                <div class="col-md-3">
+                    <asp:Label ID="lblStatusFilter" runat="server" AssociatedControlID="ddlStatus" CssClass="form-label small mb-1">Status</asp:Label>
+                    <asp:DropDownList ID="ddlStatus" ToolTip="Show only trips with this status." runat="server" CssClass="form-select">
+                        <asp:ListItem Text="All statuses" Value="" />
+                        <asp:ListItem Text="Draft" Value="Draft" />
+                        <asp:ListItem Text="Confirmed" Value="Confirmed" />
+                        <asp:ListItem Text="Completed" Value="Completed" />
+                        <asp:ListItem Text="Cancelled" Value="Cancelled" />
+                    </asp:DropDownList>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <asp:Button ID="btnFilter" ToolTip="Show the trips that match." runat="server" Text="Filter"
+                                CssClass="btn btn-outline-primary" CausesValidation="false" OnClick="btnFilter_Click" />
+                    <asp:Button ID="btnClearFilter" ToolTip="Clear the filters and show every trip again." runat="server" Text="Clear"
+                                CssClass="btn btn-outline-secondary" CausesValidation="false" OnClick="btnClearFilter_Click" />
+                </div>
+            </asp:Panel>
+
             <asp:GridView ID="gvMine" runat="server"
                           AutoGenerateColumns="false"
                           CssClass="table table-striped table-hover align-middle"
-                          EmptyDataText="No trips yet."
+                          EmptyDataText="No trips match."
                           GridLines="None">
                 <Columns>
                     <asp:BoundField DataField="TripName" HeaderText="Trip" />

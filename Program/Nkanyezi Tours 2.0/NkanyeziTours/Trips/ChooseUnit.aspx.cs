@@ -85,7 +85,7 @@ public partial class ChooseUnit : Page
         if (trip == null || !trip.ClientCanEdit)
         {
             pnlBody.Visible = false;
-            ShowMessage("This trip is finished, so it cannot be changed.", "alert-warning");
+            ShowMessage("This trip has been submitted or has ended, so it can no longer be changed. Contact your agent if something needs to change.", "alert-warning");
             return false;
         }
 
@@ -159,7 +159,7 @@ public partial class ChooseUnit : Page
 
     protected void rptUnits_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
-        if (e.CommandName != "ToggleRoom" || _leg == null)
+        if (e.CommandName != "ToggleRoom" || _leg == null || !pnlBody.Visible)
             return;
 
         if (!int.TryParse(Convert.ToString(e.CommandArgument), out var roomId))

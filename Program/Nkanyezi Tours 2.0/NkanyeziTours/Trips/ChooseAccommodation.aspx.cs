@@ -72,7 +72,7 @@ public partial class ChooseAccommodation : Page
         if (trip == null || !trip.ClientCanEdit)
         {
             pnlBody.Visible = false;
-            ShowMessage("This trip is finished, so it cannot be changed.", "alert-warning");
+            ShowMessage("This trip has been submitted or has ended, so it can no longer be changed. Contact your agent if something needs to change.", "alert-warning");
             return false;
         }
 
@@ -86,12 +86,20 @@ public partial class ChooseAccommodation : Page
         ddlProvince.DataValueField = "Id";
         ddlProvince.DataBind();
         ddlProvince.Items.Insert(0, new ListItem("Anywhere", ""));
+
+        if (_leg!.ProvinceId != null && ddlProvince.Items.FindByValue(_leg.ProvinceId.Value.ToString()) != null)
+        {
+            ddlProvince.SelectedValue = _leg.ProvinceId.Value.ToString();
+            ddlProvince.Enabled = false;
+            ddlProvince.ToolTip = "Only resorts in the region you chose for this leg are shown.";
+        }
     }
 
     private void BindOptions()
     {
         var name = txtSearchName.Text.Trim();
-        int? provinceId = int.TryParse(ddlProvince.SelectedValue, out var pid) ? pid : (int?)null;
+        int? provinceId = _leg!.ProvinceId
+                          ?? (int.TryParse(ddlProvince.SelectedValue, out var pid) ? pid : (int?)null);
         decimal? maxPrice = decimal.TryParse(txtMaxPrice.Text.Trim(), out var price) ? price : (decimal?)null;
 
         var hasFilter = name.Length > 0 || provinceId.HasValue || maxPrice.HasValue;
@@ -114,17 +122,27 @@ public partial class ChooseAccommodation : Page
     protected void btnClear_Click(object sender, EventArgs e)
     {
         txtSearchName.Text = "";
-        ddlProvince.SelectedIndex = 0;
+        if (ddlProvince.Enabled)
+            ddlProvince.SelectedIndex = 0;
         txtMaxPrice.Text = "";
         BindOptions();
     }
 
     protected void rptOptions_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
-        if (e.CommandName != "ChooseResort" || _leg == null)
+        if (e.CommandName != "ChooseResort" || _leg == null || !pnlBody.Visible)
             return;
 
         var accommodationId = Convert.ToInt32(e.CommandArgument);
+        var chosen = _accommodation.GetById(accommodationId);
+
+        if (chosen == null || !chosen.IsActive
+            || (_leg.ProvinceId != null && chosen.ProvinceId != _leg.ProvinceId))
+        {
+            ShowMessage("Please choose a resort in the region you picked for this leg.", "alert-warning");
+            BindOptions();
+            return;
+        }
 
         _legs.SetResort(_leg.TripLegId, accommodationId);
 

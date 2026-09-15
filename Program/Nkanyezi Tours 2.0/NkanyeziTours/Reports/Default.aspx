@@ -103,11 +103,27 @@
         </ul>
 
         <div class="card border-top-0 rounded-top-0 mb-3">
-            <asp:Repeater ID="rptSections" runat="server" OnItemDataBound="rptSections_ItemDataBound">
+            <asp:Repeater ID="rptSections" runat="server" OnItemDataBound="rptSections_ItemDataBound" OnItemCommand="rptSections_ItemCommand">
                 <ItemTemplate>
                     <div class="card-body report-section" data-report-section="<%#: Eval("Key") %>" <%# IsSelected((string)Eval("Key")) ? "" : "hidden" %>>
                         <h3 class="h5 mb-1"><%#: Eval("Heading") %></h3>
                         <p class="text-muted small mb-2"><%#: Eval("Description") %></p>
+                        <asp:Panel ID="pnlSort" runat="server" CssClass="d-flex flex-wrap align-items-end gap-2 mb-3 report-sort">
+                            <div>
+                                <asp:Label ID="lblSortColumn" runat="server" AssociatedControlID="ddlSortColumn" CssClass="form-label small mb-1" Text="Sort by" />
+                                <asp:DropDownList ID="ddlSortColumn" ToolTip="Choose the column to sort this table by." runat="server" CssClass="form-select form-select-sm" />
+                            </div>
+                            <div>
+                                <asp:Label ID="lblSortOrder" runat="server" AssociatedControlID="ddlSortOrder" CssClass="form-label small mb-1" Text="Order" />
+                                <asp:DropDownList ID="ddlSortOrder" ToolTip="Lowest or earliest first, or highest or latest first." runat="server" CssClass="form-select form-select-sm">
+                                    <asp:ListItem Text="Lowest first (A to Z, earliest)" Value="asc" />
+                                    <asp:ListItem Text="Highest first (Z to A, latest)" Value="desc" />
+                                </asp:DropDownList>
+                            </div>
+                            <asp:Button ID="btnSort" ToolTip="Sort the table. Saving as Excel or PDF keeps this order." runat="server" Text="Sort"
+                                        CssClass="btn btn-sm btn-outline-primary" CausesValidation="false"
+                                        CommandName="Sort" CommandArgument='<%# Eval("Key") %>' />
+                        </asp:Panel>
                         <div class="table-responsive">
                             <asp:GridView ID="gvSection" runat="server"
                                           AutoGenerateColumns="true"

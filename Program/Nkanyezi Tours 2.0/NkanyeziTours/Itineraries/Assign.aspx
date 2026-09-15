@@ -3,10 +3,16 @@
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h1 class="h3 mb-1">Assign trips</h1>
-    <p class="text-muted mb-4">
-        Allocate a trip to an agent, or move it to a different agent.
-    </p>
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Assign trips</h1>
+            <p class="text-muted mb-0">
+                Allocate a trip to an agent, or move it to a different agent.
+            </p>
+        </div>
+        <asp:HyperLink ID="lnkBack" ToolTip="Go back to the list of itineraries." runat="server" CssClass="btn btn-outline-secondary"
+                       NavigateUrl="~/Itineraries/Default.aspx">&#8592; Back to itineraries</asp:HyperLink>
+    </div>
 
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert py-2">
         <asp:Literal ID="litMessage" runat="server" />

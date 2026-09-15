@@ -17,8 +17,7 @@
         protected global::System.Web.UI.WebControls.Panel pnlSeats;
         protected global::System.Web.UI.WebControls.Label lblTravelDate;
         protected global::System.Web.UI.WebControls.DropDownList ddlTravelDate;
-        protected global::System.Web.UI.WebControls.Label lblSeats;
-        protected global::System.Web.UI.WebControls.TextBox txtSeats;
+        protected global::System.Web.UI.WebControls.Literal litTickets;
         protected global::System.Web.UI.WebControls.Repeater rptRoutes;
         protected global::System.Web.UI.WebControls.Panel pnlNoRoutes;
         protected global::System.Web.UI.WebControls.Literal litNoRoutes;

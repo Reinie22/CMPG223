@@ -14,9 +14,7 @@ public partial class Login : Page
         if (!IsPostBack && AuthService.IsSignedIn && !AuthService.BypassLogin)
             Response.Redirect("~/Default.aspx");
 
-        pnlTestAccounts.Visible = AuthService.BypassLogin;
-
-        if (AuthService.BypassLogin && !IsPostBack)
+        if (!IsPostBack)
             BindTestAccounts();
     }
 

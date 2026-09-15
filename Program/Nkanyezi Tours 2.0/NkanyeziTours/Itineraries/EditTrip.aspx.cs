@@ -10,6 +10,7 @@ public partial class EditTrip : Page
 {
     private ItineraryRepository _itineraries => Repositories.Itineraries;
     private TripRequestRepository _requests => Repositories.TripRequests;
+    private TripLegRepository _legs => Repositories.TripLegs;
     private AuthService _auth => Repositories.Auth;
 
     private AppUser? _user;
@@ -114,6 +115,12 @@ public partial class EditTrip : Page
             _                         => "text-bg-secondary"
         };
 
+        var requests = _requests.GetByItinerary(_trip.ItineraryId);
+        var rooms    = _legs.GetByItinerary(_trip.ItineraryId).Sum(l => l.EstimatedResortCost);
+        var approved = requests.Where(r => r.IsApproved).Sum(r => r.EstimatedCost);
+
+        _trip.BookingsTotal += rooms + approved;
+
         litBudgetTotal.Text   = Money(_trip.TotalBudget);
         litBookingsTotal.Text = Money(_trip.BookingsTotal);
         litExpensesTotal.Text = Money(_trip.ExpensesTotal);
@@ -125,10 +132,7 @@ public partial class EditTrip : Page
         pnlBudgetBar.CssClass = _trip.IsOverBudget ? "progress-bar bg-danger" : "progress-bar";
         pnlOverBudget.Visible = _trip.IsOverBudget;
 
-        gvBookings.DataSource = _itineraries.GetBookingLines(_trip.ItineraryId);
-        gvBookings.DataBind();
-
-        BindRequests();
+        BindRequests(requests);
 
         lnkBookTransport.NavigateUrl =
             "~/Itineraries/BookTransport.aspx?itineraryId=" + _trip.ItineraryId;
@@ -146,10 +150,8 @@ public partial class EditTrip : Page
         btnComplete.Visible = _trip.Status == ItineraryStatus.Confirmed;
     }
 
-    private void BindRequests()
+    private void BindRequests(List<TripRequestItem> requests)
     {
-        var requests = _requests.GetByItinerary(_trip!.ItineraryId);
-
         pnlRequests.Visible = requests.Count > 0;
 
         var pending = requests.Count(r => r.IsRequested);
@@ -179,13 +181,14 @@ public partial class EditTrip : Page
 
         if (_requests.Decide(id, status, agentNote: null))
             ShowMessage(status == RequestStatus.Approved
-                ? "Approved. Now make the real booking on the booking screens."
+                ? "Approved. Its cost has been added to the trip amount."
                 : "Declined. The client sees this on their own trip page.",
                 status == RequestStatus.Approved ? "alert-success" : "alert-warning");
         else
             ShowMessage("That one had already been decided.", "alert-warning");
 
-        BindRequests();
+        _trip = _itineraries.GetWithTotals(_trip.ItineraryId) ?? _trip;
+        ShowStatus();
     }
 
     protected void btnSave_Click(object sender, EventArgs e)

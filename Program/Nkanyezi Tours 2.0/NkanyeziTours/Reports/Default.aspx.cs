@@ -37,6 +37,7 @@ public partial class _Default : Page
         pnlReport.Visible  = false;
         pnlMessage.Visible = false;
         hfSection.Value    = "";
+        Sorts              = new Dictionary<string, string>();
         ShowOptionsForReport();
     }
 
@@ -65,6 +66,25 @@ public partial class _Default : Page
         var section = (ReportSection)e.Item.DataItem;
         var grid    = (GridView)e.Item.FindControl("gvSection");
 
+        var sortColumn = (DropDownList)e.Item.FindControl("ddlSortColumn");
+        var sortOrder  = (DropDownList)e.Item.FindControl("ddlSortOrder");
+
+        sortColumn.Items.Clear();
+        sortColumn.Items.Add(new ListItem("Default order", ""));
+        for (var c = 0; c < section.Columns.Count; c++)
+            sortColumn.Items.Add(new ListItem(section.Columns[c].Header, c.ToString(CultureInfo.InvariantCulture)));
+
+        if (Sorts.TryGetValue(section.Key, out var saved))
+        {
+            var parts = saved.Split('|');
+            if (sortColumn.Items.FindByValue(parts[0]) != null)
+                sortColumn.SelectedValue = parts[0];
+            if (parts.Length > 1 && sortOrder.Items.FindByValue(parts[1]) != null)
+                sortOrder.SelectedValue = parts[1];
+        }
+
+        e.Item.FindControl("pnlSort").Visible = section.Rows.Count > 1;
+
         grid.EmptyDataText = section.EmptyText;
         grid.EmptyDataRowStyle.CssClass = "text-muted-empty";
 
@@ -85,6 +105,50 @@ public partial class _Default : Page
 
         if (grid.HeaderRow != null)
             grid.HeaderRow.TableSection = TableRowSection.TableHeader;
+    }
+
+    protected void rptSections_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        if (e.CommandName != "Sort")
+            return;
+
+        var key    = Convert.ToString(e.CommandArgument) ?? "";
+        var column = ((DropDownList)e.Item.FindControl("ddlSortColumn")).SelectedValue;
+        var order  = ((DropDownList)e.Item.FindControl("ddlSortOrder")).SelectedValue;
+
+        var sorts = Sorts;
+        if (column.Length == 0)
+            sorts.Remove(key);
+        else
+            sorts[key] = column + "|" + (order == "desc" ? "desc" : "asc");
+        Sorts = sorts;
+
+        hfSection.Value = key;
+
+        var report = TryBuild();
+        if (report == null)
+            return;
+
+        Render(report);
+    }
+
+    private Dictionary<string, string> Sorts
+    {
+        get => ViewState["Sorts"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+        set => ViewState["Sorts"] = value;
+    }
+
+    private void ApplySorts(ReportDocument report)
+    {
+        foreach (var section in report.Sections)
+        {
+            if (!Sorts.TryGetValue(section.Key, out var saved))
+                continue;
+
+            var parts = saved.Split('|');
+            if (int.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var column))
+                section.SortBy(column, parts.Length > 1 && parts[1] == "desc");
+        }
     }
 
     private void Download(Func<ReportDocument, byte[]> write, string extension, string contentType)
@@ -155,8 +219,11 @@ public partial class _Default : Page
 
         try
         {
-            return new ReportBuilder(Repositories.Reports)
+            var report = new ReportBuilder(Repositories.Reports)
                 .Build(ddlReport.SelectedValue, fromDate, toDate, clientId, client, AuthService.CurrentDisplayName);
+
+            ApplySorts(report);
+            return report;
         }
         catch (Exception)
         {

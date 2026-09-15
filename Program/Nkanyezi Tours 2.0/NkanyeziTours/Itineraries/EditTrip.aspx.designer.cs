@@ -38,6 +38,5 @@
         protected global::System.Web.UI.WebControls.Panel pnlRequests;
         protected global::System.Web.UI.WebControls.Label lblPendingCount;
         protected global::System.Web.UI.WebControls.GridView gvRequests;
-        protected global::System.Web.UI.WebControls.GridView gvBookings;
     }
 }

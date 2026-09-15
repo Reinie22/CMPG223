@@ -145,9 +145,16 @@ public partial class MyTrip : Page
         rptLegs.DataSource = legs;
         rptLegs.DataBind();
 
+        var canChange = _trip!.ClientCanEdit;
+
         for (var i = 0; i < rptLegs.Items.Count; i++)
         {
             var leg = legs[i];
+
+            if (!canChange)
+                foreach (var id in new[] { "lnkRemoveLeg", "lnkChooseUnit", "lnkChooseResort", "lnkAddActivities", "lnkAddTransport" })
+                    if (rptLegs.Items[i].FindControl(id) is System.Web.UI.Control control)
+                        control.Visible = false;
 
             if (rptLegs.Items[i].FindControl("rptLegActivities") is Repeater inner)
             {
@@ -175,6 +182,11 @@ public partial class MyTrip : Page
 
         gvUnplaced.DataSource = unplaced;
         gvUnplaced.DataBind();
+
+        if (!_trip!.ClientCanEdit)
+            foreach (GridViewRow row in gvUnplaced.Rows)
+                if (row.FindControl("lnkRemove") is System.Web.UI.Control remove)
+                    remove.Visible = false;
     }
 
     private void BindTotals(List<TripLeg> legs, List<TripRequestItem> requests)
@@ -206,9 +218,20 @@ public partial class MyTrip : Page
               + legs[legs.Count - 1].EndDate.ToString("dd/MM/yyyy");
     }
 
+    private bool RefuseIfLocked()
+    {
+        if (_trip!.ClientCanEdit)
+            return false;
+
+        ShowMessage("This trip has been submitted, so it can no longer be changed. Contact your agent if something needs to change.",
+                    "alert-warning");
+        Show();
+        return true;
+    }
+
     protected void btnAddLeg_Click(object sender, EventArgs e)
     {
-        if (!Page.IsValid || _trip == null)
+        if (!Page.IsValid || _trip == null || RefuseIfLocked())
             return;
 
         var nights = int.TryParse(txtNights.Text.Trim(), out var n) ? n : 1;
@@ -259,7 +282,7 @@ public partial class MyTrip : Page
 
     protected void btnCancelBooking_Click(object sender, EventArgs e)
     {
-        if (_trip == null || !_trip.IsEditable)
+        if (_trip == null || RefuseIfLocked())
             return;
 
         _itineraries.SetStatus(_trip.ItineraryId, ItineraryStatus.Cancelled);
@@ -269,7 +292,7 @@ public partial class MyTrip : Page
 
     protected void rptLegs_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
-        if (e.CommandName != "RemoveLeg" || _trip == null)
+        if (e.CommandName != "RemoveLeg" || _trip == null || RefuseIfLocked())
             return;
 
         var legId = Convert.ToInt32(e.CommandArgument);
@@ -289,7 +312,7 @@ public partial class MyTrip : Page
 
     protected void gvUnplaced_RowCommand(object sender, GridViewCommandEventArgs e)
     {
-        if (e.CommandName != "RemoveRequest" || _trip == null)
+        if (e.CommandName != "RemoveRequest" || _trip == null || RefuseIfLocked())
             return;
 
         var id = Convert.ToInt32(e.CommandArgument);

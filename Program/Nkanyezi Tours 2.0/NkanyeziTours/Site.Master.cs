@@ -28,7 +28,8 @@ public partial class SiteMaster : MasterPage
 
             litDashboardLabel.Text = isStaff ? "Dashboard" : "Itineraries";
 
-            navMaintain.Visible    = isStaff;
+            navDashboard.Visible   = role != RoleNames.TravelAgent;
+            navMaintain.Visible    = isManagement;
             navItineraries.Visible = isStaff;
             navReports.Visible     = isManagement;
         }

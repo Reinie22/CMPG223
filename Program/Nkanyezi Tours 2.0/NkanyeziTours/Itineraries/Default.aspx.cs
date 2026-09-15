@@ -47,12 +47,37 @@ public partial class _Default : Page
         if (!IsAgent)
             BindQueue();
 
-        var mine = IsAgent
+        BindTrips();
+    }
+
+    private void BindTrips()
+    {
+        IEnumerable<Itinerary> trips = IsAgent
             ? _itineraries.GetForAgent(_user!.UserId)
             : _itineraries.GetAll();
 
-        gvMine.DataSource = mine;
+        var text = txtSearch.Text.Trim();
+        if (text.Length > 0)
+            trips = trips.Where(t => t.TripName.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0
+                                  || (t.ClientName ?? "").IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
+
+        if (ddlStatus.SelectedValue.Length > 0)
+            trips = trips.Where(t => t.Status == ddlStatus.SelectedValue);
+
+        gvMine.DataSource = trips.ToList();
         gvMine.DataBind();
+    }
+
+    protected void btnFilter_Click(object sender, EventArgs e)
+    {
+        BindTrips();
+    }
+
+    protected void btnClearFilter_Click(object sender, EventArgs e)
+    {
+        txtSearch.Text = "";
+        ddlStatus.SelectedIndex = 0;
+        BindTrips();
     }
 
     private void BindQueue()

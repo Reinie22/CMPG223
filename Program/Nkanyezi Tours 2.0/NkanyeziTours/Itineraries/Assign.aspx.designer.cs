@@ -2,6 +2,7 @@
 {
     public partial class Assign
     {
+        protected global::System.Web.UI.WebControls.HyperLink lnkBack;
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.Repeater rptWorkload;

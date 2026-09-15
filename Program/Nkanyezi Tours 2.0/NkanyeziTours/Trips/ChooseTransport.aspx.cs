@@ -47,7 +47,8 @@ public partial class ChooseTransport : Page
         {
             litSubtitle.Text = Server.HtmlEncode($"For {_leg.Title} - {_leg.DateDisplay}");
 
-            txtSeats.Text = _leg.Guests.ToString();
+            litTickets.Text = _leg.Guests + (_leg.Guests == 1 ? " ticket, for the 1 person" : " tickets, one for each of the " + _leg.Guests + " people")
+                              + " on this leg";
 
             BindTravelDays();
             BindCars();
@@ -176,7 +177,7 @@ public partial class ChooseTransport : Page
 
     protected void rptCars_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
-        if (e.CommandName != "TakeCar" || _leg == null)
+        if (e.CommandName != "TakeCar" || _leg == null || !pnlBody.Visible)
             return;
 
         var vehicleId = Convert.ToInt32(e.CommandArgument);
@@ -197,7 +198,7 @@ public partial class ChooseTransport : Page
 
     protected void rptRoutes_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
-        if (e.CommandName != "TakeSeats" || _leg == null)
+        if (e.CommandName != "TakeSeats" || _leg == null || !pnlBody.Visible)
             return;
 
         var travelDate = ParseDate(ddlTravelDate.SelectedValue);
@@ -208,11 +209,7 @@ public partial class ChooseTransport : Page
             return;
         }
 
-        if (!int.TryParse(txtSeats.Text.Trim(), out var seats) || seats < 1)
-        {
-            ShowMessage("How many seats do you need?", "alert-danger");
-            return;
-        }
+        var seats = Math.Max(_leg.Guests, 1);
 
         var routeId = Convert.ToInt32(e.CommandArgument);
 

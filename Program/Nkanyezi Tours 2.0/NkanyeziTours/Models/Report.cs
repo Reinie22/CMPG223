@@ -13,7 +13,8 @@ public enum ReportColumnKind
     Money,
     Number,
     Percent,
-    Date
+    Date,
+    Month
 }
 
 public class ReportColumn
@@ -31,7 +32,7 @@ public class ReportColumn
 
     public double PdfWidth { get; }
 
-    public bool IsNumeric => Kind != ReportColumnKind.Text && Kind != ReportColumnKind.Date;
+    public bool IsNumeric => Kind is ReportColumnKind.Money or ReportColumnKind.Number or ReportColumnKind.Percent;
 }
 
 public class ReportSection
@@ -49,6 +50,51 @@ public class ReportSection
     public List<object?[]> Rows { get; } = new List<object?[]>();
 
     public object?[]? TotalRow { get; set; }
+
+    public void SortBy(int columnIndex, bool descending)
+    {
+        if (columnIndex < 0 || columnIndex >= Columns.Count || Rows.Count < 2)
+            return;
+
+        var comparer = Comparer<object?>.Create(CompareCells);
+
+        var sorted = descending
+            ? Rows.OrderByDescending(r => columnIndex < r.Length ? r[columnIndex] : null, comparer).ToList()
+            : Rows.OrderBy(r => columnIndex < r.Length ? r[columnIndex] : null, comparer).ToList();
+
+        Rows.Clear();
+        Rows.AddRange(sorted);
+
+        var direction = Columns[columnIndex].Kind switch
+        {
+            ReportColumnKind.Text                          => descending ? "Z to A" : "A to Z",
+            ReportColumnKind.Date or ReportColumnKind.Month => descending ? "latest first" : "earliest first",
+            _                                              => descending ? "highest first" : "lowest first"
+        };
+
+        Description = (Description.TrimEnd() + " Sorted by " + Columns[columnIndex].Header.ToLowerInvariant()
+                      + ", " + direction + ".").Trim();
+    }
+
+    private static int CompareCells(object? a, object? b)
+    {
+        if (a == null || a == DBNull.Value)
+            return b == null || b == DBNull.Value ? 0 : -1;
+
+        if (b == null || b == DBNull.Value)
+            return 1;
+
+        if (a is DateTime da && b is DateTime db)
+            return da.CompareTo(db);
+
+        if (IsNumber(a) && IsNumber(b))
+            return Convert.ToDecimal(a).CompareTo(Convert.ToDecimal(b));
+
+        return string.Compare(a.ToString(), b.ToString(), StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    private static bool IsNumber(object value)
+        => value is decimal or int or long or double or float or short or byte;
 }
 
 public class ReportStat
@@ -158,6 +204,8 @@ public class ReportDocument
                 return Convert.ToDecimal(value).ToString("0.0") + "%";
             case ReportColumnKind.Date:
                 return value is DateTime date ? date.ToString("dd/MM/yyyy") : value.ToString();
+            case ReportColumnKind.Month:
+                return value is DateTime month ? month.ToString("MMMM yyyy") : value.ToString();
             default:
                 return value.ToString() ?? "";
         }

@@ -168,13 +168,22 @@ function Invoke-SqlFile ($file, $label) {
 if ($IfMissing) {
     $old = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    $existing = & $sqlcmd -S $instance -E -C -d $DbName -h -1 -W `
+    $existing = & $sqlcmd -S $instance -E -C -b -d $DbName -h -1 -W `
                           -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables;" 2>$null
+    $countQueryWorked = ($LASTEXITCODE -eq 0)
     $ErrorActionPreference = $old
 
-    $count = 0
-    if ($existing) {
-        [void][int]::TryParse(($existing | Select-Object -First 1).ToString().Trim(), [ref] $count)
+    $count = -1
+    $parsed = 0
+    if ($countQueryWorked -and $existing -and
+        [int]::TryParse(($existing | Select-Object -First 1).ToString().Trim(), [ref] $parsed)) {
+        $count = $parsed
+    }
+
+    if ($count -lt 0) {
+        Write-Warn "Could not check whether $DbName already has tables, so nothing was changed."
+        Write-Warn 'Start SQL Server or LocalDB and build again, or run this script without -IfMissing to rebuild on purpose.'
+        exit 0
     }
 
     if ($count -gt 0) {
