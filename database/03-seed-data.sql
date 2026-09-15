@@ -11,7 +11,6 @@ DELETE FROM dbo.Room;
 DELETE FROM dbo.Accommodation;
 DELETE FROM dbo.Route;
 DELETE FROM dbo.Vehicle;
-DELETE FROM dbo.ExchangeRate;
 DELETE FROM dbo.AppUser;
 
 DECLARE @tables TABLE (TableName SYSNAME);
@@ -20,7 +19,7 @@ INSERT INTO @tables (TableName) VALUES
     ('TripExpense'), ('AttractionBooking'), ('RoomBooking'), ('RouteBooking'),
     ('VehicleBooking'), ('Itinerary'), ('Attraction'),
     ('Room'), ('Accommodation'), ('Route'), ('Vehicle'),
-    ('ExchangeRate'), ('AppUser');
+    ('AppUser');
 
 DECLARE @sql NVARCHAR(MAX) = N'';
 
@@ -153,15 +152,6 @@ INSERT INTO dbo.Route (RouteType, Carrier, RouteCode, DepartureCity, ArrivalCity
 ('Shuttle','Baz Bus','BZ 10','Cape Town','Plettenberg Bay','07:00','15:30',510,650.00,36);
 GO
 
-INSERT INTO dbo.ExchangeRate (CurrencyCode, CurrencyName, RateToZar, EffectiveFrom, CapturedBy) VALUES
-('USD','US Dollar',18.450000,'2026-08-01',1),
-('EUR','Euro',20.120000,'2026-08-01',1),
-('GBP','British Pound',23.780000,'2026-08-01',1),
-('AUD','Australian Dollar',12.050000,'2026-08-01',1),
-('USD','US Dollar',18.620000,'2026-08-10',1),
-('EUR','Euro',20.310000,'2026-08-10',1);
-GO
-
 INSERT INTO dbo.Itinerary (ClientId, AgentId, TripName, StartDate, EndDate, TotalBudget, TripComments, Status, CreatedDate) VALUES
 (6, 3, 'Cape Town Long Weekend','2026-09-11','2026-09-14', 25000.00,
     'Client prefers a sea facing room. Phoned on 5 August to confirm the cableway booking.','Confirmed','2026-08-05T09:15:00'),
@@ -241,7 +231,6 @@ UNION ALL SELECT 'Room',          COUNT(*) FROM dbo.Room
 UNION ALL SELECT 'Attraction',    COUNT(*) FROM dbo.Attraction
 UNION ALL SELECT 'Vehicle',       COUNT(*) FROM dbo.Vehicle
 UNION ALL SELECT 'Route',         COUNT(*) FROM dbo.Route
-UNION ALL SELECT 'ExchangeRate',  COUNT(*) FROM dbo.ExchangeRate
 UNION ALL SELECT 'Itinerary',     COUNT(*) FROM dbo.Itinerary
 UNION ALL SELECT 'RoomBooking',   COUNT(*) FROM dbo.RoomBooking
 UNION ALL SELECT 'AttractionBooking', COUNT(*) FROM dbo.AttractionBooking

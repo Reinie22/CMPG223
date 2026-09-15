@@ -35,10 +35,7 @@
                         <asp:Panel ID="pnlAdminOnly" runat="server" Visible="false">
                             <div class="maintain-nav-group">Administrator</div>
                             <asp:HyperLink ID="lnkUsers" ToolTip="Staff and client accounts, and what each may do." runat="server" CssClass="nav-link"
-                                           NavigateUrl="~/Maintain/Users/Default.aspx">Users and access</asp:HyperLink>
-                            <asp:HyperLink ID="lnkRates" ToolTip="Exchange rates used to show prices in other currencies." runat="server" CssClass="nav-link"
-                                           NavigateUrl="~/Maintain/Rates/Default.aspx">Exchange rates</asp:HyperLink>
-                        </asp:Panel>
+                                           NavigateUrl="~/Maintain/Users/Default.aspx">Users and access</asp:HyperLink>                        </asp:Panel>
 
                     </nav>
 

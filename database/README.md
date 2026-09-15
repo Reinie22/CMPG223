@@ -53,7 +53,7 @@ That is it. It will:
    (your old file is kept as `Web.config.bak`).
 6. Print a table and foreign-key count so you can see it worked.
 
-You should end up with **21 tables, 37 foreign keys** and the seed row counts.
+You should end up with **20 tables, 36 foreign keys** and the seed row counts.
 
 Then open the solution in Visual Studio and press F5.
 
@@ -212,6 +212,6 @@ You pulled someone's schema change. Re-run Option 1.
 |---|---|
 | `setup-database.bat` | Double-click launcher for the setup script |
 | `setup-database.ps1` | Does the whole setup: detect, create, run, patch config |
-| `01-schema.sql` | Creates all 21 tables and their keys, including trip legs, leg rooms and trip choices. Drops first, so re-runnable |
+| `01-schema.sql` | Creates all 20 tables and their keys, including trip legs, leg rooms and trip choices. Drops first, so re-runnable |
 | `03-seed-data.sql` | Loads the shared test data. Run after the schema |
 | `_retired-stored-procedures/` | Old stored procedures, not used |

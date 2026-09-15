@@ -421,22 +421,6 @@ GO
 
 CREATE INDEX IX_TripExpense_Itinerary ON dbo.TripExpense (ItineraryId);
 GO
-CREATE TABLE dbo.ExchangeRate (
-    ExchangeRateId  INT IDENTITY(1,1)   NOT NULL,
-    CurrencyCode    NCHAR(3)            NOT NULL,
-    CurrencyName    NVARCHAR(50)        NOT NULL,
-    RateToZar       DECIMAL(12,6)       NOT NULL,
-    EffectiveFrom   DATE                NOT NULL,
-    CapturedBy      INT                 NULL,
-    CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_Rate_Created DEFAULT (SYSDATETIME()),
-
-    CONSTRAINT PK_ExchangeRate      PRIMARY KEY (ExchangeRateId),
-    CONSTRAINT FK_ExchangeRate_User FOREIGN KEY (CapturedBy) REFERENCES dbo.AppUser (UserId),
-    CONSTRAINT UQ_ExchangeRate      UNIQUE (CurrencyCode, EffectiveFrom),
-    CONSTRAINT CK_ExchangeRate_Rate CHECK (RateToZar > 0)
-);
-GO
-
 CREATE TABLE dbo.TripLeg (
     TripLegId       INT IDENTITY(1,1)   NOT NULL,
     ItineraryId     INT                 NOT NULL,
@@ -545,5 +529,5 @@ INSERT INTO dbo.ExpenseCategory (CategoryName) VALUES
     ('Meals'), ('Fuel'), ('Entrance fees'), ('Shopping'), ('Other');
 GO
 
-PRINT 'Schema created. 21 tables. Now run 03-seed-data.sql for test data.';
+PRINT 'Schema created. 20 tables. Now run 03-seed-data.sql for test data.';
 GO

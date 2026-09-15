@@ -218,13 +218,6 @@
     <Compile Include="Maintain\Users\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Maintain\Rates\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Maintain\Rates\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\TripLegRepository.cs" />
     <Compile Include="Models\TripLeg.cs" />
     <Compile Include="Trips\ChooseTransport.aspx.cs">
@@ -283,7 +276,6 @@
     <Compile Include="Models\AppUser.cs" />
     <Compile Include="Models\Attraction.cs" />
     <Compile Include="Models\Bookings.cs" />
-    <Compile Include="Models\ExchangeRate.cs" />
     <Compile Include="Models\Itinerary.cs" />
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\TripExpense.cs" />
@@ -292,7 +284,6 @@
     <Compile Include="Controllers\AttractionRepository.cs" />
     <Compile Include="Controllers\BookingRepositories.cs" />
     <Compile Include="Controllers\Db.cs" />
-    <Compile Include="Controllers\ExchangeRateRepository.cs" />
     <Compile Include="Controllers\ItineraryRepository.cs" />
     <Compile Include="Controllers\LookupRepository.cs" />
     <Compile Include="Controllers\PasswordHasher.cs" />
@@ -388,7 +379,6 @@
     <Content Include="Maintain\Routes\Edit.aspx" />
     <Content Include="Maintain\Users\Default.aspx" />
     <Content Include="Maintain\Users\Edit.aspx" />
-    <Content Include="Maintain\Rates\Default.aspx" />
     <Content Include="Trips\ChooseTransport.aspx" />
     <Content Include="Account\Register.aspx" />
     <Content Include="Reports\Default.aspx" />

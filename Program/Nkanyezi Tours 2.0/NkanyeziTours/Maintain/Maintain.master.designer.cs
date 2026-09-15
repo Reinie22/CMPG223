@@ -10,7 +10,6 @@
         protected global::System.Web.UI.WebControls.HyperLink lnkRoutes;
         protected global::System.Web.UI.WebControls.Panel pnlAdminOnly;
         protected global::System.Web.UI.WebControls.HyperLink lnkUsers;
-        protected global::System.Web.UI.WebControls.HyperLink lnkRates;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MaintainContent;
     }
 }

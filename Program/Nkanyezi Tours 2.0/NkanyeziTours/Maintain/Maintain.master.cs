@@ -32,8 +32,6 @@ public partial class MaintainMaster : MasterPage
             MarkActive(lnkRoutes);
         else if (Has(path, "/Maintain/Users/"))
             MarkActive(lnkUsers);
-        else if (Has(path, "/Maintain/Rates/"))
-            MarkActive(lnkRates);
     }
 
     private static bool Has(string path, string fragment)

@@ -170,7 +170,6 @@ public static class Repositories
     public static VehicleRepository Vehicles => new VehicleRepository(Current);
     public static VehicleMaintenanceRepository VehicleMaintenance => new VehicleMaintenanceRepository(Current);
     public static RouteRepository Routes => new RouteRepository(Current);
-    public static ExchangeRateRepository ExchangeRates => new ExchangeRateRepository(Current);
 
     public static ItineraryRepository Itineraries => new ItineraryRepository(Current);
     public static RoomBookingRepository RoomBookings => new RoomBookingRepository(Current);
