@@ -38,6 +38,17 @@ public class TripRequestItem
 
     public decimal GuidePrice { get; set; }
 
+    public string? RouteType { get; set; }
+
+    public string TypeDisplay => ItemType switch
+    {
+        RequestItemTypes.Vehicle => "Car rental",
+        RequestItemTypes.Route   => RouteType == RouteTypes.Shuttle ? "Bus"
+                                  : RouteType == RouteTypes.Flight  ? "Flight"
+                                  : "Route",
+        _                        => ItemType
+    };
+
     public bool IsAccommodation => ItemType == RequestItemTypes.Accommodation;
     public bool IsAttraction    => ItemType == RequestItemTypes.Attraction;
     public bool IsVehicle       => ItemType == RequestItemTypes.Vehicle;

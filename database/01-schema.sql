@@ -71,7 +71,7 @@ CREATE TABLE dbo.AppUser (
 
     CONSTRAINT PK_AppUser        PRIMARY KEY (UserId),
     CONSTRAINT UQ_AppUser_Email  UNIQUE (Email),
-    CONSTRAINT FK_AppUser_Role   FOREIGN KEY (RoleId) REFERENCES dbo.Role (RoleId)
+    CONSTRAINT FK_AppUser_Role   FOREIGN KEY (RoleId) REFERENCES dbo.Role (RoleId) ON DELETE NO ACTION
 );
 GO
 
@@ -174,6 +174,7 @@ CREATE TABLE dbo.Vehicle (
     IsActive            BIT                 NOT NULL CONSTRAINT DF_Vehicle_IsActive DEFAULT (1),
     CreatedDate         DATETIME2(0)        NOT NULL CONSTRAINT DF_Vehicle_Created  DEFAULT (SYSDATETIME()),
     ProvinceId          INT                 NULL,
+    ImageUrl            NVARCHAR(300)       NULL,
 
     CONSTRAINT PK_Vehicle         PRIMARY KEY (VehicleId),
     CONSTRAINT UQ_Vehicle_Reg     UNIQUE (RegistrationNumber),
@@ -433,8 +434,10 @@ CREATE TABLE dbo.TripLeg (
     ClientNote      NVARCHAR(500)       NULL,
     CreatedDate     DATETIME2(0)        NOT NULL CONSTRAINT DF_TripLeg_Created DEFAULT (SYSDATETIME()),
     ProvinceId      INT                 NULL,
+    ResortStatus    NVARCHAR(10)        NOT NULL CONSTRAINT DF_TripLeg_ResortStatus DEFAULT ('Requested'),
 
     CONSTRAINT PK_TripLeg               PRIMARY KEY (TripLegId),
+    CONSTRAINT CK_TripLeg_ResortStatus  CHECK (ResortStatus IN ('Requested','Approved','Declined')),
     CONSTRAINT FK_TripLeg_Itinerary     FOREIGN KEY (ItineraryId)
         REFERENCES dbo.Itinerary (ItineraryId) ON DELETE CASCADE,
     CONSTRAINT FK_TripLeg_Accommodation FOREIGN KEY (AccommodationId) REFERENCES dbo.Accommodation (AccommodationId),

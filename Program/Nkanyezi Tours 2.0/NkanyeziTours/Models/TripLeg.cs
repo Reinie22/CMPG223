@@ -45,6 +45,20 @@ public class TripLeg
 
     public bool HasResort => AccommodationId != null;
 
+    public string ResortStatus { get; set; } = RequestStatus.Requested;
+
+    public bool IsResortRequested => ResortStatus == RequestStatus.Requested;
+    public bool IsResortApproved  => ResortStatus == RequestStatus.Approved;
+
+    public string ResortStatusCssClass => ResortStatus switch
+    {
+        RequestStatus.Approved => "text-bg-success",
+        RequestStatus.Declined => "text-bg-danger",
+        _                      => "text-bg-secondary"
+    };
+
+    public string LegDisplay => $"Leg {LegNumber}";
+
     public int RoomCount { get; set; }
 
     public int RoomsCapacity { get; set; }

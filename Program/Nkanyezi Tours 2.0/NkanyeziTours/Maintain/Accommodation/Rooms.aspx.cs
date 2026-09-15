@@ -40,11 +40,6 @@ public partial class Rooms : Page
 
         litSubtitle.Text = Server.HtmlEncode($"{_property.Name} - {_property.Location}");
 
-        litRate.Text     = _property.RoomCount == 0
-            ? "no units captured yet"
-            : "from R" + _property.FromPricePerNight.ToString("N2")
-              + " a night, sleeping " + _property.TotalCapacity + " in total";
-
         if (!IsPostBack)
             BindRooms();
     }

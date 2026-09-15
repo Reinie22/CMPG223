@@ -146,6 +146,14 @@ public class VehicleRepository
         parameters.ToArray());
     }
 
+    public void SetImageUrl(int vehicleId, string? imageUrl)
+        => _db.Execute(@"
+        UPDATE  dbo.Vehicle
+        SET     ImageUrl = @ImageUrl
+        WHERE   VehicleId = @VehicleId;",
+        Db.P("@VehicleId", vehicleId),
+        Db.P("@ImageUrl",  imageUrl));
+
     public bool Delete(int vehicleId)
         => _db.Scalar<bool>(@"
         DECLARE @HasBookings BIT =
@@ -179,6 +187,7 @@ public class VehicleRepository
         Location           = Db.GetNullableString(r, "Location"),
         ProvinceId         = Db.GetNullable<int>(r, "ProvinceId"),
         ProvinceName       = Db.GetOptionalString(r, "ProvinceName"),
+        ImageUrl           = Db.GetOptionalString(r, "ImageUrl"),
         PricePerDay        = (decimal)r["PricePerDay"],
         IncludedKmPerDay   = (int)r["IncludedKmPerDay"],
         RatePerExtraKm     = (decimal)r["RatePerExtraKm"],

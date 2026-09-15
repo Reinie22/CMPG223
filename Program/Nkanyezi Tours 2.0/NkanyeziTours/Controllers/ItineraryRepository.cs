@@ -120,7 +120,7 @@ public class ItineraryRepository
 
         UNION ALL
 
-        SELECT      'Vehicle',
+        SELECT      'Car rental',
                     vb.VehicleBookingId,
                     ISNULL(v.Make + ' ' + v.Model, v.RegistrationNumber)
                         + ' (' + CAST(vb.TotalDays AS NVARCHAR(10)) + ' days)',
@@ -133,7 +133,7 @@ public class ItineraryRepository
 
         UNION ALL
 
-        SELECT      'Route',
+        SELECT      CASE rt.RouteType WHEN 'Shuttle' THEN 'Bus' ELSE 'Flight' END,
                     rtb.RouteBookingId,
                     rt.Carrier + ' ' + ISNULL(rt.RouteCode, '')
                         + ' ' + rt.DepartureCity + ' to ' + rt.ArrivalCity

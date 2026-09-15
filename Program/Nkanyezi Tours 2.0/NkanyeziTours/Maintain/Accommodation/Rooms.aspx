@@ -178,20 +178,13 @@
                                                     CssClass="btn btn-sm btn-outline-danger text-nowrap"
                                                     CommandName="DeleteRoom"
                                                     CommandArgument='<%# Eval("RoomId") %>'
-                                                    CausesValidation="false" Text="Delete"
+                                                    CausesValidation="false" Text="Deactivate"
                                                     data-confirm="Delete this room? If it has bookings it will be taken out of service instead." />
                                 </div>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
-
-                <p class="text-muted small mb-0 mt-2">
-                    Each unit carries its own price and how many people it sleeps. The
-                    resort itself has a geographical location only, so a chalet and a
-                    stand here can cost different amounts. Clients see this resort as
-                    <asp:Literal ID="litRate" runat="server" />.
-                </p>
             </div>
         </div>
 

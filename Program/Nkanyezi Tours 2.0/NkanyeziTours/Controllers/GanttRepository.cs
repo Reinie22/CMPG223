@@ -50,13 +50,14 @@ public class GanttRepository
                         l.StartDate,
                         l.EndDate,
                         CONCAT('LEG-', l.TripLegId) AS Reference,
-                        'Requested'     AS Status,
-                        CAST(1 AS BIT)  AS IsDraft,
+                        CASE l.ResortStatus WHEN 'Approved' THEN 'Booked' ELSE 'Requested' END AS Status,
+                        CAST(CASE l.ResortStatus WHEN 'Approved' THEN 0 ELSE 1 END AS BIT) AS IsDraft,
                         i.TripName
             FROM        dbo.TripLegRoom AS lr
             INNER JOIN  dbo.TripLeg     AS l ON l.TripLegId   = lr.TripLegId
             INNER JOIN  dbo.Itinerary   AS i ON i.ItineraryId = l.ItineraryId
             WHERE       i.Status NOT IN ('Cancelled','Completed')
+              AND       l.ResortStatus <> 'Declined'
               AND       l.StartDate < @To
               AND       l.EndDate   > @From
 
@@ -67,12 +68,13 @@ public class GanttRepository
                         l.StartDate,
                         l.EndDate,
                         CONCAT('LEG-', l.TripLegId) AS Reference,
-                        'Requested'     AS Status,
-                        CAST(1 AS BIT)  AS IsDraft,
+                        CASE l.ResortStatus WHEN 'Approved' THEN 'Booked' ELSE 'Requested' END AS Status,
+                        CAST(CASE l.ResortStatus WHEN 'Approved' THEN 0 ELSE 1 END AS BIT) AS IsDraft,
                         i.TripName
             FROM        dbo.TripLeg   AS l
             INNER JOIN  dbo.Itinerary AS i ON i.ItineraryId = l.ItineraryId
             WHERE       l.AccommodationId IS NOT NULL
+              AND       l.ResortStatus <> 'Declined'
               AND       NOT EXISTS (SELECT 1 FROM dbo.TripLegRoom AS x
                                     WHERE  x.TripLegId = l.TripLegId)
               AND       i.Status NOT IN ('Cancelled','Completed')

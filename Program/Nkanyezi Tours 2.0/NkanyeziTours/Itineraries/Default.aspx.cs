@@ -41,7 +41,6 @@ public partial class _Default : Page
 
         litMineHeading.Text = IsAgent ? "My trips" : "All trips";
 
-        lnkAssign.Visible = !IsAgent;
         pnlQueue.Visible  = !IsAgent;
 
         if (!IsAgent)

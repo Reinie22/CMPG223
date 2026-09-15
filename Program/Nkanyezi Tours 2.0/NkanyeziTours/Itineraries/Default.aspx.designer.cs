@@ -4,7 +4,6 @@
     {
         protected global::System.Web.UI.WebControls.Literal litSubtitle;
         protected global::System.Web.UI.WebControls.HyperLink lnkGantt;
-        protected global::System.Web.UI.WebControls.HyperLink lnkAssign;
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.Panel pnlQueue;

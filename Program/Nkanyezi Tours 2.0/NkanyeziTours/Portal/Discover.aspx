@@ -200,7 +200,12 @@
             <div class="col-sm-6 col-lg-4">
                 <div class="choice-card d-flex flex-column">
                     <div class="choice-card-photo">
+                        <asp:Image ID="imgCar" runat="server"
+                                   Visible='<%# !string.IsNullOrWhiteSpace(Convert.ToString(Eval("ImageUrl"))) %>'
+                                   ImageUrl='<%# Eval("ImageUrl") %>'
+                                   AlternateText='<%# Eval("Display") %>' />
                         <asp:Label ID="lblCarHint" runat="server" CssClass="placeholder-text"
+                                   Visible='<%# string.IsNullOrWhiteSpace(Convert.ToString(Eval("ImageUrl"))) %>'
                                    Text="Photo to come" />
                     </div>
                     <div class="choice-card-body">
@@ -231,10 +236,6 @@
         <ItemTemplate>
             <div class="col-sm-6 col-lg-4">
                 <div class="choice-card d-flex flex-column">
-                    <div class="choice-card-photo">
-                        <asp:Label ID="lblGoHint" runat="server" CssClass="placeholder-text"
-                                   Text="Photo to come" />
-                    </div>
                     <div class="choice-card-body">
                         <div class="choice-card-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Journey"))) %></div>
                         <div class="choice-card-meta">

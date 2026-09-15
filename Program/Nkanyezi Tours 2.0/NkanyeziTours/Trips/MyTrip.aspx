@@ -102,7 +102,12 @@
                                                        Text="Photo to come" />
                                         </div>
                                         <div class="choice-card-body">
-                                            <div class="choice-card-title"><%# Server.HtmlEncode(Convert.ToString(Eval("ResortName"))) %></div>
+                                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                                <div class="choice-card-title"><%# Server.HtmlEncode(Convert.ToString(Eval("ResortName"))) %></div>
+                                                <asp:Label ID="lblResortStatus" runat="server"
+                                                           CssClass='<%# "badge " + Eval("ResortStatusCssClass") %>'
+                                                           Text='<%# Eval("ResortStatus") %>' />
+                                            </div>
                                             <div class="choice-card-meta">
                                                 <%# Eval("ResortType") %> &middot; <%# Eval("ResortLocation") %>
                                             </div>
@@ -156,7 +161,7 @@
                                 </div>
 
                                 <div class="leg-scroll">
-                                <asp:Repeater ID="rptLegActivities" runat="server">
+                                <asp:Repeater ID="rptLegActivities" runat="server" OnItemCommand="rptLegItems_ItemCommand">
                                     <HeaderTemplate>
                                         <div class="row g-2">
                                     </HeaderTemplate>
@@ -171,9 +176,19 @@
                                                             </div>
                                                             <div class="choice-card-meta"><%# Eval("DateDisplay") %></div>
                                                         </div>
-                                                        <asp:Label ID="lblActStatus" runat="server"
-                                                                   CssClass='<%# "badge " + Eval("StatusCssClass") %>'
-                                                                   Text='<%# Eval("Status") %>' />
+                                                        <div class="d-flex flex-column align-items-end gap-1">
+                                                            <asp:Label ID="lblActStatus" runat="server"
+                                                                       CssClass='<%# "badge " + Eval("StatusCssClass") %>'
+                                                                       Text='<%# Eval("Status") %>' />
+                                                            <asp:LinkButton ID="lnkRemoveActivity" ToolTip="Takes this off the leg." runat="server"
+                                                                            CssClass="btn btn-sm btn-outline-danger py-0 px-2 text-nowrap"
+                                                                            CommandName="RemoveRequest"
+                                                                            CommandArgument='<%# Eval("TripRequestItemId") %>'
+                                                                            CausesValidation="false"
+                                                                            Visible='<%# Convert.ToBoolean(Eval("IsRequested")) %>'
+                                                                            Text="Remove"
+                                                                            data-confirm="Remove this from the leg?" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,7 +217,7 @@
                                 </div>
 
                                 <div class="leg-scroll">
-                                <asp:Repeater ID="rptLegTransport" runat="server">
+                                <asp:Repeater ID="rptLegTransport" runat="server" OnItemCommand="rptLegItems_ItemCommand">
                                     <HeaderTemplate>
                                         <div class="row g-2">
                                     </HeaderTemplate>
@@ -215,14 +230,24 @@
                                                             <div class="choice-card-title" style="font-size:.9rem;">
                                                                 <asp:Label ID="lblTKind" runat="server"
                                                                            CssClass='<%# "badge me-1 " + Eval("TypeCssClass") %>'
-                                                                           Text='<%# Eval("ItemType") %>' />
+                                                                           Text='<%# Eval("TypeDisplay") %>' />
                                                                 <%# Server.HtmlEncode(Convert.ToString(Eval("ItemName"))) %>
                                                             </div>
                                                             <div class="choice-card-meta"><%# Eval("DateDisplay") %></div>
                                                         </div>
-                                                        <asp:Label ID="lblTStatus" runat="server"
-                                                                   CssClass='<%# "badge " + Eval("StatusCssClass") %>'
-                                                                   Text='<%# Eval("Status") %>' />
+                                                        <div class="d-flex flex-column align-items-end gap-1">
+                                                            <asp:Label ID="lblTStatus" runat="server"
+                                                                       CssClass='<%# "badge " + Eval("StatusCssClass") %>'
+                                                                       Text='<%# Eval("Status") %>' />
+                                                            <asp:LinkButton ID="lnkRemoveTransport" ToolTip="Takes this off the leg." runat="server"
+                                                                            CssClass="btn btn-sm btn-outline-danger py-0 px-2 text-nowrap"
+                                                                            CommandName="RemoveRequest"
+                                                                            CommandArgument='<%# Eval("TripRequestItemId") %>'
+                                                                            CausesValidation="false"
+                                                                            Visible='<%# Convert.ToBoolean(Eval("IsRequested")) %>'
+                                                                            Text="Remove"
+                                                                            data-confirm="Remove this from the leg?" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -364,7 +389,7 @@
                               CssClass="table table-sm table-striped align-middle mb-0"
                               GridLines="None">
                     <Columns>
-                        <asp:BoundField DataField="ItemType" HeaderText="Type" />
+                        <asp:BoundField DataField="TypeDisplay" HeaderText="Type" />
                         <asp:BoundField DataField="ItemName" HeaderText="Choice" />
                         <asp:BoundField DataField="DateDisplay" HeaderText="When" />
                         <asp:TemplateField HeaderText="Status">
@@ -403,7 +428,7 @@
                             <ItemTemplate>
                                 <asp:Label ID="lblType" runat="server"
                                            CssClass='<%# "badge " + Eval("TypeCssClass") %>'
-                                           Text='<%# Eval("BookingType") %>' />
+                                           Text='<%# Eval("TypeDisplay") %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="Description" HeaderText="Detail" />

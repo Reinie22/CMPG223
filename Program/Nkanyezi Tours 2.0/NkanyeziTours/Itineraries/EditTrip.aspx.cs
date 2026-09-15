@@ -116,7 +116,8 @@ public partial class EditTrip : Page
         };
 
         var requests = _requests.GetByItinerary(_trip.ItineraryId);
-        var rooms    = _legs.GetByItinerary(_trip.ItineraryId).Sum(l => l.EstimatedResortCost);
+        var legs     = _legs.GetByItinerary(_trip.ItineraryId);
+        var rooms    = legs.Where(l => l.HasResort && l.IsResortApproved).Sum(l => l.EstimatedResortCost);
         var approved = requests.Where(r => r.IsApproved).Sum(r => r.EstimatedCost);
 
         _trip.BookingsTotal += rooms + approved;
@@ -132,7 +133,7 @@ public partial class EditTrip : Page
         pnlBudgetBar.CssClass = _trip.IsOverBudget ? "progress-bar bg-danger" : "progress-bar";
         pnlOverBudget.Visible = _trip.IsOverBudget;
 
-        BindRequests(requests);
+        BindRequests(requests, legs.Where(l => l.HasResort).ToList());
 
         lnkBookTransport.NavigateUrl =
             "~/Itineraries/BookTransport.aspx?itineraryId=" + _trip.ItineraryId;
@@ -150,11 +151,15 @@ public partial class EditTrip : Page
         btnComplete.Visible = _trip.Status == ItineraryStatus.Confirmed;
     }
 
-    private void BindRequests(List<TripRequestItem> requests)
+    private void BindRequests(List<TripRequestItem> requests, List<TripLeg> resorts)
     {
-        pnlRequests.Visible = requests.Count > 0;
+        pnlRequests.Visible = requests.Count > 0 || resorts.Count > 0;
 
-        var pending = requests.Count(r => r.IsRequested);
+        pnlResorts.Visible = resorts.Count > 0;
+        gvResorts.DataSource = resorts;
+        gvResorts.DataBind();
+
+        var pending = requests.Count(r => r.IsRequested) + resorts.Count(l => l.IsResortRequested);
 
         lblPendingCount.Text = pending + " waiting";
         lblPendingCount.Visible = pending > 0;
@@ -183,6 +188,34 @@ public partial class EditTrip : Page
             ShowMessage(status == RequestStatus.Approved
                 ? "Approved. Its cost has been added to the trip amount."
                 : "Declined. The client sees this on their own trip page.",
+                status == RequestStatus.Approved ? "alert-success" : "alert-warning");
+        else
+            ShowMessage("That one had already been decided.", "alert-warning");
+
+        _trip = _itineraries.GetWithTotals(_trip.ItineraryId) ?? _trip;
+        ShowStatus();
+    }
+
+    protected void gvResorts_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (_trip == null)
+            return;
+
+        string status;
+
+        if (e.CommandName == "ApproveResort")
+            status = RequestStatus.Approved;
+        else if (e.CommandName == "DeclineResort")
+            status = RequestStatus.Declined;
+        else
+            return;
+
+        var legId = Convert.ToInt32(e.CommandArgument);
+
+        if (_legs.DecideResort(legId, _trip.ItineraryId, status))
+            ShowMessage(status == RequestStatus.Approved
+                ? "Accommodation approved. Its cost has been added to the trip amount."
+                : "Accommodation declined. The client sees this on their own trip page.",
                 status == RequestStatus.Approved ? "alert-success" : "alert-warning");
         else
             ShowMessage("That one had already been decided.", "alert-warning");

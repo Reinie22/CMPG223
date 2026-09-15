@@ -40,10 +40,6 @@
             <ItemTemplate>
                 <div class="col-sm-6 col-lg-4">
                     <div class='choice-card d-flex flex-column <%# Convert.ToBoolean(Eval("IsChosen")) ? "is-selected" : "" %>'>
-                        <div class="choice-card-photo">
-                            <asp:Label ID="lblUnitHint" runat="server" CssClass="placeholder-text"
-                                       Text="Photo to come" />
-                        </div>
                         <div class="choice-card-body">
                             <div class="choice-card-title">Room <%#: Eval("UnitName") %></div>
                             <div class="choice-card-meta"><%#: Eval("TypeDisplay") %></div>

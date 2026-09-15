@@ -155,7 +155,8 @@ public class TripLegRepository
           AND   (@AccommodationId IS NULL OR rm.AccommodationId <> @AccommodationId);
 
         UPDATE  dbo.TripLeg
-        SET     AccommodationId = @AccommodationId
+        SET     AccommodationId = @AccommodationId,
+                ResortStatus    = 'Requested'
         WHERE   TripLegId       = @TripLegId;",
         Db.P("@TripLegId",       tripLegId),
         Db.P("@AccommodationId", accommodationId));
@@ -179,7 +180,10 @@ public class TripLegRepository
         WHERE       l.TripLegId = @TripLegId
           AND       NOT EXISTS (SELECT 1 FROM dbo.TripLegRoom AS x
                                 WHERE  x.TripLegId = @TripLegId
-                                  AND  x.RoomId    = @RoomId);",
+                                  AND  x.RoomId    = @RoomId);
+
+        IF @@ROWCOUNT > 0
+            UPDATE dbo.TripLeg SET ResortStatus = 'Requested' WHERE TripLegId = @TripLegId;",
         Db.P("@TripLegId", tripLegId),
         Db.P("@RoomId",    roomId)) > 0;
 
@@ -187,9 +191,24 @@ public class TripLegRepository
         => _db.Execute(@"
         DELETE FROM dbo.TripLegRoom
         WHERE   TripLegId = @TripLegId
-          AND   RoomId    = @RoomId;",
+          AND   RoomId    = @RoomId;
+
+        IF @@ROWCOUNT > 0
+            UPDATE dbo.TripLeg SET ResortStatus = 'Requested' WHERE TripLegId = @TripLegId;",
         Db.P("@TripLegId", tripLegId),
         Db.P("@RoomId",    roomId)) > 0;
+
+    public bool DecideResort(int tripLegId, int itineraryId, string status)
+        => _db.Execute(@"
+        UPDATE  dbo.TripLeg
+        SET     ResortStatus = @Status
+        WHERE   TripLegId    = @TripLegId
+          AND   ItineraryId  = @ItineraryId
+          AND   AccommodationId IS NOT NULL
+          AND   ResortStatus = 'Requested';",
+        Db.P("@TripLegId",   tripLegId),
+        Db.P("@ItineraryId", itineraryId),
+        Db.P("@Status",      status)) > 0;
 
     public void Remove(int tripLegId)
     {
@@ -284,6 +303,7 @@ public class TripLegRepository
         Guests              = (int)r["Guests"],
         ClientNote          = Db.GetNullableString(r, "ClientNote"),
         CreatedDate         = (DateTime)r["CreatedDate"],
+        ResortStatus        = (string)r["ResortStatus"],
 
         ResortName          = Db.GetOptionalString(r, "ResortName"),
         ResortLocation      = Db.GetOptionalString(r, "ResortLocation"),

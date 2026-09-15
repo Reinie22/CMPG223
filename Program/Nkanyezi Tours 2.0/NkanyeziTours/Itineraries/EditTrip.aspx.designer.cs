@@ -37,6 +37,9 @@
         protected global::System.Web.UI.WebControls.Button btnCancelTrip;
         protected global::System.Web.UI.WebControls.Panel pnlRequests;
         protected global::System.Web.UI.WebControls.Label lblPendingCount;
+        protected global::System.Web.UI.WebControls.HyperLink lnkBackTop;
+        protected global::System.Web.UI.WebControls.Panel pnlResorts;
+        protected global::System.Web.UI.WebControls.GridView gvResorts;
         protected global::System.Web.UI.WebControls.GridView gvRequests;
     }
 }

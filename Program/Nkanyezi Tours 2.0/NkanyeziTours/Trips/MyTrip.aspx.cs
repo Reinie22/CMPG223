@@ -171,6 +171,14 @@ public partial class MyTrip : Page
                     .ToList();
                 transport.DataBind();
             }
+
+            if (!canChange)
+                foreach (var repeaterId in new[] { "rptLegActivities", "rptLegTransport" })
+                    if (rptLegs.Items[i].FindControl(repeaterId) is Repeater items)
+                        foreach (RepeaterItem item in items.Items)
+                            foreach (var id in new[] { "lnkRemoveActivity", "lnkRemoveTransport" })
+                                if (item.FindControl(id) is System.Web.UI.Control remove)
+                                    remove.Visible = false;
         }
     }
 
@@ -315,8 +323,19 @@ public partial class MyTrip : Page
         if (e.CommandName != "RemoveRequest" || _trip == null || RefuseIfLocked())
             return;
 
-        var id = Convert.ToInt32(e.CommandArgument);
+        RemoveRequest(Convert.ToInt32(e.CommandArgument));
+    }
 
+    protected void rptLegItems_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        if (e.CommandName != "RemoveRequest" || _trip == null || RefuseIfLocked())
+            return;
+
+        RemoveRequest(Convert.ToInt32(e.CommandArgument));
+    }
+
+    private void RemoveRequest(int id)
+    {
         if (_requests.RemoveIfPending(id, _trip.ItineraryId))
             ShowMessage("Removed from your trip.", "alert-success");
         else

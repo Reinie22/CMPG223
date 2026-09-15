@@ -44,6 +44,9 @@ public partial class Edit : Page
         txtPrice.Text       = vehicle.PricePerDay.ToString("0.00", CultureInfo.InvariantCulture);
         txtInclKm.Text      = vehicle.IncludedKmPerDay.ToString();
         txtExtraKm.Text     = vehicle.RatePerExtraKm.ToString("0.00", CultureInfo.InvariantCulture);
+
+        pnlCurrentPhoto.Visible  = !string.IsNullOrWhiteSpace(vehicle.ImageUrl);
+        imgCurrentPhoto.ImageUrl = vehicle.ImageUrl ?? "";
     }
 
     private void BindRegions()
@@ -69,6 +72,14 @@ public partial class Edit : Page
             return;
         }
 
+        if (!ImageStore.TrySave(fuPhoto, "vehicles", out var newPhoto, out var photoError))
+        {
+            ShowMessage(Server.HtmlEncode(photoError!), "alert-danger");
+            return;
+        }
+
+        var oldPhoto = VehicleId.HasValue ? _vehicles.GetById(VehicleId.Value)?.ImageUrl : null;
+
         var vehicle = new Vehicle
         {
             RegistrationNumber = registration,
@@ -85,14 +96,28 @@ public partial class Edit : Page
             RatePerExtraKm     = decimal.Parse(txtExtraKm.Text.Trim(), CultureInfo.InvariantCulture)
         };
 
+        int savedId;
+
         if (VehicleId.HasValue)
         {
             vehicle.VehicleId = VehicleId.Value;
             _vehicles.Update(vehicle);
+            savedId = VehicleId.Value;
         }
         else
         {
-            _vehicles.Create(vehicle);
+            savedId = _vehicles.Create(vehicle);
+        }
+
+        if (newPhoto != null)
+        {
+            _vehicles.SetImageUrl(savedId, newPhoto);
+            ImageStore.Delete(oldPhoto);
+        }
+        else if (chkRemovePhoto.Checked && oldPhoto != null)
+        {
+            _vehicles.SetImageUrl(savedId, null);
+            ImageStore.Delete(oldPhoto);
         }
 
         Response.Redirect("~/Maintain/Vehicles/Default.aspx?saved=1");

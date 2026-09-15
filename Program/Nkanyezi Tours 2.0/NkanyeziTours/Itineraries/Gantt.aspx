@@ -25,7 +25,7 @@
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-3 small">
-                <span><span class="gantt-key gantt-booked"></span> Confirmed</span>
+                <span><span class="gantt-key gantt-booked"></span> Booked</span>
                 <span><span class="gantt-key gantt-draft"></span> Requested, not booked</span>
                 <span><span class="gantt-key gantt-weekend"></span> Weekend</span>
             </div>

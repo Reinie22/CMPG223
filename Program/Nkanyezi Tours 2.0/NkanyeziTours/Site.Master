@@ -80,8 +80,9 @@
         </main>
 
         <footer class="border-top py-3 mt-4">
-            <div class="container text-muted small">
-                Group 6 &middot; CMPG223 &middot; Nkanyezi Tours
+            <div class="container text-muted small d-flex flex-wrap justify-content-between gap-2">
+                <span>Group 6 &middot; CMPG223 &middot; Nkanyezi Tours</span>
+                <a href="<%: ResolveUrl("~/Help.aspx") %>" class="link-secondary" title="Answers to common questions, with a keyword search.">Help</a>
             </div>
         </footer>
 

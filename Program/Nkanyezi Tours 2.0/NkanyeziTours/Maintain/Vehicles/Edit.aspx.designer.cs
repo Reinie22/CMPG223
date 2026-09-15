@@ -41,6 +41,12 @@
         protected global::System.Web.UI.WebControls.TextBox txtExtraKm;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvExtraKm;
         protected global::System.Web.UI.WebControls.RangeValidator rvExtraKm;
+        protected global::System.Web.UI.WebControls.Label lblPhoto;
+        protected global::System.Web.UI.WebControls.Panel pnlCurrentPhoto;
+        protected global::System.Web.UI.WebControls.Image imgCurrentPhoto;
+        protected global::System.Web.UI.WebControls.CheckBox chkRemovePhoto;
+        protected global::System.Web.UI.WebControls.Label lblRemovePhoto;
+        protected global::System.Web.UI.WebControls.FileUpload fuPhoto;
         protected global::System.Web.UI.WebControls.HyperLink lnkCancel;
         protected global::System.Web.UI.WebControls.Button btnSave;
     }

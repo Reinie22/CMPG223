@@ -384,6 +384,7 @@
     <Content Include="Reports\Default.aspx" />
     <Content Include="Error.aspx" />
     <Content Include="NotFound.aspx" />
+    <Content Include="Help.aspx" />
     <Content Include="Itineraries\Gantt.aspx" />
     <Content Include="Portal\Discover.aspx" />
     <Content Include="Web.config" />

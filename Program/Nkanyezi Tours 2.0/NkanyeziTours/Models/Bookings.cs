@@ -161,10 +161,13 @@ public class BookingLine
     {
         "Accommodation" => "bg-info",
         "Attraction"    => "bg-warning text-dark",
-        "Vehicle"       => "bg-primary",
-        "Route"         => "bg-dark",
+        "Car rental"    => "bg-primary",
+        "Flight"        => "bg-dark",
+        "Bus"           => "bg-dark",
         _               => "bg-secondary"
     };
+
+    public string TypeDisplay => BookingType == "Attraction" ? "Activity" : BookingType;
 }
 
 public static class BookingStatus

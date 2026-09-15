@@ -153,6 +153,26 @@
                                         ErrorMessage="The extra km rate cannot be negative." />
                 </div>
 
+                <div class="col-12">
+                    <asp:Label ID="lblPhoto" runat="server" AssociatedControlID="fuPhoto"
+                               CssClass="form-label">Photo</asp:Label>
+                    <asp:Panel ID="pnlCurrentPhoto" runat="server" Visible="false" CssClass="mb-2 d-flex flex-wrap align-items-center gap-3">
+                        <asp:Image ID="imgCurrentPhoto" runat="server" CssClass="rounded border"
+                                   Style="max-height:120px;max-width:200px;object-fit:cover;"
+                                   AlternateText="Current photo" />
+                        <div class="form-check">
+                            <asp:CheckBox ID="chkRemovePhoto" runat="server" CssClass="form-check-input"
+                                          ToolTip="Tick to remove the current photo when you save." />
+                            <asp:Label ID="lblRemovePhoto" runat="server" AssociatedControlID="chkRemovePhoto"
+                                       CssClass="form-check-label">Remove this photo</asp:Label>
+                        </div>
+                    </asp:Panel>
+                    <asp:FileUpload ID="fuPhoto" runat="server" CssClass="form-control"
+                                    accept=".jpg,.jpeg,.png,.gif,.webp"
+                                    ToolTip="The photo clients see on the car rental card. Choosing a new photo replaces the current one." />
+                    <div class="form-text">JPG, PNG, GIF or WEBP, up to 5 MB.</div>
+                </div>
+
             </div>
 
             <hr class="my-4" />

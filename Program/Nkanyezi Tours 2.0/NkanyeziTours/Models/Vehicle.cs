@@ -19,6 +19,8 @@ public class Vehicle
 
     public string? ProvinceName { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public decimal PricePerDay { get; set; }
     public int IncludedKmPerDay { get; set; } = 200;
     public decimal RatePerExtraKm { get; set; }

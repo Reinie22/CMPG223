@@ -8,10 +8,7 @@
         <p class="text-muted mb-0"><asp:Literal ID="litSubtitle" runat="server" /></p>
         <div class="d-flex flex-wrap gap-2">
             <asp:HyperLink ID="lnkGantt" ToolTip="Month view of what is booked, so you can spot a free unit or a double booking." runat="server" CssClass="btn btn-outline-primary"
-                           NavigateUrl="~/Itineraries/Gantt.aspx">Bookings chart</asp:HyperLink>
-            <asp:HyperLink ID="lnkAssign" ToolTip="Give a waiting trip to one of your agents." runat="server" Visible="false" CssClass="btn btn-outline-primary"
-                           NavigateUrl="~/Itineraries/Assign.aspx">Assign trips</asp:HyperLink>
-        </div>
+                           NavigateUrl="~/Itineraries/Gantt.aspx">Bookings chart</asp:HyperLink>        </div>
     </div>
 
     <asp:Panel ID="pnlMessage" runat="server" Visible="false" CssClass="alert py-2">

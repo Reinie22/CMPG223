@@ -3,6 +3,11 @@
 
 <asp:Content ID="cMain" ContentPlaceHolderID="MainContent" runat="server">
 
+    <div class="mb-3">
+        <asp:HyperLink ID="lnkBackTop" ToolTip="Go back to the list of itineraries." runat="server" CssClass="btn btn-outline-secondary"
+                       NavigateUrl="~/Itineraries/Default.aspx">&#8592; Back to itineraries</asp:HyperLink>
+    </div>
+
     <div class="d-flex justify-content-between align-items-start mb-1">
         <h1 class="h3 mb-0"><asp:Literal ID="litHeading" runat="server" /></h1>
         <asp:Label ID="lblStatus" runat="server" CssClass="badge" />
@@ -27,7 +32,7 @@
                         <div class="fs-5 fw-semibold"><asp:Literal ID="litBudgetTotal" runat="server" /></div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="text-muted small" title="The rooms on the trip's legs plus everything you have approved.">Amount</div>
+                        <div class="text-muted small" title="Everything you have approved: accommodation, activities and transport.">Amount</div>
                         <div class="fs-5 fw-semibold"><asp:Literal ID="litBookingsTotal" runat="server" /></div>
                     </div>
                     <div class="col-6 col-md-3">
@@ -135,6 +140,54 @@
                     <asp:Label ID="lblPendingCount" runat="server" CssClass="badge text-bg-warning ms-1" />
                 </h2>
 
+                <asp:Panel ID="pnlResorts" runat="server" Visible="false">
+                    <h3 class="h6 text-uppercase text-muted mb-2">Accommodation</h3>
+                    <asp:GridView ID="gvResorts" runat="server"
+                                  AutoGenerateColumns="false"
+                                  DataKeyNames="TripLegId"
+                                  OnRowCommand="gvResorts_RowCommand"
+                                  CssClass="table table-striped align-middle mb-4"
+                                  GridLines="None">
+                        <Columns>
+                            <asp:BoundField DataField="LegDisplay" HeaderText="Leg" />
+                            <asp:BoundField DataField="ResortName" HeaderText="Choice" />
+                            <asp:BoundField DataField="UnitDisplay" HeaderText="Rooms" />
+                            <asp:BoundField DataField="DateDisplay" HeaderText="When" />
+                            <asp:BoundField DataField="Guests" HeaderText="People" />
+                            <asp:BoundField DataField="EstimatedResortCost" HeaderText="Cost"
+                                            DataFormatString="R{0:N2}" ItemStyle-CssClass="text-end" />
+                            <asp:TemplateField HeaderText="Status">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblResortStatus" runat="server"
+                                               CssClass='<%# "badge " + Eval("ResortStatusCssClass") %>'
+                                               Text='<%# Eval("ResortStatus") %>' />
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="">
+                                <ItemTemplate>
+                                    <div class="d-flex gap-1">
+                                        <asp:LinkButton ID="lnkApproveResort" ToolTip="Accepts the resort and rooms the client chose for this leg." runat="server"
+                                                        CssClass="btn btn-sm btn-success text-nowrap"
+                                                        CommandName="ApproveResort"
+                                                        CommandArgument='<%# Eval("TripLegId") %>'
+                                                        CausesValidation="false"
+                                                        Visible='<%# Convert.ToBoolean(Eval("IsResortRequested")) %>'
+                                                        Text="Approve" />
+                                        <asp:LinkButton ID="lnkDeclineResort" ToolTip="Turns this accommodation down. The client sees it was declined." runat="server"
+                                                        CssClass="btn btn-sm btn-outline-danger text-nowrap"
+                                                        CommandName="DeclineResort"
+                                                        CommandArgument='<%# Eval("TripLegId") %>'
+                                                        CausesValidation="false"
+                                                        Visible='<%# Convert.ToBoolean(Eval("IsResortRequested")) %>'
+                                                        Text="Decline" />
+                                    </div>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                    <h3 class="h6 text-uppercase text-muted mb-2">Activities and transport</h3>
+                </asp:Panel>
+
                 <asp:GridView ID="gvRequests" runat="server"
                               AutoGenerateColumns="false"
                               DataKeyNames="TripRequestItemId"
@@ -146,7 +199,7 @@
                         <asp:TemplateField HeaderText="Type">
                             <ItemTemplate>
                                 <asp:Label ID="lblKind" runat="server" CssClass="badge text-bg-light"
-                                           Text='<%# Eval("ItemType") %>' />
+                                           Text='<%# Eval("TypeDisplay") %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="ItemName" HeaderText="Choice" />

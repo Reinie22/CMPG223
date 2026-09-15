@@ -30,7 +30,9 @@ public class TripRequestRepository
                                 AND u.AvailabilityStatus = 1),
                              att.Rate,
                              veh.PricePerDay,
-                             rt.IndicativeFarePerSeat, 0)                     AS GuidePrice
+                             rt.IndicativeFarePerSeat, 0)                     AS GuidePrice,
+
+                    rt.RouteType                                              AS RouteType
         FROM        dbo.TripRequestItem AS tr
         LEFT JOIN   dbo.Accommodation   AS acc ON acc.AccommodationId = tr.AccommodationId
         LEFT JOIN   dbo.Attraction      AS att ON att.AttractionId    = tr.AttractionId
@@ -131,6 +133,7 @@ public class TripRequestRepository
 
         ItemName          = Db.GetOptionalString(r, "ItemName") ?? "",
         ItemLocation      = Db.GetOptionalString(r, "ItemLocation"),
-        GuidePrice        = (decimal)r["GuidePrice"]
+        GuidePrice        = (decimal)r["GuidePrice"],
+        RouteType         = Db.GetOptionalString(r, "RouteType")
     };
 }

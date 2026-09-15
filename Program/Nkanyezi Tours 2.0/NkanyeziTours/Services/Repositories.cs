@@ -51,6 +51,13 @@ public static class Repositories
         if (working != null)
             return working;
 
+        if (RestartLocalDb(new SqlConnectionStringBuilder(configured).DataSource))
+        {
+            working = TryConnect(configured, 30);
+            if (working != null)
+                return working;
+        }
+
         foreach (var server in fallbackServers)
         {
             StartLocalDbIfNeeded(server);
@@ -92,6 +99,21 @@ public static class Repositories
             return;
 
         RunSqlLocalDb("start " + instance);
+    }
+
+    private static bool RestartLocalDb(string dataSource)
+    {
+        if (string.IsNullOrWhiteSpace(dataSource) ||
+            !dataSource.StartsWith(@"(localdb)\", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var instance = dataSource.Substring(@"(localdb)\".Length).Trim();
+
+        if (instance.Length == 0)
+            return false;
+
+        RunSqlLocalDb("stop " + instance + " -k");
+        return RunSqlLocalDb("start " + instance);
     }
 
     private static bool RunSqlLocalDb(string arguments)
