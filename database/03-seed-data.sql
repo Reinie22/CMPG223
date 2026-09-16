@@ -74,6 +74,11 @@ INSERT INTO dbo.Accommodation (Name, Description, Type, Address, City, ProvinceI
     (SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Western Cape'),5,3100.00,60,'Wi-Fi, Spa, Pool, Two restaurants'),
 ('Kalahari Desert Camp','Remote desert camp with dark skies for stargazing.','Camp','Askham Road','Askham',
     (SELECT ProvinceId FROM dbo.Province WHERE ProvinceName='Northern Cape'),3,1100.00,16,'Stargazing deck, Restaurant, Guided walks');
+
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/nkanyezi-lodge-sandton.jpg'      WHERE Name = 'Nkanyezi Lodge Sandton';
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/drakensberg-mountain-retreat.jpg' WHERE Name = 'Drakensberg Mountain Retreat';
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/kalahari-desert-camp.jpg'         WHERE Name = 'Kalahari Desert Camp';
+GO
 GO
 
 INSERT INTO dbo.Room (AccommodationId, RoomNumber, RoomType, Beds, Size, Bathroom, AvailabilityStatus, PricePerNight, Capacity) VALUES

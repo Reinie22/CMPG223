@@ -285,7 +285,9 @@ public class RoomRepository
         Db.P("@Beds",               room.Beds),
         Db.P("@Size",               room.Size),
         Db.P("@Bathroom",           room.Bathroom),
-        Db.P("@AvailabilityStatus", room.AvailabilityStatus));
+        Db.P("@AvailabilityStatus", room.AvailabilityStatus),
+        Db.P("@PricePerNight",      room.PricePerNight),
+        Db.P("@Capacity",           room.Capacity));
 
     public bool Delete(int roomId)
         => _db.Scalar<bool>(@"

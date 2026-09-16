@@ -400,6 +400,9 @@
     <Content Include="Itineraries\BookRoute.aspx" />
     <Content Include="Content\site.css" />
     <Content Include="Content\images\transport-hero.png" />
+    <Content Include="Content\images\seed\drakensberg-mountain-retreat.jpg" />
+    <Content Include="Content\images\seed\kalahari-desert-camp.jpg" />
+    <Content Include="Content\images\seed\nkanyezi-lodge-sandton.jpg" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
