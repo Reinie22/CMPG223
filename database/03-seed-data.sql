@@ -78,6 +78,9 @@ INSERT INTO dbo.Accommodation (Name, Description, Type, Address, City, ProvinceI
 UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/nkanyezi-lodge-sandton.jpg'      WHERE Name = 'Nkanyezi Lodge Sandton';
 UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/drakensberg-mountain-retreat.jpg' WHERE Name = 'Drakensberg Mountain Retreat';
 UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/kalahari-desert-camp.jpg'         WHERE Name = 'Kalahari Desert Camp';
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/table-view-guest-house.jpg' WHERE Name = 'Table View Guest House';
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/kruger-gate-safari-camp.jpg' WHERE Name = 'Kruger Gate Safari Camp';
+UPDATE dbo.Accommodation SET ImageUrl = '~/Content/images/seed/garden-route-beach-hotel.jpg' WHERE Name = 'Garden Route Beach Hotel';
 GO
 GO
 
@@ -227,6 +230,22 @@ INSERT INTO dbo.TripExpense (ItineraryId, ExpenseCategoryId, Description, Amount
 (4,(SELECT ExpenseCategoryId FROM dbo.ExpenseCategory WHERE CategoryName='Other'),
     'Travel insurance bought in London', 2853.60,120.00,'GBP','2026-08-09',NULL,9);
 GO
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/vw-polo-vivo.jpg' WHERE RegistrationNumber = 'CA 123 456';
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/toyota-starlet.jpg' WHERE RegistrationNumber = 'GP 789 012';
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/toyota-corolla.jpg' WHERE RegistrationNumber = 'GP 345 678';
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/vw-kombi.jpg' WHERE RegistrationNumber = 'CA 901 234';
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/ford-ranger.jpg' WHERE RegistrationNumber = 'MP 567 890';
+UPDATE dbo.Vehicle SET ImageUrl = '~/Content/images/seed/mercedes-c-class.jpg' WHERE RegistrationNumber = 'GP 111 222';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/table-mountain-cableway.jpg' WHERE Name = 'Table Mountain Cableway';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/robben-island-tour.jpg' WHERE Name = 'Robben Island Tour';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/kruger-sunrise-game-drive.jpg' WHERE Name = 'Kruger Sunrise Game Drive';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/soweto-cultural-tour.jpg' WHERE Name = 'Soweto Cultural Tour';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/drakensberg-guided-hike.jpg' WHERE Name = 'Drakensberg Guided Hike';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/cango-caves-tour.jpg' WHERE Name = 'Cango Caves Adventure Tour';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/bloukrans-bungee.jpg' WHERE Name = 'Bloukrans Bridge Bungee';
+UPDATE dbo.Attraction SET ImageUrl = '~/Content/images/seed/kalahari-stargazing.jpg' WHERE Name = 'Kalahari Stargazing Evening';
+GO
+
 
 PRINT '';
 PRINT 'Seed data loaded. Row counts:';

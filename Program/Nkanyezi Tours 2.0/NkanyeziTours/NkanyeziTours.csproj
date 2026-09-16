@@ -403,6 +403,23 @@
     <Content Include="Content\images\seed\drakensberg-mountain-retreat.jpg" />
     <Content Include="Content\images\seed\kalahari-desert-camp.jpg" />
     <Content Include="Content\images\seed\nkanyezi-lodge-sandton.jpg" />
+    <Content Include="Content\images\seed\table-view-guest-house.jpg" />
+    <Content Include="Content\images\seed\kruger-gate-safari-camp.jpg" />
+    <Content Include="Content\images\seed\garden-route-beach-hotel.jpg" />
+    <Content Include="Content\images\seed\vw-polo-vivo.jpg" />
+    <Content Include="Content\images\seed\toyota-starlet.jpg" />
+    <Content Include="Content\images\seed\toyota-corolla.jpg" />
+    <Content Include="Content\images\seed\vw-kombi.jpg" />
+    <Content Include="Content\images\seed\ford-ranger.jpg" />
+    <Content Include="Content\images\seed\mercedes-c-class.jpg" />
+    <Content Include="Content\images\seed\table-mountain-cableway.jpg" />
+    <Content Include="Content\images\seed\robben-island-tour.jpg" />
+    <Content Include="Content\images\seed\kruger-sunrise-game-drive.jpg" />
+    <Content Include="Content\images\seed\soweto-cultural-tour.jpg" />
+    <Content Include="Content\images\seed\drakensberg-guided-hike.jpg" />
+    <Content Include="Content\images\seed\cango-caves-tour.jpg" />
+    <Content Include="Content\images\seed\bloukrans-bungee.jpg" />
+    <Content Include="Content\images\seed\kalahari-stargazing.jpg" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

@@ -201,8 +201,6 @@ You pulled someone's schema change. Re-run Option 1.
   a disaster; the next person just re-runs the script.
 - **Test data lives in `03-seed-data.sql`, not in your database.** If you need a
   new test record for a demo, add it to the seed file so everyone has it.
-- `_retired-stored-procedures/` is old work kept for reference. It is not part
-  of the setup and you do not need to run it.
 
 ---
 
@@ -214,4 +212,3 @@ You pulled someone's schema change. Re-run Option 1.
 | `setup-database.ps1` | Does the whole setup: detect, create, run, patch config |
 | `01-schema.sql` | Creates all 20 tables and their keys, including trip legs, leg rooms and trip choices. Drops first, so re-runnable |
 | `03-seed-data.sql` | Loads the shared test data. Run after the schema |
-| `_retired-stored-procedures/` | Old stored procedures, not used |

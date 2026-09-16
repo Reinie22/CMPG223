@@ -96,8 +96,12 @@ Write-Ok $sqlcmd
 
 # ------------------------------------------------------- 2. find an instance
 function Test-Instance ($name) {
-    & $sqlcmd -S $name -E -C -l 8 -b -Q "SET NOCOUNT ON; SELECT 1" 2>&1 | Out-Null
-    return ($LASTEXITCODE -eq 0)
+    $old = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    & $sqlcmd -S $name -E -C -l 8 -b -Q "SET NOCOUNT ON; SELECT 1" 2>$null | Out-Null
+    $worked = ($LASTEXITCODE -eq 0)
+    $ErrorActionPreference = $old
+    return $worked
 }
 
 Write-Step 'Looking for a SQL Server instance'
@@ -110,12 +114,15 @@ if ($Server) {
     # LocalDB may exist but be stopped or not created yet - fix that first.
     $localdb = (Get-Command sqllocaldb.exe -ErrorAction SilentlyContinue).Source
     if ($localdb) {
+        $old = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         $instances = & $localdb info 2>$null
         if ($instances -notcontains 'MSSQLLocalDB') {
             Write-Warn 'LocalDB instance MSSQLLocalDB does not exist - creating it'
-            & $localdb create MSSQLLocalDB 2>&1 | Out-Null
+            & $localdb create MSSQLLocalDB 2>$null | Out-Null
         }
-        & $localdb start MSSQLLocalDB 2>&1 | Out-Null
+        & $localdb start MSSQLLocalDB 2>$null | Out-Null
+        $ErrorActionPreference = $old
     }
 }
 
@@ -169,7 +176,7 @@ if ($IfMissing) {
     $old = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     $existing = & $sqlcmd -S $instance -E -C -b -d $DbName -h -1 -W `
-                          -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables;" 2>$null
+                          -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables WHERE name <> 'sysdiagrams';" 2>$null
     $countQueryWorked = ($LASTEXITCODE -eq 0)
     $ErrorActionPreference = $old
 
@@ -219,7 +226,7 @@ if (-not $NoConfigUpdate) {
 
 # ------------------------------------------------------------------ 6. verify
 Write-Step 'Checking that the tables are really there'
-& $sqlcmd -S $instance -E -C -b -d $DbName -h -1 -W -Q "SET NOCOUNT ON; SELECT CONCAT(COUNT(*), ' tables, ', (SELECT COUNT(*) FROM sys.objects WHERE type = 'F'), ' foreign keys') FROM sys.tables;"
+& $sqlcmd -S $instance -E -C -b -d $DbName -h -1 -W -Q "SET NOCOUNT ON; SELECT CONCAT(COUNT(*), ' tables, ', (SELECT COUNT(*) FROM sys.objects WHERE type = 'F'), ' foreign keys') FROM sys.tables WHERE name <> 'sysdiagrams';"
 
 Write-Host ''
 Write-Host '  Done. Open the solution in Visual Studio and press F5.' -ForegroundColor Green
