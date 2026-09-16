@@ -80,9 +80,20 @@
         </main>
 
         <footer class="border-top py-3 mt-4">
-            <div class="container text-muted small d-flex flex-wrap justify-content-between gap-2">
-                <span>Group 6 &middot; CMPG223 &middot; Nkanyezi Tours</span>
-                <a href="<%: ResolveUrl("~/Help.aspx") %>" class="link-secondary" title="Answers to common questions, with a keyword search.">Help</a>
+            <div class="container text-muted small">
+                <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <span>Group 6 &middot; CMPG223 &middot; Nkanyezi Tours</span>
+                    <a href="<%: ResolveUrl("~/Help.aspx") %>" class="link-secondary" title="Answers to common questions, with a keyword search.">Help</a>
+                </div>
+                <div class="footer-members mt-2 pt-2 border-top">
+                    <span>50344226 | Kutloano Sabalele</span>
+                    <span>50763679 | Lindokuhle Kweta</span>
+                    <span>45662878 | Ruan Venter</span>
+                    <span>55810608 | Reinhardt van der Walt</span>
+                    <span>55807593 | Sibane Ndhlela</span>
+                    <span>55985866 | Wihandr&eacute; Singleton</span>
+                    <span>50536192 | Zizipho Zingelwa</span>
+                </div>
             </div>
         </footer>
 

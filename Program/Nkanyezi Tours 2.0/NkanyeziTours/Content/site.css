@@ -808,3 +808,11 @@ input[type="date"].form-control::-webkit-datetime-edit-year-field:focus {
     color: #ffffff;
     border-radius: .25rem;
 }
+
+.footer-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1.25rem;
+    color: #7a8698;
+    font-size: .78rem;
+}
